@@ -1,5 +1,5 @@
 {
-  "name": "@repo/ui",
+  "name": "@choblue/ui",
   "version": "0.0.0",
   "private": true,
   "exports": {
@@ -13,8 +13,8 @@
     "check-types": "tsc --noEmit"
   },
   "devDependencies": {
-    "@repo/eslint-config": "workspace:*",
-    "@repo/typescript-config": "workspace:*",
+    "@choblue/eslint-config": "workspace:*",
+    "@choblue/typescript-config": "workspace:*",
     "@tailwindcss/postcss": "^4.1.18",
     "@types/node": "^22.15.3",
     "@types/react": "19.2.2",
