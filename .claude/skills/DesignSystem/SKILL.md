@@ -5,24 +5,40 @@
 ### 파일 위치
 ```
 packages/ui/src/
+├── components/
+│   └── button/
+│       ├── button.tsx        # 컴포넌트 구현
+│       ├── button.test.tsx   # 단위 테스트
+│       └── index.ts          # barrel export
+├── hooks/
+│   └── .gitkeep             # 향후 커스텀 훅
 ├── lib/
-│   └── cn.ts              # clsx + tailwind-merge 유틸리티
+│   └── cn.ts                # clsx + tailwind-merge 유틸리티
 ├── styles/
-│   ├── theme.css           # @theme 디자인 토큰
-│   ├── dark-theme.css      # .dark 변수 오버라이드
-│   └── globals.css         # 테마 번들 + Pretendard CDN
-├── button.tsx              # 컴포넌트 파일 (kebab-case 아님, 단일 단어)
-├── text-input.tsx          # 복합 이름은 kebab-case
-└── index.ts                # 없음 — barrel export 사용하지 않음
+│   └── globals.css          # 테마 번들
+└── test-setup.ts
 ```
 
 ### Import 패턴
 ```tsx
-// apps에서 사용
+// apps에서 사용 (package.json exports로 resolve)
 import { Button } from "@choblue/ui/button";
-import { TextInput } from "@choblue/ui/text-input";
 import { cn } from "@choblue/ui/lib/cn";
+
+// 컴포넌트 내부에서 lib 참조
+import { cn } from "../../lib/cn";
 ```
+
+### package.json exports
+컴포넌트별 명시적 경로 매핑:
+```json
+{
+  "./button": "./src/components/button/index.ts",
+  "./lib/*": "./src/lib/*.ts",
+  "./styles/*.css": "./src/styles/*.css"
+}
+```
+새 컴포넌트 추가 시 exports에 항목을 추가해야 한다.
 
 ---
 
@@ -70,7 +86,7 @@ import { cn } from "@choblue/ui/lib/cn";
 
 ```tsx
 import { cva, type VariantProps } from "class-variance-authority";
-import { cn } from "./lib/cn";
+import { cn } from "../../lib/cn";
 
 // 1. variants 정의
 const buttonVariants = cva(
@@ -198,3 +214,71 @@ className="h-9 px-4 md:h-10 md:px-6 hover:bg-primary/90 focus-visible:ring-2 dis
 | 컴포넌트 이름 | PascalCase | `Button`, `TextInput` |
 | Props 타입 | PascalCase + Props | `ButtonProps`, `TextInputProps` |
 | Variants 변수 | camelCase + Variants | `buttonVariants`, `textInputVariants` |
+
+---
+
+## 8. Storybook 컨벤션
+
+### 스토리 파일 위치
+```
+apps/storybook-ui/src/stories/
+└── Button.stories.tsx    # PascalCase + .stories.tsx
+```
+
+### 스토리 작성 패턴
+```tsx
+import type { Meta, StoryObj } from "@storybook/react-vite";
+import { Button } from "@choblue/ui/button";
+
+const meta = {
+  title: "UI/ComponentName",       // "UI/" 프리픽스 필수
+  component: Button,
+  parameters: { layout: "centered" },
+  tags: ["autodocs"],              // 자동 문서 생성
+  argTypes: {
+    variant: {
+      control: "select",
+      options: ["primary", "secondary", "outline", "ghost", "destructive"],
+    },
+    size: {
+      control: "select",
+      options: ["sm", "md", "lg", "icon"],
+    },
+    disabled: { control: "boolean" },
+  },
+} satisfies Meta<typeof Button>;
+
+export default meta;
+type Story = StoryObj<typeof meta>;
+
+// 각 variant별 스토리
+export const Primary: Story = {
+  args: { children: "Button" },
+};
+```
+
+### 스토리 작성 규칙
+- `title`: `"UI/{ComponentName}"` 형식으로 그룹화
+- `satisfies Meta<typeof Component>` 타입 안전성 확보
+- `tags: ["autodocs"]` 로 자동 문서 생성
+- 각 variant/size 조합별 스토리 작성
+- Disabled, WithIcon 등 특수 상태 스토리 포함
+- argTypes로 Storybook Controls 패널 설정
+
+### Storybook 설정
+- 테마 지원: `@storybook/addon-themes` + `withThemeByClassName` (light/dark)
+- 접근성: `@storybook/addon-a11y` (test: 'todo')
+- 글로벌 CSS: `preview.ts`에서 `@choblue/tailwind-config/globals.css` import
+
+---
+
+## 9. 새 컴포넌트 추가 체크리스트
+
+1. `src/components/{name}/` 디렉토리 생성
+2. `{name}.tsx` — 컴포넌트 구현 (CVA + cn 패턴)
+3. `{name}.test.tsx` — 단위 테스트 (vitest + testing-library)
+4. `index.ts` — barrel export (`export { Component, componentVariants }; export type { ComponentProps };`)
+5. `packages/ui/package.json`의 `exports`에 `"./{name}": "./src/components/{name}/index.ts"` 추가
+6. `apps/storybook-ui/src/stories/{Name}.stories.tsx` — Storybook 스토리 작성
+7. 테스트 통과 확인: `pnpm --filter @choblue/ui test`
+8. 타입 체크 확인: `pnpm --filter @choblue/ui check-types`
