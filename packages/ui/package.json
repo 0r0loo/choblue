@@ -3,7 +3,7 @@
   "version": "0.0.0",
   "private": true,
   "exports": {
-    "./*": "./src/*.tsx",
+    "./button": "./src/components/button/index.ts",
     "./lib/*": "./src/lib/*.ts",
     "./styles/*.css": "./src/styles/*.css"
   },
