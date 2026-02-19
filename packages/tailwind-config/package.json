@@ -1,0 +1,22 @@
+{
+  "name": "@choblue/tailwind-config",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    "./globals.css": "./styles/globals.css",
+    "./theme.css": "./styles/theme.css",
+    "./dark-theme.css": "./styles/dark-theme.css",
+    "./postcss": "./postcss.config.js",
+    "./vite": "./vite.ts"
+  },
+  "dependencies": {
+    "tailwindcss": "^4.1.18",
+    "@tailwindcss/postcss": "^4.1.18",
+    "@tailwindcss/vite": "^4.1.18",
+    "postcss": "^8.5.6"
+  },
+  "peerDependencies": {
+    "vite": ">=7.0.0"
+  }
+}
