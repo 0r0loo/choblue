@@ -45,5 +45,7 @@ function Button({ className, variant, size, type = "button", ...props }: ButtonP
   );
 }
 
+Button.displayName = "Button";
+
 export { Button, buttonVariants };
 export type { ButtonProps };
