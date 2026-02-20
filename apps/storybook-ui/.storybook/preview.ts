@@ -1,4 +1,4 @@
-import "@choblue/tailwind-config/globals.css";
+import "../src/globals.css";
 import type { Preview } from '@storybook/react-vite'
 import { withThemeByClassName } from '@storybook/addon-themes';
 

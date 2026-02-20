@@ -7,27 +7,15 @@ import { Input } from "./input";
 describe("Input", () => {
   it("renders an input element", () => {
     render(<Input />);
-    expect(screen.getByRole("textbox")).toBeInTheDocument();
+    const input = screen.getByRole("textbox");
+    expect(input).toBeInTheDocument();
+    expect(input.className).toContain("border");
+    expect(input.className).toContain("bg-background");
   });
 
   it("has type text by default", () => {
     render(<Input />);
     expect(screen.getByRole("textbox")).toHaveAttribute("type", "text");
-  });
-
-  describe("variants", () => {
-    it("applies outline variant by default", () => {
-      render(<Input />);
-      const input = screen.getByRole("textbox");
-      expect(input.className).toContain("border");
-      expect(input.className).toContain("bg-background");
-    });
-
-    it("applies filled variant", () => {
-      render(<Input variant="filled" />);
-      const input = screen.getByRole("textbox");
-      expect(input.className).toContain("bg-surface");
-    });
   });
 
   describe("sizes", () => {
@@ -50,30 +38,35 @@ describe("Input", () => {
     });
   });
 
-  describe("status", () => {
-    it("applies success status", () => {
-      render(<Input status="success" />);
-      const input = screen.getByRole("textbox");
-      expect(input.className).toContain("border-success");
-    });
+  describe("aria-invalid", () => {
+    it("should render aria-invalid attribute when aria-invalid is true", () => {
+      render(<Input aria-invalid />);
 
-    it("applies warning status", () => {
-      render(<Input status="warning" />);
-      const input = screen.getByRole("textbox");
-      expect(input.className).toContain("border-warning");
-    });
-
-    it("applies error status", () => {
-      render(<Input status="error" />);
-      const input = screen.getByRole("textbox");
-      expect(input.className).toContain("border-error");
-    });
-
-    it("sets aria-invalid when status is error", () => {
-      render(<Input status="error" />);
       expect(screen.getByRole("textbox")).toHaveAttribute(
         "aria-invalid",
         "true",
+      );
+    });
+
+    it("should include aria-invalid:border-destructive in base classes", () => {
+      render(<Input />);
+      const input = screen.getByRole("textbox");
+
+      expect(input.className).toContain("aria-invalid:border-destructive");
+    });
+
+    it("should not have aria-invalid attribute by default", () => {
+      render(<Input />);
+
+      expect(screen.getByRole("textbox")).not.toHaveAttribute("aria-invalid");
+    });
+
+    it("should have aria-invalid false when aria-invalid is explicitly false", () => {
+      render(<Input aria-invalid={false} />);
+
+      expect(screen.getByRole("textbox")).toHaveAttribute(
+        "aria-invalid",
+        "false",
       );
     });
   });
