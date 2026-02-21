@@ -3,7 +3,14 @@ import type { ComponentProps } from "react";
 import { cn } from "../../lib/cn";
 
 const buttonVariants = cva(
-  "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background disabled:pointer-events-none disabled:opacity-50",
+  [
+    'inline-flex items-center justify-center gap-2 whitespace-nowrap', // 레이아웃
+    'rounded-md text-sm font-medium',                                  // 모양/타이포
+    'transition-colors',                                               // 효과
+    'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring', // 포커스
+    'focus-visible:ring-offset-2 focus-visible:ring-offset-background',       // 포커스 오프셋
+    'disabled:pointer-events-none disabled:opacity-50',                // 상태
+  ],
   {
     variants: {
       variant: {
@@ -39,7 +46,7 @@ function Button({ className, variant, size, type = "button", ...props }: ButtonP
   return (
     <button
       type={type}
-      className={cn(buttonVariants({ variant, size, className }))}
+      className={cn(buttonVariants({ variant, size }), className)}
       {...props}
     />
   );

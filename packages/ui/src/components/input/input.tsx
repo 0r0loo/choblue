@@ -3,7 +3,19 @@ import type { ComponentProps } from "react";
 import { cn } from "../../lib/cn";
 
 const inputVariants = cva(
-  "flex w-full rounded-md px-3 text-sm transition-colors border border-input bg-background shadow-sm file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background disabled:pointer-events-none disabled:opacity-50 aria-invalid:border-destructive aria-invalid:ring-destructive/20 aria-invalid:text-destructive",
+  [
+    'flex w-full',                                                     // 레이아웃
+    'rounded-md px-3',                                                 // 크기/간격
+    'text-sm',                                                         // 모양/타이포
+    'border border-input bg-background shadow-sm',                     // 배경/보더
+    'transition-colors',                                               // 효과
+    'file:border-0 file:bg-transparent file:text-sm file:font-medium', // 파일 입력
+    'placeholder:text-muted-foreground',                               // 플레이스홀더
+    'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring', // 포커스
+    'focus-visible:ring-offset-2 focus-visible:ring-offset-background',       // 포커스 오프셋
+    'disabled:pointer-events-none disabled:opacity-50',                // 상태
+    'aria-invalid:border-destructive aria-invalid:ring-destructive/20 aria-invalid:text-destructive', // 유효성
+  ],
   {
     variants: {
       size: {
@@ -33,7 +45,7 @@ function Input({
     <input
       ref={ref}
       type={type}
-      className={cn(inputVariants({ size, className }))}
+      className={cn(inputVariants({ size }), className)}
       {...props}
     />
   );
