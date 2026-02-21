@@ -4,7 +4,13 @@
   "private": true,
   "exports": {
     "./button": "./src/components/button/index.ts",
+    "./badge": "./src/components/badge/index.ts",
     "./input": "./src/components/input/index.ts",
+    "./textarea": "./src/components/textarea/index.ts",
+    "./select": "./src/components/select/index.ts",
+    "./card": "./src/components/card/index.ts",
+    "./dialog": "./src/components/dialog/index.ts",
+    "./toast": "./src/components/toast/index.ts",
     "./lib/*": "./src/lib/*.ts",
     "./styles/*.css": "./src/styles/*.css"
   },
