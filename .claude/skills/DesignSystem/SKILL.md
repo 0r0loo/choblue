@@ -6,10 +6,15 @@
 ```
 packages/ui/src/
 ├── components/
-│   └── button/
-│       ├── button.tsx        # 컴포넌트 구현
-│       ├── button.test.tsx   # 단위 테스트
-│       └── index.ts          # barrel export
+│   ├── button/
+│   │   ├── button.tsx        # CVA 패턴 (단일 컴포넌트)
+│   │   ├── button.test.tsx
+│   │   └── index.ts
+│   └── select/
+│       ├── select-context.tsx # Context + Provider (복합 컴포넌트)
+│       ├── select.tsx         # 서브 컴포넌트들
+│       ├── select.test.tsx
+│       └── index.ts
 ├── hooks/
 │   └── .gitkeep             # 향후 커스텀 훅
 ├── lib/
@@ -133,6 +138,61 @@ export { Button, buttonVariants };
 export type { ButtonProps };
 ```
 
+### 복합 컴포넌트 템플릿 (Compound Component)
+
+Select, Dialog, Toast 등 여러 서브 컴포넌트로 구성되는 경우 사용한다.
+
+**파일 분리 원칙:**
+- `{name}-context.tsx` — Context, Provider, 상태/인터랙션 로직이 있는 컴포넌트
+- `{name}.tsx` — 표현(presentational) 서브 컴포넌트 + context 모듈 re-export
+
+```tsx
+// {name}-context.tsx
+import { createContext, useContext, useState, type ReactNode } from "react";
+
+interface DialogContextValue {
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+}
+
+const DialogContext = createContext<DialogContextValue | null>(null);
+
+function useDialogContext() {
+  const ctx = useContext(DialogContext);
+  if (!ctx)
+    throw new Error("Dialog compound components must be used within <Dialog>");
+  return ctx;
+}
+
+// Root Provider
+interface DialogProps { /* ... */ }
+function Dialog({ children, open, onOpenChange }: DialogProps) { /* ... */ }
+
+// 인터랙션이 있는 서브 컴포넌트 (Trigger, Content, Close 등)
+function DialogTrigger(/* ... */) { /* ... */ }
+function DialogContent(/* ... */) { /* ... */ }
+
+export { Dialog, DialogTrigger, DialogContent, useDialogContext };
+```
+
+```tsx
+// {name}.tsx
+import { useDialogContext } from "./{name}-context";
+
+// context 모듈 re-export (테스트 import 호환)
+export { Dialog, useDialogContext } from "./{name}-context";
+export type { DialogProps, DialogContextValue } from "./{name}-context";
+
+// 표현 서브 컴포넌트 (CVA 불필요 — variant/size가 없음)
+function DialogHeader({ className, ...props }: ComponentProps<"div">) { /* ... */ }
+function DialogTitle({ className, ...props }: ComponentProps<"h2">) { /* ... */ }
+```
+
+**복합 컴포넌트 규칙:**
+- CVA는 variant/size props가 있는 경우에만 사용, 없으면 `cn()` 직접 사용
+- 각 파일 200줄 이하 유지
+- 모든 서브 컴포넌트에 `displayName` 설정
+
 ### 규칙
 - **named export만 사용** (`export default` 금지)
 - **`"use client"` 는 이벤트 핸들러가 있을 때만** 추가
@@ -174,6 +234,15 @@ success → success-* (초록/민트 계열)
 warning → warning-* (오렌지 계열)
 error   → danger-*  (빨강 계열)
 info    → info-*    (시안 계열)
+```
+
+### 시맨틱 보더 토큰
+```tsx
+// ✅ 시맨틱 보더 토큰 사용
+className="border border-border"
+
+// ❌ border만 쓰면 기본색 적용 (테마 미반영)
+className="border"
 ```
 
 ### 반응형 / 상태 클래스 순서
@@ -276,9 +345,27 @@ export const Primary: Story = {
 
 1. `src/components/{name}/` 디렉토리 생성
 2. `{name}.tsx` — 컴포넌트 구현 (CVA + cn 패턴)
+   - **복합 컴포넌트의 경우**: `{name}-context.tsx` (Context/Provider/인터랙션) + `{name}.tsx` (표현 서브컴포넌트) 분리
 3. `{name}.test.tsx` — 단위 테스트 (vitest + testing-library)
 4. `index.ts` — barrel export (`export { Component, componentVariants }; export type { ComponentProps };`)
 5. `packages/ui/package.json`의 `exports`에 `"./{name}": "./src/components/{name}/index.ts"` 추가
 6. `apps/storybook-ui/src/stories/{Name}.stories.tsx` — Storybook 스토리 작성
-7. 테스트 통과 확인: `pnpm --filter @choblue/ui test`
-8. 타입 체크 확인: `pnpm --filter @choblue/ui check-types`
+7. 모든 서브 컴포넌트에 `displayName` 설정
+8. 각 파일 200줄 이하 유지
+9. 테스트 통과 확인: `pnpm --filter @choblue/ui test`
+10. 타입 체크 확인: `pnpm --filter @choblue/ui check-types`
+
+---
+
+## 10. 현재 구현된 컴포넌트 목록
+
+| 컴포넌트 | 패턴 | Variants | 파일 |
+|----------|------|----------|------|
+| Button | CVA 단일 | variant, size | button.tsx |
+| Input | CVA 단일 | size | input.tsx |
+| Badge | CVA 단일 | variant | badge.tsx |
+| Card | 복합 (6 서브) | - | card.tsx |
+| Textarea | CVA 단일 | size | textarea.tsx |
+| Select | 복합 (Context) | - | select-context.tsx + select.tsx |
+| Dialog | 복합 (Context) | - | dialog-context.tsx + dialog.tsx |
+| Toast | 복합 (Context) | - | toast-context.tsx + toast.tsx |
