@@ -1,0 +1,32 @@
+{
+  "name": "lunch",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc -b && vite build",
+    "lint": "eslint . --max-warnings 0",
+    "preview": "vite preview",
+    "check-types": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@choblue/ui": "workspace:*",
+    "@tanstack/react-query": "^5",
+    "@tanstack/react-router": "^1",
+    "react": "^19.2.0",
+    "react-dom": "^19.2.0"
+  },
+  "devDependencies": {
+    "@choblue/eslint-config": "workspace:*",
+    "@choblue/tailwind-config": "workspace:*",
+    "@choblue/typescript-config": "workspace:*",
+    "@tanstack/router-plugin": "^1",
+    "@types/react": "^19.2.2",
+    "@types/react-dom": "^19.2.2",
+    "@vitejs/plugin-react": "^5.1.4",
+    "eslint": "^9.39.1",
+    "typescript": "5.9.2",
+    "vite": "^7.3.1"
+  }
+}
