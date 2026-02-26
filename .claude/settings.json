@@ -7,6 +7,14 @@
           {
             "type": "command",
             "command": ".claude/hooks/quality-gate.sh"
+          },
+          {
+            "type": "command",
+            "command": ".claude/hooks/skill-detector.sh"
+          },
+          {
+            "type": "command",
+            "command": ".claude/hooks/project-map-detector.sh"
           }
         ]
       }
