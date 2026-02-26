@@ -3,6 +3,8 @@ import { ConfigModule } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { WorkspaceModule } from './workspace/workspace.module';
 import { LunchPostModule } from './lunch-post/lunch-post.module';
+import { ParticipationModule } from './participation/participation.module';
+import { MemberModule } from './member/member.module';
 
 @Module({
   imports: [
@@ -22,6 +24,8 @@ import { LunchPostModule } from './lunch-post/lunch-post.module';
     }),
     WorkspaceModule,
     LunchPostModule,
+    ParticipationModule,
+    MemberModule,
   ],
 })
 export class AppModule {}
