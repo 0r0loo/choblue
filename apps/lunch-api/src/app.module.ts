@@ -2,6 +2,7 @@ import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { WorkspaceModule } from './workspace/workspace.module';
+import { LunchPostModule } from './lunch-post/lunch-post.module';
 
 @Module({
   imports: [
@@ -20,6 +21,7 @@ import { WorkspaceModule } from './workspace/workspace.module';
       synchronize: process.env.NODE_ENV !== 'production',
     }),
     WorkspaceModule,
+    LunchPostModule,
   ],
 })
 export class AppModule {}
