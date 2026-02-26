@@ -1,0 +1,15 @@
+services:
+  db:
+    container_name: local-dev-db
+    image: postgres:17-alpine
+    restart: unless-stopped
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_PASSWORD: postgres
+    volumes:
+      - local-dev-data:/var/lib/postgresql/data
+      - ./docker/init-databases.sh:/docker-entrypoint-initdb.d/init-databases.sh
+
+volumes:
+  local-dev-data:
