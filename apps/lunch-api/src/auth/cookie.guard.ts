@@ -1,10 +1,12 @@
 import {
   CanActivate,
   ExecutionContext,
+  Inject,
   Injectable,
+  Optional,
   UnauthorizedException,
 } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
+import { getRepositoryToken } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Member } from '../entities/member.entity';
 import { AUTH_COOKIE_NAME } from './constants';
@@ -13,7 +15,8 @@ import { AuthenticatedRequest } from './types';
 @Injectable()
 export class CookieGuard implements CanActivate {
   constructor(
-    @InjectRepository(Member)
+    @Optional()
+    @Inject(getRepositoryToken(Member))
     private readonly memberRepository: Repository<Member>,
   ) {}
 
