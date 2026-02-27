@@ -14,6 +14,8 @@ import { Route as WorkspaceSlugRouteImport } from './routes/$workspaceSlug'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as WorkspaceSlugIndexRouteImport } from './routes/$workspaceSlug/index'
 import { Route as JoinInviteCodeRouteImport } from './routes/join.$inviteCode'
+import { Route as WorkspaceSlugSettingsRouteImport } from './routes/$workspaceSlug/settings'
+import { Route as WorkspaceSlugProfileRouteImport } from './routes/$workspaceSlug/profile'
 import { Route as WorkspaceSlugGatheringsNewRouteImport } from './routes/$workspaceSlug/gatherings.new'
 import { Route as WorkspaceSlugGatheringsPostIdRouteImport } from './routes/$workspaceSlug/gatherings.$postId'
 import { Route as WorkspaceSlugGatheringsPostIdEditRouteImport } from './routes/$workspaceSlug/gatherings.$postId.edit'
@@ -43,6 +45,16 @@ const JoinInviteCodeRoute = JoinInviteCodeRouteImport.update({
   path: '/join/$inviteCode',
   getParentRoute: () => rootRouteImport,
 } as any)
+const WorkspaceSlugSettingsRoute = WorkspaceSlugSettingsRouteImport.update({
+  id: '/settings',
+  path: '/settings',
+  getParentRoute: () => WorkspaceSlugRoute,
+} as any)
+const WorkspaceSlugProfileRoute = WorkspaceSlugProfileRouteImport.update({
+  id: '/profile',
+  path: '/profile',
+  getParentRoute: () => WorkspaceSlugRoute,
+} as any)
 const WorkspaceSlugGatheringsNewRoute =
   WorkspaceSlugGatheringsNewRouteImport.update({
     id: '/gatherings/new',
@@ -66,6 +78,8 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/$workspaceSlug': typeof WorkspaceSlugRouteWithChildren
   '/create': typeof CreateRoute
+  '/$workspaceSlug/profile': typeof WorkspaceSlugProfileRoute
+  '/$workspaceSlug/settings': typeof WorkspaceSlugSettingsRoute
   '/join/$inviteCode': typeof JoinInviteCodeRoute
   '/$workspaceSlug/': typeof WorkspaceSlugIndexRoute
   '/$workspaceSlug/gatherings/$postId': typeof WorkspaceSlugGatheringsPostIdRouteWithChildren
@@ -75,6 +89,8 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/create': typeof CreateRoute
+  '/$workspaceSlug/profile': typeof WorkspaceSlugProfileRoute
+  '/$workspaceSlug/settings': typeof WorkspaceSlugSettingsRoute
   '/join/$inviteCode': typeof JoinInviteCodeRoute
   '/$workspaceSlug': typeof WorkspaceSlugIndexRoute
   '/$workspaceSlug/gatherings/$postId': typeof WorkspaceSlugGatheringsPostIdRouteWithChildren
@@ -86,6 +102,8 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/$workspaceSlug': typeof WorkspaceSlugRouteWithChildren
   '/create': typeof CreateRoute
+  '/$workspaceSlug/profile': typeof WorkspaceSlugProfileRoute
+  '/$workspaceSlug/settings': typeof WorkspaceSlugSettingsRoute
   '/join/$inviteCode': typeof JoinInviteCodeRoute
   '/$workspaceSlug/': typeof WorkspaceSlugIndexRoute
   '/$workspaceSlug/gatherings/$postId': typeof WorkspaceSlugGatheringsPostIdRouteWithChildren
@@ -98,6 +116,8 @@ export interface FileRouteTypes {
     | '/'
     | '/$workspaceSlug'
     | '/create'
+    | '/$workspaceSlug/profile'
+    | '/$workspaceSlug/settings'
     | '/join/$inviteCode'
     | '/$workspaceSlug/'
     | '/$workspaceSlug/gatherings/$postId'
@@ -107,6 +127,8 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/create'
+    | '/$workspaceSlug/profile'
+    | '/$workspaceSlug/settings'
     | '/join/$inviteCode'
     | '/$workspaceSlug'
     | '/$workspaceSlug/gatherings/$postId'
@@ -117,6 +139,8 @@ export interface FileRouteTypes {
     | '/'
     | '/$workspaceSlug'
     | '/create'
+    | '/$workspaceSlug/profile'
+    | '/$workspaceSlug/settings'
     | '/join/$inviteCode'
     | '/$workspaceSlug/'
     | '/$workspaceSlug/gatherings/$postId'
@@ -168,6 +192,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof JoinInviteCodeRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/$workspaceSlug/settings': {
+      id: '/$workspaceSlug/settings'
+      path: '/settings'
+      fullPath: '/$workspaceSlug/settings'
+      preLoaderRoute: typeof WorkspaceSlugSettingsRouteImport
+      parentRoute: typeof WorkspaceSlugRoute
+    }
+    '/$workspaceSlug/profile': {
+      id: '/$workspaceSlug/profile'
+      path: '/profile'
+      fullPath: '/$workspaceSlug/profile'
+      preLoaderRoute: typeof WorkspaceSlugProfileRouteImport
+      parentRoute: typeof WorkspaceSlugRoute
+    }
     '/$workspaceSlug/gatherings/new': {
       id: '/$workspaceSlug/gatherings/new'
       path: '/gatherings/new'
@@ -208,12 +246,16 @@ const WorkspaceSlugGatheringsPostIdRouteWithChildren =
   )
 
 interface WorkspaceSlugRouteChildren {
+  WorkspaceSlugProfileRoute: typeof WorkspaceSlugProfileRoute
+  WorkspaceSlugSettingsRoute: typeof WorkspaceSlugSettingsRoute
   WorkspaceSlugIndexRoute: typeof WorkspaceSlugIndexRoute
   WorkspaceSlugGatheringsPostIdRoute: typeof WorkspaceSlugGatheringsPostIdRouteWithChildren
   WorkspaceSlugGatheringsNewRoute: typeof WorkspaceSlugGatheringsNewRoute
 }
 
 const WorkspaceSlugRouteChildren: WorkspaceSlugRouteChildren = {
+  WorkspaceSlugProfileRoute: WorkspaceSlugProfileRoute,
+  WorkspaceSlugSettingsRoute: WorkspaceSlugSettingsRoute,
   WorkspaceSlugIndexRoute: WorkspaceSlugIndexRoute,
   WorkspaceSlugGatheringsPostIdRoute:
     WorkspaceSlugGatheringsPostIdRouteWithChildren,
