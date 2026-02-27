@@ -7,9 +7,9 @@
 
 - **이름**: side-project
 - **브랜치**: main
-- **최근 커밋**: bb092af FEAT: 점심 모집 앱 LunchPost 모듈 구현 (Controller, Service, DTO, 테스트)
-- **생성 시간**: 2026-02-26 17:23:41
-- **총 파일 수**: 179
+- **최근 커밋**: 93c50db FEAT: 점심 모집 앱 메인 화면 컴포넌트 및 타입 구현
+- **생성 시간**: 2026-02-26 19:11:23
+- **총 파일 수**: 225
 
 ## 기술 스택
 
@@ -30,6 +30,7 @@ typescript@5.9.2
 ./.claude/scripts
 ./.claude/skills
 ./.claude/skills/Coding
+./.claude/skills/DDD
 ./.claude/skills/DesignSystem
 ./.claude/skills/Git
 ./.claude/skills/NextJS
