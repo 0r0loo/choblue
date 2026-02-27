@@ -50,7 +50,7 @@ export class WorkspaceService {
       const savedWorkspace = await manager.save(workspace);
 
       const member = manager.create(Member, {
-        nickname: '관리자',
+        nickname: dto.nickname,
         cookieToken,
         role: MemberRole.ADMIN,
         workspaceId: savedWorkspace.id,

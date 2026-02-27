@@ -9,4 +9,9 @@ export class CreateWorkspaceDto {
   @IsOptional()
   @IsString()
   description?: string;
+
+  @IsString()
+  @IsNotEmpty()
+  @Length(2, 10)
+  nickname!: string;
 }

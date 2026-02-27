@@ -99,6 +99,7 @@ describe('WorkspaceController', () => {
     const createDto: CreateWorkspaceDto = {
       name: 'Engineering Team',
       description: 'A workspace for engineers',
+      nickname: '관리자',
     };
 
     it('should call workspaceService.create with the dto', async () => {

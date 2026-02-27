@@ -128,6 +128,7 @@ describe('WorkspaceService', () => {
     const createDto: CreateWorkspaceDto = {
       name: 'Engineering Team',
       description: 'A workspace for engineers',
+      nickname: '관리자',
     };
 
     function setupCreateMocks() {
@@ -238,7 +239,7 @@ describe('WorkspaceService', () => {
 
     it('should throw BadRequestException when name is shorter than 2 characters', async () => {
       // Arrange
-      const shortNameDto: CreateWorkspaceDto = { name: 'A' };
+      const shortNameDto: CreateWorkspaceDto = { name: 'A', nickname: '관리자' };
 
       // Act & Assert
       await expect(service.create(shortNameDto)).rejects.toThrow(
@@ -250,6 +251,7 @@ describe('WorkspaceService', () => {
       // Arrange
       const longNameDto: CreateWorkspaceDto = {
         name: 'A'.repeat(31),
+        nickname: '관리자',
       };
 
       // Act & Assert
@@ -260,7 +262,7 @@ describe('WorkspaceService', () => {
 
     it('should accept name with exactly 2 characters', async () => {
       // Arrange
-      const minNameDto: CreateWorkspaceDto = { name: 'AB' };
+      const minNameDto: CreateWorkspaceDto = { name: 'AB', nickname: '관리자' };
       setupCreateMocks();
 
       // Act & Assert
@@ -271,6 +273,7 @@ describe('WorkspaceService', () => {
       // Arrange
       const maxNameDto: CreateWorkspaceDto = {
         name: 'A'.repeat(30),
+        nickname: '관리자',
       };
       setupCreateMocks();
 
