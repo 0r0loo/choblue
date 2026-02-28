@@ -38,6 +38,13 @@ export async function apiFetch<T>(
   return response.json() as Promise<T>;
 }
 
+export function getErrorMessage(error: unknown, fallback: string): string {
+  if (error instanceof ApiError) {
+    return error.message;
+  }
+  return fallback;
+}
+
 export const api = {
   get: <T>(path: string): Promise<T> => {
     return apiFetch<T>(path);
