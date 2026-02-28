@@ -1,7 +1,10 @@
-import { useEffect, useState } from 'react';
+import { useState, useEffect } from 'react';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { Button } from '@choblue/ui/button';
 import { Input } from '@choblue/ui/input';
-import { api } from '@/lib/api';
+import { api, getErrorMessage } from '@/lib/api';
+import { postQueries } from '@/lib/queries';
+import { postKeys } from '@/lib/query-keys';
 import type { LunchPost } from '@/types';
 
 export interface EditPostPageProps {
@@ -20,7 +23,12 @@ const TIME_OPTIONS = [
 ];
 
 export function EditPostPage({ postId, onNavigate }: EditPostPageProps) {
-  const [isLoading, setIsLoading] = useState(true);
+  const queryClient = useQueryClient();
+
+  const { data: post, isLoading, error: fetchError } = useQuery(
+    postQueries.detail(postId),
+  );
+
   const [menu, setMenu] = useState('');
   const [restaurant, setRestaurant] = useState('');
   const [date, setDate] = useState('');
@@ -30,45 +38,41 @@ export function EditPostPage({ postId, onNavigate }: EditPostPageProps) {
   const [dateError, setDateError] = useState<string | null>(null);
   const [timeError, setTimeError] = useState<string | null>(null);
   const [maxParticipantsError, setMaxParticipantsError] = useState<string | null>(null);
-  const [apiError, setApiError] = useState<string | null>(null);
-  const [isSubmitting, setIsSubmitting] = useState(false);
 
   useEffect(() => {
-    let cancelled = false;
-
-    async function fetchPost() {
-      setIsLoading(true);
-      try {
-        const data = await api.get<LunchPost>(`/posts/${postId}`);
-        if (!cancelled) {
-          setMenu(data.menu);
-          setRestaurant(data.restaurant ?? '');
-          setDate(data.date);
-          setTime(data.time);
-          setMaxParticipants(data.maxParticipants);
-        }
-      } catch {
-        if (!cancelled) {
-          setApiError('데이터를 불러오는 중 오류가 발생했습니다.');
-        }
-      } finally {
-        if (!cancelled) {
-          setIsLoading(false);
-        }
-      }
+    if (post) {
+      setMenu(post.menu);
+      setRestaurant(post.restaurant ?? '');
+      setDate(post.date);
+      setTime(post.time);
+      setMaxParticipants(post.maxParticipants);
     }
+  }, [post]);
 
-    fetchPost();
-
-    return () => {
-      cancelled = true;
-    };
-  }, [postId]);
+  const updateMutation = useMutation({
+    mutationFn: (payload: Partial<LunchPost>) =>
+      api.patch(`/posts/${postId}`, payload),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: postKeys.detail(postId) });
+      queryClient.invalidateQueries({ queryKey: postKeys.lists() });
+      onNavigate(`/posts/${postId}`);
+    },
+  });
 
   if (isLoading) {
     return (
       <div className="flex min-h-screen items-center justify-center">
         <p className="text-muted-foreground">불러오는 중...</p>
+      </div>
+    );
+  }
+
+  if (fetchError) {
+    return (
+      <div className="flex min-h-screen items-center justify-center">
+        <p className="text-destructive">
+          {getErrorMessage(fetchError, '데이터를 불러오는 중 오류가 발생했습니다.')}
+        </p>
       </div>
     );
   }
@@ -107,30 +111,20 @@ export function EditPostPage({ postId, onNavigate }: EditPostPageProps) {
     return isValid;
   }
 
-  async function handleSubmit(e: React.FormEvent) {
+  function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
 
     if (!validate()) {
       return;
     }
 
-    setIsSubmitting(true);
-    setApiError(null);
-
-    try {
-      await api.patch(`/posts/${postId}`, {
-        menu,
-        restaurant: restaurant.trim() || null,
-        date,
-        time,
-        maxParticipants,
-      });
-      onNavigate(`/posts/${postId}`);
-    } catch {
-      setApiError('오류가 발생했습니다. 다시 시도해주세요.');
-    } finally {
-      setIsSubmitting(false);
-    }
+    updateMutation.mutate({
+      menu,
+      restaurant: restaurant.trim() || null,
+      date,
+      time,
+      maxParticipants,
+    });
   }
 
   return (
@@ -221,12 +215,14 @@ export function EditPostPage({ postId, onNavigate }: EditPostPageProps) {
           )}
         </div>
 
-        {apiError && (
-          <p className="text-sm text-destructive">{apiError}</p>
+        {updateMutation.error && (
+          <p className="text-sm text-destructive">
+            {getErrorMessage(updateMutation.error, '오류가 발생했습니다. 다시 시도해주세요.')}
+          </p>
         )}
 
-        <Button type="submit" className="w-full" disabled={isSubmitting}>
-          {isSubmitting ? '수정 중...' : '수정하기'}
+        <Button type="submit" className="w-full" disabled={updateMutation.isPending}>
+          {updateMutation.isPending ? '수정 중...' : '수정하기'}
         </Button>
       </form>
     </div>

@@ -1,9 +1,9 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
+import { useQuery } from '@tanstack/react-query';
 import { Button } from '@choblue/ui/button';
-import { api } from '@/lib/api';
+import { postQueries } from '@/lib/queries';
 import { MiniCalendar } from '@/components/mini-calendar';
 import { PostFeed } from '@/components/post-feed';
-import type { LunchPost } from '@/types';
 
 export interface MainPageProps {
   workspaceId: string;
@@ -19,59 +19,16 @@ function toDateString(date: Date): string {
 
 export function MainPage({ workspaceId, onNavigate }: MainPageProps) {
   const [selectedDate, setSelectedDate] = useState(() => toDateString(new Date()));
-  const [posts, setPosts] = useState<LunchPost[]>([]);
-  const [calendarData, setCalendarData] = useState<Record<string, number>>({});
 
-  useEffect(() => {
-    let cancelled = false;
+  const yearMonth = selectedDate.slice(0, 7);
 
-    async function fetchPosts() {
-      try {
-        const data = await api.get<LunchPost[]>(
-          `/workspaces/${workspaceId}/posts?date=${selectedDate}`,
-        );
-        if (!cancelled) {
-          setPosts(data);
-        }
-      } catch {
-        if (!cancelled) {
-          setPosts([]);
-        }
-      }
-    }
+  const { data: posts = [] } = useQuery(
+    postQueries.list(workspaceId, selectedDate),
+  );
 
-    fetchPosts();
-
-    return () => {
-      cancelled = true;
-    };
-  }, [workspaceId, selectedDate]);
-
-  useEffect(() => {
-    let cancelled = false;
-
-    async function fetchCalendar() {
-      try {
-        const yearMonth = selectedDate.slice(0, 7);
-        const data = await api.get<Record<string, number>>(
-          `/workspaces/${workspaceId}/posts/calendar?month=${yearMonth}`,
-        );
-        if (!cancelled) {
-          setCalendarData(data);
-        }
-      } catch {
-        if (!cancelled) {
-          setCalendarData({});
-        }
-      }
-    }
-
-    fetchCalendar();
-
-    return () => {
-      cancelled = true;
-    };
-  }, [workspaceId, selectedDate]);
+  const { data: calendarData = {} } = useQuery(
+    postQueries.calendar(workspaceId, yearMonth),
+  );
 
   function handlePostClick(postId: string) {
     onNavigate(`/gatherings/${postId}`);

@@ -19,3 +19,10 @@ export const workspaceKeys = {
   byInviteCode: (code: string) =>
     [...workspaceKeys.all, 'invite', code] as const,
 };
+
+export const memberKeys = {
+  all: ['members'] as const,
+  me: () => [...memberKeys.all, 'me'] as const,
+  current: (workspaceSlug: string) =>
+    [...memberKeys.all, 'current', workspaceSlug] as const,
+};

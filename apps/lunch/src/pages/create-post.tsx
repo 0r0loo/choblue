@@ -1,7 +1,9 @@
 import { useState } from 'react';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { Button } from '@choblue/ui/button';
 import { Input } from '@choblue/ui/input';
-import { api } from '@/lib/api';
+import { api, getErrorMessage } from '@/lib/api';
+import { postKeys } from '@/lib/query-keys';
 
 export interface CreatePostPageProps {
   workspaceId: string;
@@ -27,6 +29,8 @@ function getTodayString(): string {
 }
 
 export function CreatePostPage({ workspaceId, onNavigate }: CreatePostPageProps) {
+  const queryClient = useQueryClient();
+
   const [menu, setMenu] = useState('');
   const [restaurant, setRestaurant] = useState('');
   const [date, setDate] = useState(getTodayString());
@@ -36,8 +40,21 @@ export function CreatePostPage({ workspaceId, onNavigate }: CreatePostPageProps)
   const [dateError, setDateError] = useState<string | null>(null);
   const [timeError, setTimeError] = useState<string | null>(null);
   const [maxParticipantsError, setMaxParticipantsError] = useState<string | null>(null);
-  const [apiError, setApiError] = useState<string | null>(null);
-  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const createMutation = useMutation({
+    mutationFn: (payload: {
+      menu: string;
+      restaurant: string | null;
+      date: string;
+      time: string;
+      maxParticipants: number;
+    }) => api.post(`/workspaces/${workspaceId}/posts`, payload),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: postKeys.lists() });
+      queryClient.invalidateQueries({ queryKey: postKeys.calendars() });
+      onNavigate(`/${workspaceId}`);
+    },
+  });
 
   function validate(): boolean {
     let isValid = true;
@@ -73,30 +90,20 @@ export function CreatePostPage({ workspaceId, onNavigate }: CreatePostPageProps)
     return isValid;
   }
 
-  async function handleSubmit(e: React.FormEvent) {
+  function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
 
     if (!validate()) {
       return;
     }
 
-    setIsSubmitting(true);
-    setApiError(null);
-
-    try {
-      await api.post(`/workspaces/${workspaceId}/posts`, {
-        menu,
-        restaurant: restaurant.trim() || null,
-        date,
-        time,
-        maxParticipants,
-      });
-      onNavigate(`/${workspaceId}`);
-    } catch {
-      setApiError('오류가 발생했습니다. 다시 시도해주세요.');
-    } finally {
-      setIsSubmitting(false);
-    }
+    createMutation.mutate({
+      menu,
+      restaurant: restaurant.trim() || null,
+      date,
+      time,
+      maxParticipants,
+    });
   }
 
   return (
@@ -187,12 +194,14 @@ export function CreatePostPage({ workspaceId, onNavigate }: CreatePostPageProps)
           )}
         </div>
 
-        {apiError && (
-          <p className="text-sm text-destructive">{apiError}</p>
+        {createMutation.error && (
+          <p className="text-sm text-destructive">
+            {getErrorMessage(createMutation.error, '오류가 발생했습니다. 다시 시도해주세요.')}
+          </p>
         )}
 
-        <Button type="submit" className="w-full" disabled={isSubmitting}>
-          {isSubmitting ? '모집 중...' : '모집하기'}
+        <Button type="submit" className="w-full" disabled={createMutation.isPending}>
+          {createMutation.isPending ? '모집 중...' : '모집하기'}
         </Button>
       </form>
     </div>

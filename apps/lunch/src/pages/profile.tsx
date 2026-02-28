@@ -1,64 +1,49 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { Button } from '@choblue/ui/button';
 import { Input } from '@choblue/ui/input';
-import { api } from '@/lib/api';
+import { api, getErrorMessage } from '@/lib/api';
+import { memberQueries } from '@/lib/queries';
+import { memberKeys } from '@/lib/query-keys';
+import type { Member } from '@/types';
 
 export interface ProfilePageProps {
   workspaceId: string;
   onNavigate: (path: string) => void;
 }
 
-interface MemberInfo {
-  id: string;
-  nickname: string;
-  role: string;
-  joinedAt: string;
-}
-
 const NICKNAME_MIN_LENGTH = 2;
 const NICKNAME_MAX_LENGTH = 10;
 
 export function ProfilePage({ onNavigate }: ProfilePageProps) {
-  const [member, setMember] = useState<MemberInfo | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-  const [actionError, setActionError] = useState<string | null>(null);
+  const queryClient = useQueryClient();
+
+  const { data: member, isLoading, error: fetchError } = useQuery(
+    memberQueries.me(),
+  );
 
   const [nickname, setNickname] = useState('');
   const [originalNickname, setOriginalNickname] = useState('');
+  const [initialized, setInitialized] = useState(false);
   const [validationError, setValidationError] = useState<string | null>(null);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
 
-  useEffect(() => {
-    let cancelled = false;
+  // Initialize form when member loads
+  if (member && !initialized) {
+    setNickname(member.nickname);
+    setOriginalNickname(member.nickname);
+    setInitialized(true);
+  }
 
-    async function fetchMember() {
-      setIsLoading(true);
-      setError(null);
-      try {
-        const data = await api.get<MemberInfo>('/members/me');
-        if (!cancelled) {
-          setMember(data);
-          setNickname(data.nickname);
-          setOriginalNickname(data.nickname);
-        }
-      } catch {
-        if (!cancelled) {
-          setError('데이터를 불러오는 중 오류가 발생했습니다.');
-        }
-      } finally {
-        if (!cancelled) {
-          setIsLoading(false);
-        }
-      }
-    }
-
-    fetchMember();
-
-    return () => {
-      cancelled = true;
-    };
-  }, []);
+  const updateMutation = useMutation({
+    mutationFn: (payload: { nickname: string }) =>
+      api.patch<Member>('/members/me', payload),
+    onSuccess: (updated) => {
+      queryClient.setQueryData(memberKeys.me(), updated);
+      setOriginalNickname(updated.nickname);
+      setSuccessMessage('닉네임이 변경되었습니다');
+    },
+  });
 
   if (isLoading) {
     return (
@@ -68,10 +53,14 @@ export function ProfilePage({ onNavigate }: ProfilePageProps) {
     );
   }
 
-  if (error || !member) {
+  if (fetchError || !member) {
     return (
       <div className="flex min-h-screen items-center justify-center">
-        <p className="text-destructive">{error ?? '데이터를 찾을 수 없습니다.'}</p>
+        <p className="text-destructive">
+          {fetchError
+            ? getErrorMessage(fetchError, '데이터를 불러오는 중 오류가 발생했습니다.')
+            : '데이터를 찾을 수 없습니다.'}
+        </p>
       </div>
     );
   }
@@ -91,25 +80,15 @@ export function ProfilePage({ onNavigate }: ProfilePageProps) {
     return true;
   }
 
-  async function handleSubmit(e: React.FormEvent) {
+  function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setSuccessMessage(null);
-    setActionError(null);
 
     if (!validate()) {
       return;
     }
 
-    try {
-      const updated = await api.patch<MemberInfo>('/members/me', {
-        nickname,
-      });
-      setMember(updated);
-      setOriginalNickname(updated.nickname);
-      setSuccessMessage('닉네임이 변경되었습니다');
-    } catch {
-      setActionError('닉네임 변경 중 오류가 발생했습니다.');
-    }
+    updateMutation.mutate({ nickname });
   }
 
   function handleBackClick(e: React.MouseEvent) {
@@ -142,7 +121,7 @@ export function ProfilePage({ onNavigate }: ProfilePageProps) {
                 setNickname(e.target.value);
                 setValidationError(null);
                 setSuccessMessage(null);
-                setActionError(null);
+                updateMutation.reset();
               }}
             />
             {validationError && (
@@ -158,8 +137,10 @@ export function ProfilePage({ onNavigate }: ProfilePageProps) {
             <p className="text-sm text-green-600">{successMessage}</p>
           )}
 
-          {actionError && (
-            <p className="text-sm text-destructive">{actionError}</p>
+          {updateMutation.error && (
+            <p className="text-sm text-destructive">
+              {getErrorMessage(updateMutation.error, '닉네임 변경 중 오류가 발생했습니다.')}
+            </p>
           )}
         </form>
       </div>

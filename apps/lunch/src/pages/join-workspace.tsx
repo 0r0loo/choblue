@@ -1,86 +1,31 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
+import { useQuery, useMutation } from '@tanstack/react-query';
 import { Button } from '@choblue/ui/button';
 import { Input } from '@choblue/ui/input';
-import { api } from '@/lib/api';
+import { api, getErrorMessage } from '@/lib/api';
+import { workspaceQueries } from '@/lib/queries';
+import type { JoinResult } from '@/types';
 
 export interface JoinWorkspacePageProps {
   inviteCode: string;
   onNavigate: (path: string) => void;
 }
 
-interface WorkspaceInfo {
-  id: string;
-  name: string;
-  slug: string;
-  description: string;
-  memberCount: number;
-}
-
-interface JoinResult {
-  memberId: string;
-  workspaceSlug: string;
-}
-
 export function JoinWorkspacePage({ inviteCode, onNavigate }: JoinWorkspacePageProps) {
-  const [workspace, setWorkspace] = useState<WorkspaceInfo | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
-  const [fetchError, setFetchError] = useState<string | null>(null);
+  const { data: workspace, isLoading, error: fetchError } = useQuery(
+    workspaceQueries.byInviteCode(inviteCode),
+  );
 
   const [nickname, setNickname] = useState('');
   const [nicknameError, setNicknameError] = useState<string | null>(null);
-  const [apiError, setApiError] = useState<string | null>(null);
-  const [isSubmitting, setIsSubmitting] = useState(false);
 
-  useEffect(() => {
-    let cancelled = false;
-
-    async function fetchWorkspace() {
-      try {
-        const data = await api.get<WorkspaceInfo>(`/workspaces/by-invite/${inviteCode}`);
-        if (!cancelled) {
-          setWorkspace(data);
-          setIsLoading(false);
-        }
-      } catch (err) {
-        if (!cancelled) {
-          const message = err instanceof Error ? err.message : '유효하지 않은 링크입니다';
-          setFetchError(message);
-          setIsLoading(false);
-        }
-      }
-    }
-
-    void fetchWorkspace();
-
-    return () => {
-      cancelled = true;
-    };
-  }, [inviteCode]);
-
-  async function handleSubmit(e: React.FormEvent) {
-    e.preventDefault();
-
-    if (!nickname.trim()) {
-      setNicknameError('닉네임을 입력해주세요');
-      return;
-    }
-
-    setNicknameError(null);
-    setApiError(null);
-    setIsSubmitting(true);
-
-    try {
-      const result = await api.post<JoinResult>(
-        `/workspaces/${workspace!.id}/members`,
-        { nickname, inviteCode },
-      );
+  const joinMutation = useMutation({
+    mutationFn: (payload: { nickname: string; inviteCode: string }) =>
+      api.post<JoinResult>(`/workspaces/${workspace!.id}/members`, payload),
+    onSuccess: (result) => {
       onNavigate(`/${result.workspaceSlug}`);
-    } catch {
-      setApiError('오류가 발생했습니다. 다시 시도해주세요.');
-    } finally {
-      setIsSubmitting(false);
-    }
-  }
+    },
+  });
 
   if (isLoading) {
     return (
@@ -93,13 +38,27 @@ export function JoinWorkspacePage({ inviteCode, onNavigate }: JoinWorkspacePageP
   if (fetchError) {
     return (
       <div className="flex min-h-screen items-center justify-center p-4">
-        <p className="text-destructive">{fetchError}</p>
+        <p className="text-destructive">
+          {getErrorMessage(fetchError, '유효하지 않은 링크입니다')}
+        </p>
       </div>
     );
   }
 
   if (!workspace) {
     return null;
+  }
+
+  function handleSubmit(e: React.FormEvent) {
+    e.preventDefault();
+
+    if (!nickname.trim()) {
+      setNicknameError('닉네임을 입력해주세요');
+      return;
+    }
+
+    setNicknameError(null);
+    joinMutation.mutate({ nickname, inviteCode });
   }
 
   return (
@@ -128,12 +87,14 @@ export function JoinWorkspacePage({ inviteCode, onNavigate }: JoinWorkspacePageP
           )}
         </div>
 
-        {apiError && (
-          <p className="text-sm text-destructive">{apiError}</p>
+        {joinMutation.error && (
+          <p className="text-sm text-destructive">
+            {getErrorMessage(joinMutation.error, '오류가 발생했습니다. 다시 시도해주세요.')}
+          </p>
         )}
 
-        <Button type="submit" className="w-full" disabled={isSubmitting}>
-          {isSubmitting ? '참여 중...' : '참여하기'}
+        <Button type="submit" className="w-full" disabled={joinMutation.isPending}>
+          {joinMutation.isPending ? '참여 중...' : '참여하기'}
         </Button>
       </form>
     </div>

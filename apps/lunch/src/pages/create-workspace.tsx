@@ -1,18 +1,12 @@
 import { useState } from 'react';
+import { useMutation } from '@tanstack/react-query';
 import { Button } from '@choblue/ui/button';
 import { Input } from '@choblue/ui/input';
-import { api } from '@/lib/api';
+import { api, getErrorMessage } from '@/lib/api';
+import type { WorkspaceCreatedResult } from '@/types';
 
 export interface CreateWorkspacePageProps {
   onNavigate: (path: string) => void;
-}
-
-interface WorkspaceCreatedResult {
-  id: string;
-  name: string;
-  slug: string;
-  inviteCode: string;
-  inviteLink: string;
 }
 
 interface FormErrors {
@@ -25,9 +19,11 @@ export function CreateWorkspacePage({ onNavigate }: CreateWorkspacePageProps) {
   const [description, setDescription] = useState('');
   const [nickname, setNickname] = useState('');
   const [errors, setErrors] = useState<FormErrors>({});
-  const [apiError, setApiError] = useState<string | null>(null);
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [result, setResult] = useState<WorkspaceCreatedResult | null>(null);
+
+  const createMutation = useMutation({
+    mutationFn: (payload: Record<string, string>) =>
+      api.post<WorkspaceCreatedResult>('/workspaces', payload),
+  });
 
   function validate(): boolean {
     const newErrors: FormErrors = {};
@@ -43,38 +39,29 @@ export function CreateWorkspacePage({ onNavigate }: CreateWorkspacePageProps) {
     return Object.keys(newErrors).length === 0;
   }
 
-  async function handleSubmit(e: React.FormEvent) {
+  function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
 
     if (!validate()) {
       return;
     }
 
-    setIsSubmitting(true);
-    setApiError(null);
-
-    try {
-      const payload: Record<string, string> = { name, nickname };
-      if (description.trim()) {
-        payload.description = description;
-      }
-
-      const response = await api.post<WorkspaceCreatedResult>('/workspaces', payload);
-      setResult(response);
-    } catch {
-      setApiError('오류가 발생했습니다. 다시 시도해주세요.');
-    } finally {
-      setIsSubmitting(false);
+    const payload: Record<string, string> = { name, nickname };
+    if (description.trim()) {
+      payload.description = description;
     }
+
+    createMutation.mutate(payload);
   }
 
   async function handleCopyInviteLink() {
-    if (result?.inviteLink) {
-      await navigator.clipboard.writeText(result.inviteLink);
+    if (createMutation.data?.inviteLink) {
+      await navigator.clipboard.writeText(createMutation.data.inviteLink);
     }
   }
 
-  if (result) {
+  if (createMutation.data) {
+    const result = createMutation.data;
     return (
       <div className="flex min-h-screen flex-col items-center justify-center gap-6 p-4">
         <div className="w-full max-w-md space-y-6 text-center">
@@ -148,12 +135,14 @@ export function CreateWorkspacePage({ onNavigate }: CreateWorkspacePageProps) {
           )}
         </div>
 
-        {apiError && (
-          <p className="text-sm text-destructive">{apiError}</p>
+        {createMutation.error && (
+          <p className="text-sm text-destructive">
+            {getErrorMessage(createMutation.error, '오류가 발생했습니다. 다시 시도해주세요.')}
+          </p>
         )}
 
-        <Button type="submit" className="w-full" disabled={isSubmitting}>
-          {isSubmitting ? '생성 중...' : '만들기'}
+        <Button type="submit" className="w-full" disabled={createMutation.isPending}>
+          {createMutation.isPending ? '생성 중...' : '만들기'}
         </Button>
       </form>
     </div>

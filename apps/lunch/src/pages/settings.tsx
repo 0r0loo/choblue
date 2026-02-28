@@ -1,7 +1,11 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { Button } from '@choblue/ui/button';
 import { Input } from '@choblue/ui/input';
-import { api } from '@/lib/api';
+import { api, getErrorMessage } from '@/lib/api';
+import { workspaceQueries } from '@/lib/queries';
+import { workspaceKeys } from '@/lib/query-keys';
+import type { Workspace } from '@/types';
 
 export interface SettingsPageProps {
   workspaceId: string;
@@ -9,36 +13,27 @@ export interface SettingsPageProps {
   onNavigate: (path: string) => void;
 }
 
-interface Workspace {
-  id: string;
-  name: string;
-  description: string;
-  inviteCode: string;
-}
-
-interface Member {
-  id: string;
-  nickname: string;
-  role: 'admin' | 'member';
-  joinedAt: string;
-}
-
 export function SettingsPage({
   workspaceId,
   currentMemberId,
   onNavigate,
 }: SettingsPageProps) {
-  const [workspace, setWorkspace] = useState<Workspace | null>(null);
-  const [members, setMembers] = useState<Member[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-  const [actionError, setActionError] = useState<string | null>(null);
+  const queryClient = useQueryClient();
+
+  const { data: workspace, isLoading: isLoadingWorkspace, error: wsError } = useQuery(
+    workspaceQueries.detail(workspaceId),
+  );
+
+  const { data: members = [], isLoading: isLoadingMembers } = useQuery(
+    workspaceQueries.members(workspaceId),
+  );
 
   const [copied, setCopied] = useState(false);
 
   // Workspace edit form state
   const [editName, setEditName] = useState('');
   const [editDescription, setEditDescription] = useState('');
+  const [editInitialized, setEditInitialized] = useState(false);
   const [editSuccess, setEditSuccess] = useState(false);
 
   // Regenerate invite confirmation
@@ -47,40 +42,40 @@ export function SettingsPage({
   // Leave workspace confirmation
   const [showLeaveConfirm, setShowLeaveConfirm] = useState(false);
 
-  useEffect(() => {
-    let cancelled = false;
+  // Initialize form when workspace loads
+  if (workspace && !editInitialized) {
+    setEditName(workspace.name);
+    setEditDescription(workspace.description);
+    setEditInitialized(true);
+  }
 
-    async function fetchData() {
-      setIsLoading(true);
-      setError(null);
-      try {
-        const [ws, mems] = await Promise.all([
-          api.get<Workspace>(`/workspaces/${workspaceId}`),
-          api.get<Member[]>(`/workspaces/${workspaceId}/members`),
-        ]);
-        if (!cancelled) {
-          setWorkspace(ws);
-          setMembers(mems);
-          setEditName(ws.name);
-          setEditDescription(ws.description);
-        }
-      } catch {
-        if (!cancelled) {
-          setError('데이터를 불러오는 중 오류가 발생했습니다.');
-        }
-      } finally {
-        if (!cancelled) {
-          setIsLoading(false);
-        }
-      }
-    }
+  const editMutation = useMutation({
+    mutationFn: (payload: { name: string; description: string }) =>
+      api.patch<Workspace>(`/workspaces/${workspaceId}`, payload),
+    onSuccess: (updated) => {
+      queryClient.setQueryData(workspaceKeys.detail(workspaceId), updated);
+      setEditSuccess(true);
+    },
+  });
 
-    fetchData();
+  const regenerateMutation = useMutation({
+    mutationFn: () =>
+      api.post<Workspace>(`/workspaces/${workspaceId}/regenerate-invite`),
+    onSuccess: (updated) => {
+      queryClient.setQueryData(workspaceKeys.detail(workspaceId), updated);
+      setShowRegenerateConfirm(false);
+    },
+  });
 
-    return () => {
-      cancelled = true;
-    };
-  }, [workspaceId]);
+  const leaveMutation = useMutation({
+    mutationFn: () => api.delete(`/workspaces/${workspaceId}/members/me`),
+    onSuccess: () => {
+      document.cookie = 'workspaceId=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
+      onNavigate('/');
+    },
+  });
+
+  const isLoading = isLoadingWorkspace || isLoadingMembers;
 
   if (isLoading) {
     return (
@@ -90,10 +85,14 @@ export function SettingsPage({
     );
   }
 
-  if (error || !workspace) {
+  if (wsError || !workspace) {
     return (
       <div className="flex min-h-screen items-center justify-center">
-        <p className="text-destructive">{error ?? '데이터를 찾을 수 없습니다.'}</p>
+        <p className="text-destructive">
+          {wsError
+            ? getErrorMessage(wsError, '데이터를 불러오는 중 오류가 발생했습니다.')
+            : '데이터를 찾을 수 없습니다.'}
+        </p>
       </div>
     );
   }
@@ -109,59 +108,35 @@ export function SettingsPage({
     setTimeout(() => setCopied(false), 3000);
   }
 
-  async function handleEditSubmit(e: React.FormEvent) {
+  function handleEditSubmit(e: React.FormEvent) {
     e.preventDefault();
     setEditSuccess(false);
-    setActionError(null);
 
     if (!editName.trim()) {
-      setActionError('워크스페이스 이름을 입력해주세요.');
       return;
     }
 
-    try {
-      const updated = await api.patch<Workspace>(
-        `/workspaces/${workspaceId}`,
-        { name: editName, description: editDescription },
-      );
-      setWorkspace(updated);
-      setEditSuccess(true);
-    } catch {
-      setActionError('워크스페이스 수정 중 오류가 발생했습니다.');
-    }
+    editMutation.mutate({ name: editName, description: editDescription });
   }
 
   function handleRegenerateClick() {
     setShowRegenerateConfirm(true);
   }
 
-  async function handleRegenerateConfirm() {
-    setActionError(null);
-    try {
-      const updated = await api.post<Workspace>(
-        `/workspaces/${workspaceId}/regenerate-invite`,
-      );
-      setWorkspace(updated);
-      setShowRegenerateConfirm(false);
-    } catch {
-      setActionError('초대 링크 재발급 중 오류가 발생했습니다.');
-    }
+  function handleRegenerateConfirm() {
+    regenerateMutation.mutate();
   }
 
   function handleLeaveClick() {
     setShowLeaveConfirm(true);
   }
 
-  async function handleLeaveConfirm() {
-    setActionError(null);
-    try {
-      await api.delete(`/workspaces/${workspaceId}/members/me`);
-      document.cookie = 'workspaceId=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
-      onNavigate('/');
-    } catch {
-      setActionError('워크스페이스 탈퇴 중 오류가 발생했습니다.');
-    }
+  function handleLeaveConfirm() {
+    leaveMutation.mutate();
   }
+
+  const actionError =
+    editMutation.error ?? regenerateMutation.error ?? leaveMutation.error;
 
   return (
     <div className="flex min-h-screen flex-col items-center p-4">
@@ -272,7 +247,9 @@ export function SettingsPage({
         </div>
 
         {actionError && (
-          <p className="text-sm text-destructive">{actionError}</p>
+          <p className="text-sm text-destructive">
+            {getErrorMessage(actionError, '오류가 발생했습니다.')}
+          </p>
         )}
 
         {/* Leave workspace */}

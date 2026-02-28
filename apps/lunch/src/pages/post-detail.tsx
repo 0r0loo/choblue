@@ -1,7 +1,8 @@
-import { useEffect, useState } from 'react';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { Button } from '@choblue/ui/button';
-import { api } from '@/lib/api';
-import type { LunchPost } from '@/types';
+import { api, getErrorMessage } from '@/lib/api';
+import { postQueries } from '@/lib/queries';
+import { postKeys } from '@/lib/query-keys';
 
 export interface PostDetailPageProps {
   postId: string;
@@ -10,39 +11,41 @@ export interface PostDetailPageProps {
 }
 
 export function PostDetailPage({ postId, currentMemberId, onNavigate }: PostDetailPageProps) {
-  const [post, setPost] = useState<LunchPost | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-  const [actionError, setActionError] = useState<string | null>(null);
+  const queryClient = useQueryClient();
 
-  useEffect(() => {
-    let cancelled = false;
+  const { data: post, isLoading, error: fetchError } = useQuery(
+    postQueries.detail(postId),
+  );
 
-    async function fetchPost() {
-      setIsLoading(true);
-      setError(null);
-      try {
-        const data = await api.get<LunchPost>(`/posts/${postId}`);
-        if (!cancelled) {
-          setPost(data);
-        }
-      } catch {
-        if (!cancelled) {
-          setError('데이터를 불러오는 중 오류가 발생했습니다.');
-        }
-      } finally {
-        if (!cancelled) {
-          setIsLoading(false);
-        }
-      }
-    }
+  const participateMutation = useMutation({
+    mutationFn: () => api.post(`/posts/${postId}/participate`),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: postKeys.detail(postId) });
+    },
+  });
 
-    fetchPost();
+  const cancelMutation = useMutation({
+    mutationFn: () => api.delete(`/posts/${postId}/participate`),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: postKeys.detail(postId) });
+    },
+  });
 
-    return () => {
-      cancelled = true;
-    };
-  }, [postId]);
+  const closeMutation = useMutation({
+    mutationFn: () => api.post(`/posts/${postId}/close`),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: postKeys.detail(postId) });
+    },
+  });
+
+  const deleteMutation = useMutation({
+    mutationFn: () => api.delete(`/posts/${postId}`),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: postKeys.lists() });
+      queryClient.invalidateQueries({ queryKey: postKeys.calendars() });
+      onNavigate('/');
+    },
+  });
 
   if (isLoading) {
     return (
@@ -52,10 +55,14 @@ export function PostDetailPage({ postId, currentMemberId, onNavigate }: PostDeta
     );
   }
 
-  if (error || !post) {
+  if (fetchError || !post) {
     return (
       <div className="flex min-h-screen items-center justify-center">
-        <p className="text-destructive">{error ?? '데이터를 찾을 수 없습니다.'}</p>
+        <p className="text-destructive">
+          {fetchError
+            ? getErrorMessage(fetchError, '데이터를 불러오는 중 오류가 발생했습니다.')
+            : '데이터를 찾을 수 없습니다.'}
+        </p>
       </div>
     );
   }
@@ -66,50 +73,16 @@ export function PostDetailPage({ postId, currentMemberId, onNavigate }: PostDeta
   );
   const isOpen = post.status === 'open';
 
-  async function handleParticipate() {
-    setActionError(null);
-    try {
-      await api.post(`/posts/${postId}/participate`);
-      const updated = await api.get<LunchPost>(`/posts/${postId}`);
-      setPost(updated);
-    } catch {
-      setActionError('참여 중 오류가 발생했습니다.');
-    }
-  }
+  const actionError =
+    participateMutation.error ??
+    cancelMutation.error ??
+    closeMutation.error ??
+    deleteMutation.error;
 
-  async function handleCancelParticipation() {
-    setActionError(null);
-    try {
-      await api.delete(`/posts/${postId}/participate`);
-      const updated = await api.get<LunchPost>(`/posts/${postId}`);
-      setPost(updated);
-    } catch {
-      setActionError('참여 취소 중 오류가 발생했습니다.');
-    }
-  }
-
-  async function handleClose() {
-    setActionError(null);
-    try {
-      await api.post(`/posts/${postId}/close`);
-      const updated = await api.get<LunchPost>(`/posts/${postId}`);
-      setPost(updated);
-    } catch {
-      setActionError('마감 중 오류가 발생했습니다.');
-    }
-  }
-
-  async function handleDelete() {
+  function handleDelete() {
     const confirmed = window.confirm('정말 삭제하시겠습니까?');
     if (!confirmed) return;
-
-    setActionError(null);
-    try {
-      await api.delete(`/posts/${postId}`);
-      onNavigate('/');
-    } catch {
-      setActionError('삭제 중 오류가 발생했습니다.');
-    }
+    deleteMutation.mutate();
   }
 
   function handleEdit() {
@@ -156,16 +129,18 @@ export function PostDetailPage({ postId, currentMemberId, onNavigate }: PostDeta
         </div>
 
         {actionError && (
-          <p className="text-sm text-destructive">{actionError}</p>
+          <p className="text-sm text-destructive">
+            {getErrorMessage(actionError, '오류가 발생했습니다.')}
+          </p>
         )}
 
         <div className="flex flex-col gap-3">
           {isOpen && !isParticipating && !isAuthor && (
-            <Button onClick={handleParticipate}>참여하기</Button>
+            <Button onClick={() => participateMutation.mutate()}>참여하기</Button>
           )}
 
           {isOpen && isParticipating && !isAuthor && (
-            <Button variant="outline" onClick={handleCancelParticipation}>
+            <Button variant="outline" onClick={() => cancelMutation.mutate()}>
               참여 취소
             </Button>
           )}
@@ -176,7 +151,7 @@ export function PostDetailPage({ postId, currentMemberId, onNavigate }: PostDeta
                 수정
               </Button>
               {isOpen && (
-                <Button variant="secondary" onClick={handleClose}>
+                <Button variant="secondary" onClick={() => closeMutation.mutate()}>
                   마감
                 </Button>
               )}
