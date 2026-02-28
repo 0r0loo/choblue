@@ -12,7 +12,7 @@ function RouteComponent() {
   return (
     <MainPage
       workspaceId={workspaceSlug}
-      onNavigate={(path) => navigate({ to: `/$workspaceSlug${path}` })}
+      onNavigate={(path) => navigate({ to: `/${workspaceSlug}${path}` })}
     />
   );
 }
