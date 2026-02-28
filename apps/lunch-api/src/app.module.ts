@@ -1,6 +1,7 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { AuthModule } from './auth/auth.module';
 import { WorkspaceModule } from './workspace/workspace.module';
 import { LunchPostModule } from './lunch-post/lunch-post.module';
 import { ParticipationModule } from './participation/participation.module';
@@ -22,6 +23,7 @@ import { MemberModule } from './member/member.module';
       entities: [__dirname + '/entities/*.entity{.ts,.js}'],
       synchronize: process.env.NODE_ENV !== 'production',
     }),
+    AuthModule,
     WorkspaceModule,
     LunchPostModule,
     ParticipationModule,

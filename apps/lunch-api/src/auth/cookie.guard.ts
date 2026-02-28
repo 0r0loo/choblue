@@ -3,7 +3,6 @@ import {
   ExecutionContext,
   Inject,
   Injectable,
-  Optional,
   UnauthorizedException,
 } from '@nestjs/common';
 import { getRepositoryToken } from '@nestjs/typeorm';
@@ -15,7 +14,6 @@ import { AuthenticatedRequest } from './types';
 @Injectable()
 export class CookieGuard implements CanActivate {
   constructor(
-    @Optional()
     @Inject(getRepositoryToken(Member))
     private readonly memberRepository: Repository<Member>,
   ) {}

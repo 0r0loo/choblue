@@ -84,7 +84,10 @@ describe('ParticipationController', () => {
           useValue: participationService,
         },
       ],
-    }).compile();
+    })
+      .overrideGuard(CookieGuard)
+      .useValue({ canActivate: () => true })
+      .compile();
 
     controller = module.get<ParticipationController>(ParticipationController);
   });

@@ -53,7 +53,10 @@ describe('MemberController', () => {
           useValue: memberService,
         },
       ],
-    }).compile();
+    })
+      .overrideGuard(CookieGuard)
+      .useValue({ canActivate: () => true })
+      .compile();
 
     controller = module.get<MemberController>(MemberController);
   });

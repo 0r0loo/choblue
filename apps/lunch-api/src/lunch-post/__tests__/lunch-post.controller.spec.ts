@@ -88,7 +88,10 @@ describe('LunchPostController', () => {
           useValue: lunchPostService,
         },
       ],
-    }).compile();
+    })
+      .overrideGuard(CookieGuard)
+      .useValue({ canActivate: () => true })
+      .compile();
 
     controller = module.get<LunchPostController>(LunchPostController);
   });

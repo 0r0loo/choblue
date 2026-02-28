@@ -86,7 +86,10 @@ describe('WorkspaceController', () => {
           useValue: workspaceService,
         },
       ],
-    }).compile();
+    })
+      .overrideGuard(CookieGuard)
+      .useValue({ canActivate: () => true })
+      .compile();
 
     controller = module.get<WorkspaceController>(WorkspaceController);
   });
