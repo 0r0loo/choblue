@@ -6,6 +6,7 @@ import { WorkspaceModule } from './workspace/workspace.module';
 import { LunchPostModule } from './lunch-post/lunch-post.module';
 import { ParticipationModule } from './participation/participation.module';
 import { MemberModule } from './member/member.module';
+import { ReviewModule } from './review/review.module';
 
 @Module({
   imports: [
@@ -28,6 +29,7 @@ import { MemberModule } from './member/member.module';
     LunchPostModule,
     ParticipationModule,
     MemberModule,
+    ReviewModule,
   ],
 })
 export class AppModule {}

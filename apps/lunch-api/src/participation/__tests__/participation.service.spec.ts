@@ -61,6 +61,7 @@ describe('ParticipationService', () => {
     updatedAt: new Date('2025-01-01'),
     lunchPosts: [],
     participations: [],
+    reviews: [],
   };
 
   const mockParticipant: Member = {
@@ -74,6 +75,7 @@ describe('ParticipationService', () => {
     updatedAt: new Date('2025-01-01'),
     lunchPosts: [],
     participations: [],
+    reviews: [],
   };
 
   const mockOtherWorkspaceMember: Member = {
@@ -87,6 +89,7 @@ describe('ParticipationService', () => {
     updatedAt: new Date('2025-01-01'),
     lunchPosts: [],
     participations: [],
+    reviews: [],
   };
 
   function createMockLunchPost(overrides: Partial<LunchPost> = {}): LunchPost {
@@ -106,6 +109,7 @@ describe('ParticipationService', () => {
       workspace: mockWorkspace,
       author: mockAuthor,
       participations: [],
+      reviews: [],
       ...overrides,
     };
   }

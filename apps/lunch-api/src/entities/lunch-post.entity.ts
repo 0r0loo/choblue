@@ -10,6 +10,7 @@ import {
 import { Workspace } from './workspace.entity';
 import { Member } from './member.entity';
 import { Participation } from './participation.entity';
+import { Review } from './review.entity';
 
 export enum LunchPostStatus {
   OPEN = 'open',
@@ -62,4 +63,7 @@ export class LunchPost {
 
   @OneToMany(() => Participation, (participation) => participation.lunchPost)
   participations!: Participation[];
+
+  @OneToMany(() => Review, (review) => review.lunchPost)
+  reviews!: Review[];
 }

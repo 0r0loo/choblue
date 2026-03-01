@@ -10,6 +10,7 @@ import {
 import { Workspace } from './workspace.entity';
 import { LunchPost } from './lunch-post.entity';
 import { Participation } from './participation.entity';
+import { Review } from './review.entity';
 
 export enum MemberRole {
   ADMIN = 'admin',
@@ -47,4 +48,7 @@ export class Member {
 
   @OneToMany(() => Participation, (participation) => participation.member)
   participations!: Participation[];
+
+  @OneToMany(() => Review, (review) => review.member)
+  reviews!: Review[];
 }

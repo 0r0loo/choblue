@@ -41,6 +41,7 @@ describe('MemberService', () => {
     updatedAt: new Date('2025-01-01'),
     lunchPosts: [],
     participations: [],
+    reviews: [],
   };
 
   beforeEach(async () => {

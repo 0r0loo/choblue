@@ -37,6 +37,7 @@ describe('CookieGuard', () => {
     updatedAt: new Date('2025-01-01'),
     lunchPosts: [],
     participations: [],
+    reviews: [],
   };
 
   function createMockExecutionContext(cookies: Record<string, string> = {}): ExecutionContext {
