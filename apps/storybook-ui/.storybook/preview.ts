@@ -4,6 +4,11 @@ import { withThemeByClassName } from '@storybook/addon-themes';
 
 const preview: Preview = {
   parameters: {
+    options: {
+      storySort: {
+        order: ["Foundation", "UI"],
+      },
+    },
     controls: {
       matchers: {
        color: /(background|color)$/i,
