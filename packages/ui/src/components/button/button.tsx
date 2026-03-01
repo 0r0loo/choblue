@@ -21,7 +21,7 @@ const buttonVariants = cva(
           "border border-input bg-background shadow-sm hover:bg-accent hover:text-accent-foreground",
         ghost: "hover:bg-accent hover:text-accent-foreground",
         destructive:
-          "bg-destructive text-destructive-foreground shadow-sm hover:bg-destructive/90",
+          "bg-destructive text-destructive-foreground shadow-sm shadow-[inset_0_1px_rgba(255,255,255,0.15)] hover:bg-destructive/90 hover:shadow-md",
       },
       size: {
         sm: "h-8 rounded-md px-3 text-xs",

@@ -20,6 +20,12 @@ export const workspaceKeys = {
     [...workspaceKeys.all, 'invite', code] as const,
 };
 
+export const reviewKeys = {
+  all: ['reviews'] as const,
+  lists: () => [...reviewKeys.all, 'list'] as const,
+  list: (postId: string) => [...reviewKeys.lists(), postId] as const,
+};
+
 export const memberKeys = {
   all: ['members'] as const,
   me: () => [...memberKeys.all, 'me'] as const,

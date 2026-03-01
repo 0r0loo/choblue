@@ -1,10 +1,13 @@
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { Button } from '@choblue/ui/button';
+import type { CalendarPost } from '@/types';
+import { getHolidaysForMonth } from '@/lib/holidays';
 
 export interface MiniCalendarProps {
   selectedDate: string;
   onDateSelect: (date: string) => void;
-  calendarData?: Record<string, number>;
+  onPostClick?: (postId: string) => void;
+  calendarData?: Record<string, CalendarPost[]>;
 }
 
 const MONTH_NAMES = [
@@ -26,12 +29,14 @@ function parseDate(dateStr: string): { year: number; month: number; day: number 
   return { year, month, day };
 }
 
-export function MiniCalendar({ selectedDate, onDateSelect, calendarData = {} }: MiniCalendarProps) {
+export function MiniCalendar({ selectedDate, onDateSelect, onPostClick, calendarData = {} }: MiniCalendarProps) {
   const parsed = parseDate(selectedDate);
   const [viewYear, setViewYear] = useState(parsed.year);
   const [viewMonth, setViewMonth] = useState(parsed.month);
 
   const todayString = toDateString(new Date());
+  const monthKey = `${viewYear}-${String(viewMonth).padStart(2, '0')}`;
+  const holidays = useMemo(() => getHolidaysForMonth(monthKey), [monthKey]);
 
   const firstDayOfMonth = new Date(viewYear, viewMonth - 1, 1);
   const startDayOfWeek = firstDayOfMonth.getDay();
@@ -62,7 +67,7 @@ export function MiniCalendar({ selectedDate, onDateSelect, calendarData = {} }: 
   }
 
   const blanks = Array.from({ length: startDayOfWeek }, (_, i) => (
-    <div key={`blank-${i}`} />
+    <div key={`blank-${i}`} className="min-h-[72px]" />
   ));
 
   const days = Array.from({ length: daysInMonth }, (_, i) => {
@@ -72,31 +77,66 @@ export function MiniCalendar({ selectedDate, onDateSelect, calendarData = {} }: 
     const dateString = `${viewYear}-${month}-${dayStr}`;
     const isToday = dateString === todayString;
     const isSelected = dateString === selectedDate;
-    const hasData = calendarData[dateString] !== undefined && calendarData[dateString] > 0;
+    const posts = calendarData[dateString] ?? [];
+    const holiday = holidays[dateString];
+    const dayOfWeek = new Date(viewYear, viewMonth - 1, day).getDay();
+    const isSunday = dayOfWeek === 0;
+    const isHoliday = !!holiday;
+    const isRedDay = isSunday || isHoliday;
 
     return (
-      <button
+      <div
         key={dateString}
-        type="button"
-        className={`relative flex h-9 w-9 items-center justify-center rounded-full text-sm transition-colors ${
+        className={`relative flex min-h-[72px] flex-col rounded-lg border p-1 text-xs transition-colors cursor-pointer ${
           isSelected
-            ? 'bg-primary text-primary-foreground'
+            ? 'border-primary bg-primary/10'
             : isToday
-              ? 'bg-accent font-bold'
-              : 'hover:bg-accent'
+              ? 'border-accent bg-accent/50'
+              : 'border-transparent hover:bg-accent/30'
         }`}
+        onClick={() => handleDateClick(day)}
+        role="button"
+        tabIndex={0}
         aria-current={isToday ? 'date' : undefined}
         aria-pressed={isSelected}
-        onClick={() => handleDateClick(day)}
+        onKeyDown={(e) => {
+          if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault();
+            handleDateClick(day);
+          }
+        }}
       >
-        {day}
-        {hasData && (
-          <span
-            data-testid="date-indicator"
-            className="absolute bottom-0.5 left-1/2 h-1 w-1 -translate-x-1/2 rounded-full bg-primary"
-          />
+        <span className={`mb-0.5 text-[11px] leading-none ${
+          isSelected ? 'font-bold text-primary' : isRedDay ? 'font-bold text-red-500' : isToday ? 'font-bold' : ''
+        }`}>
+          {day}
+        </span>
+        {isHoliday && (
+          <span className="truncate text-[9px] leading-none text-red-400">
+            {holiday.name}
+          </span>
         )}
-      </button>
+        <div className="flex flex-col gap-0.5 overflow-hidden">
+          {posts.slice(0, 2).map((post) => (
+            <button
+              key={post.id}
+              type="button"
+              className="w-full truncate rounded bg-primary/15 px-1 py-0.5 text-left text-[10px] leading-tight text-primary hover:bg-primary/25 transition-colors"
+              onClick={(e) => {
+                e.stopPropagation();
+                onPostClick?.(post.id);
+              }}
+            >
+              {post.menu}({post.participantCount}/{post.maxParticipants})
+            </button>
+          ))}
+          {posts.length > 2 && (
+            <span className="text-[10px] text-muted-foreground leading-tight">
+              +{posts.length - 2}
+            </span>
+          )}
+        </div>
+      </div>
     );
   });
 
@@ -125,8 +165,8 @@ export function MiniCalendar({ selectedDate, onDateSelect, calendarData = {} }: 
       </div>
 
       <div className="grid grid-cols-7 gap-1 text-center text-xs text-muted-foreground">
-        {DAY_LABELS.map((label) => (
-          <div key={label} className="flex h-9 items-center justify-center">
+        {DAY_LABELS.map((label, idx) => (
+          <div key={label} className={`flex h-6 items-center justify-center ${idx === 0 ? 'text-red-500' : ''}`}>
             {label}
           </div>
         ))}

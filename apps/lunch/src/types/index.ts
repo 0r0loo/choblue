@@ -23,6 +23,20 @@ export interface LunchPost {
   participations: LunchPostParticipation[];
 }
 
+export interface Review {
+  id: string;
+  lunchPostId: string;
+  memberId: string;
+  rating: number;
+  content: string | null;
+  createdAt: string;
+  updatedAt: string;
+  member: {
+    id: string;
+    nickname: string;
+  };
+}
+
 export interface Workspace {
   id: string;
   name: string;
@@ -44,11 +58,16 @@ export interface CurrentMember {
 }
 
 export interface WorkspaceCreatedResult {
-  id: string;
-  name: string;
-  slug: string;
-  inviteCode: string;
-  inviteLink: string;
+  workspace: {
+    id: string;
+    name: string;
+    slug: string;
+    inviteCode: string;
+  };
+  member: {
+    id: string;
+    nickname: string;
+  };
 }
 
 export interface WorkspaceInfo {
@@ -62,4 +81,11 @@ export interface WorkspaceInfo {
 export interface JoinResult {
   memberId: string;
   workspaceSlug: string;
+}
+
+export interface CalendarPost {
+  id: string;
+  menu: string;
+  participantCount: number;
+  maxParticipants: number;
 }

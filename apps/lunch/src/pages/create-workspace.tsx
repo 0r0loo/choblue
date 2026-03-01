@@ -54,14 +54,20 @@ export function CreateWorkspacePage({ onNavigate }: CreateWorkspacePageProps) {
     createMutation.mutate(payload);
   }
 
+  function getInviteLink(inviteCode: string): string {
+    return `${window.location.origin}/join/${inviteCode}`;
+  }
+
   async function handleCopyInviteLink() {
-    if (createMutation.data?.inviteLink) {
-      await navigator.clipboard.writeText(createMutation.data.inviteLink);
+    const inviteCode = createMutation.data?.workspace.inviteCode;
+    if (inviteCode) {
+      await navigator.clipboard.writeText(getInviteLink(inviteCode));
     }
   }
 
   if (createMutation.data) {
-    const result = createMutation.data;
+    const { workspace } = createMutation.data;
+    const inviteLink = getInviteLink(workspace.inviteCode);
     return (
       <div className="flex min-h-screen flex-col items-center justify-center gap-6 p-4">
         <div className="w-full max-w-md space-y-6 text-center">
@@ -69,7 +75,7 @@ export function CreateWorkspacePage({ onNavigate }: CreateWorkspacePageProps) {
 
           <div className="rounded-lg border p-4">
             <p className="mt-1 break-all font-mono text-sm">
-              초대 링크: {result.inviteLink}
+              초대 링크: {inviteLink}
             </p>
           </div>
 
@@ -77,7 +83,7 @@ export function CreateWorkspacePage({ onNavigate }: CreateWorkspacePageProps) {
             <Button variant="outline" onClick={handleCopyInviteLink}>
               복사
             </Button>
-            <Button onClick={() => onNavigate(`/${result.slug}`)}>
+            <Button onClick={() => onNavigate(`/${workspace.slug}`)}>
               시작하기
             </Button>
           </div>
