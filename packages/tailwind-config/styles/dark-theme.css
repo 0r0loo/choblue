@@ -1,8 +1,9 @@
 .dark {
-  --color-background: var(--color-neutral-950);
+  /* Onyx Black / True Black for OLED friendliness */
+  --color-background: #000000;
+  --color-surface: #12121A;
   --color-foreground: var(--color-neutral-50);
-  --color-surface: var(--color-neutral-900);
-  --color-muted: var(--color-neutral-400);
+  --color-muted: var(--color-neutral-800);
   --color-muted-foreground: var(--color-neutral-400);
   --color-border: var(--color-neutral-800);
   --color-ring: var(--color-primary-400);
@@ -16,6 +17,6 @@
   --color-destructive-foreground: white;
   --color-accent: var(--color-neutral-800);
   --color-accent-foreground: var(--color-neutral-50);
-  --color-card: var(--color-neutral-900);
+  --color-card: #12121A;
   --color-card-foreground: var(--color-neutral-50);
 }

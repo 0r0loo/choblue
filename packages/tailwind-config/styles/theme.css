@@ -107,8 +107,22 @@
   --radius-2xl: 1rem;
   --radius-full: 9999px;
 
-  /* ─── Shadows ─── */
-  --shadow-sm: 0 1px 2px 0 oklch(0 0 0 / 0.05);
-  --shadow-md: 0 4px 6px -1px oklch(0 0 0 / 0.1), 0 2px 4px -2px oklch(0 0 0 / 0.1);
-  --shadow-lg: 0 10px 15px -3px oklch(0 0 0 / 0.1), 0 4px 6px -4px oklch(0 0 0 / 0.1);
+  /* ─── Premium Layered Shadows ─── */
+  --shadow-sm: 0 1px 2px 0 oklch(0 0 0 / 0.04);
+  --shadow-md: 0 4px 8px -2px oklch(0 0 0 / 0.05), 0 2px 4px -2px oklch(0 0 0 / 0.04);
+  --shadow-lg: 0 12px 24px -4px oklch(0 0 0 / 0.08), 0 4px 8px -4px oklch(0 0 0 / 0.04);
+  --shadow-xl: 0 20px 40px -8px oklch(0 0 0 / 0.1), 0 8px 16px -8px oklch(0 0 0 / 0.05);
+
+  /* ─── Animations & Transitions ─── */
+  --ease-apple: cubic-bezier(0.32, 0.72, 0, 1);
+  --ease-spring: cubic-bezier(0.175, 0.885, 0.32, 1.275);
+
+  /* ─── Z-Index ─── */
+  --z-dropdown: 100;
+  --z-sticky: 200;
+  --z-fixed: 300;
+  --z-modalbackdrop: 400;
+  --z-modal: 500;
+  --z-popover: 600;
+  --z-toast: 700;
 }
