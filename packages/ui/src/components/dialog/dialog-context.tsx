@@ -113,7 +113,7 @@ function DialogContent({
     <dialog
       ref={setRef}
       className={cn(
-        "fixed inset-0 m-auto w-full max-w-lg rounded-lg border border-border bg-background p-0 shadow-lg backdrop:bg-black/50",
+        "fixed inset-0 m-auto w-full max-w-lg rounded-xl border border-black/5 dark:border-white/10 bg-background p-0 shadow-xl backdrop:bg-black/60",
         className,
       )}
       onClose={handleClose}

@@ -25,8 +25,8 @@ function Toast({ variant = "default", className, ref, ...props }: ToastProps) {
       ref={ref}
       data-variant={variant}
       className={cn(
-        "flex items-center gap-3 rounded-lg border p-4 shadow-lg",
-        variant === "default" && "bg-background border-border",
+        "flex items-center gap-3 rounded-xl border p-4 shadow-lg",
+        variant === "default" && "bg-background border-black/5 dark:border-white/10",
         variant === "destructive" &&
           "bg-destructive text-destructive-foreground border-destructive",
         className,

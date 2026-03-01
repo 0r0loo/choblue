@@ -6,16 +6,15 @@ const buttonVariants = cva(
   [
     'inline-flex items-center justify-center gap-2 whitespace-nowrap', // 레이아웃
     'rounded-md text-sm font-medium',                                  // 모양/타이포
-    'transition-colors',                                               // 효과
-    'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring', // 포커스
-    'focus-visible:ring-offset-2 focus-visible:ring-offset-background',       // 포커스 오프셋
+    'transition-[color,background-color,border-color,box-shadow,transform] duration-200 ease-apple active:scale-[0.98]', // 애니메이션
+    'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2', // 포커스
     'disabled:pointer-events-none disabled:opacity-50',                // 상태
   ],
   {
     variants: {
       variant: {
         primary:
-          "bg-primary text-primary-foreground shadow-sm hover:bg-primary/90",
+          "bg-primary text-primary-foreground shadow-sm shadow-[inset_0_1px_rgba(255,255,255,0.2)] hover:bg-primary/90 hover:shadow-md",
         secondary:
           "bg-secondary text-secondary-foreground shadow-sm hover:bg-secondary/80",
         outline:

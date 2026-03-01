@@ -60,9 +60,8 @@ function SelectTrigger({
           "w-full rounded-md px-3",                                           // size/spacing
           "h-9 text-sm",                                                      // shape/typo
           "border border-input bg-background shadow-sm",                      // bg/border
-          "transition-colors",                                                // effects
-          "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring", // focus
-          "focus-visible:ring-offset-2 focus-visible:ring-offset-background", // focus offset
+          "transition-[color,background-color,border-color,box-shadow] duration-200 ease-apple", // transition
+          "focus-visible:outline-none focus-visible:ring-[3px] focus-visible:ring-primary/20 focus-visible:border-primary/50", // focus glow
           "disabled:pointer-events-none disabled:opacity-50",                 // state
         ],
         className,
@@ -201,7 +200,7 @@ function SelectItem({
           "relative flex w-full cursor-pointer select-none items-center", // layout
           "rounded-sm py-1.5 pl-8 pr-2",                                 // size/spacing
           "text-sm",                                                      // typo
-          "outline-none transition-colors",                               // reset/effects
+          "outline-none transition-colors duration-150 ease-apple",        // transition
           "hover:bg-accent hover:text-accent-foreground",                 // hover
           "focus:bg-accent focus:text-accent-foreground",                 // focus
           "data-[disabled]:pointer-events-none data-[disabled]:opacity-50", // disabled

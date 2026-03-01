@@ -8,10 +8,9 @@ const textareaVariants = cva(
     'rounded-md px-3 py-2',                                            // 크기/간격
     'text-sm',                                                         // 모양/타이포
     'border border-input bg-background shadow-sm',                     // 배경/보더
-    'transition-colors',                                               // 효과
+    'transition-[color,background-color,border-color,box-shadow] duration-200 ease-apple', // 전환
     'placeholder:text-muted-foreground',                               // 플레이스홀더
-    'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring', // 포커스
-    'focus-visible:ring-offset-2 focus-visible:ring-offset-background',       // 포커스 오프셋
+    'focus-visible:outline-none focus-visible:ring-[3px] focus-visible:ring-primary/20 focus-visible:border-primary/50', // 부드러운 글로우 포커스
     'disabled:pointer-events-none disabled:opacity-50',                // 상태
     'aria-invalid:border-destructive aria-invalid:ring-destructive/20 aria-invalid:text-destructive', // 유효성
   ],
