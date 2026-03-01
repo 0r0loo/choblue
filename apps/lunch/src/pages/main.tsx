@@ -22,13 +22,15 @@ export function MainPage({ workspaceId, onNavigate }: MainPageProps) {
 
   const yearMonth = selectedDate.slice(0, 7);
 
-  const { data: posts = [] } = useQuery(
-    postQueries.list(workspaceId, selectedDate),
-  );
+  const { data: posts = [] } = useQuery({
+    ...postQueries.list(workspaceId, selectedDate),
+    enabled: !!workspaceId,
+  });
 
-  const { data: calendarData = {} } = useQuery(
-    postQueries.calendar(workspaceId, yearMonth),
-  );
+  const { data: calendarData = {} } = useQuery({
+    ...postQueries.calendar(workspaceId, yearMonth),
+    enabled: !!workspaceId,
+  });
 
   function handlePostClick(postId: string) {
     onNavigate(`/gatherings/${postId}`);
@@ -39,11 +41,12 @@ export function MainPage({ workspaceId, onNavigate }: MainPageProps) {
   }
 
   return (
-    <div className="relative flex min-h-screen flex-col p-4">
+    <div className="relative flex flex-col p-4">
       <div className="mx-auto w-full max-w-md space-y-6">
         <MiniCalendar
           selectedDate={selectedDate}
           onDateSelect={setSelectedDate}
+          onPostClick={handlePostClick}
           calendarData={calendarData}
         />
 

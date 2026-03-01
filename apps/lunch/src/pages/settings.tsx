@@ -3,19 +3,17 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { Button } from '@choblue/ui/button';
 import { Input } from '@choblue/ui/input';
 import { api, getErrorMessage } from '@/lib/api';
-import { workspaceQueries } from '@/lib/queries';
+import { workspaceQueries, memberQueries } from '@/lib/queries';
 import { workspaceKeys } from '@/lib/query-keys';
 import type { Workspace } from '@/types';
 
 export interface SettingsPageProps {
   workspaceId: string;
-  currentMemberId: string;
   onNavigate: (path: string) => void;
 }
 
 export function SettingsPage({
   workspaceId,
-  currentMemberId,
   onNavigate,
 }: SettingsPageProps) {
   const queryClient = useQueryClient();
@@ -27,6 +25,10 @@ export function SettingsPage({
   const { data: members = [], isLoading: isLoadingMembers } = useQuery(
     workspaceQueries.members(workspaceId),
   );
+
+  const { data: me } = useQuery(memberQueries.me());
+
+  const isAdmin = me?.role === 'admin';
 
   const [copied, setCopied] = useState(false);
 
@@ -79,7 +81,7 @@ export function SettingsPage({
 
   if (isLoading) {
     return (
-      <div className="flex min-h-screen items-center justify-center">
+      <div className="flex flex-1 items-center justify-center">
         <p className="text-muted-foreground">불러오는 중...</p>
       </div>
     );
@@ -87,7 +89,7 @@ export function SettingsPage({
 
   if (wsError || !workspace) {
     return (
-      <div className="flex min-h-screen items-center justify-center">
+      <div className="flex flex-1 items-center justify-center">
         <p className="text-destructive">
           {wsError
             ? getErrorMessage(wsError, '데이터를 불러오는 중 오류가 발생했습니다.')
@@ -96,9 +98,6 @@ export function SettingsPage({
       </div>
     );
   }
-
-  const currentMember = members.find((m) => m.id === currentMemberId);
-  const isAdmin = currentMember?.role === 'admin';
 
   const inviteLink = `${window.location.origin}/join/${workspace.inviteCode}`;
 
@@ -119,16 +118,8 @@ export function SettingsPage({
     editMutation.mutate({ name: editName, description: editDescription });
   }
 
-  function handleRegenerateClick() {
-    setShowRegenerateConfirm(true);
-  }
-
   function handleRegenerateConfirm() {
     regenerateMutation.mutate();
-  }
-
-  function handleLeaveClick() {
-    setShowLeaveConfirm(true);
   }
 
   function handleLeaveConfirm() {
@@ -139,52 +130,78 @@ export function SettingsPage({
     editMutation.error ?? regenerateMutation.error ?? leaveMutation.error;
 
   return (
-    <div className="flex min-h-screen flex-col items-center p-4">
-      <div className="w-full max-w-md space-y-6">
-        <h2 className="text-2xl font-bold">{workspace.name}</h2>
+    <div className="flex flex-col items-center p-4 pb-8">
+      <div className="w-full max-w-md space-y-5">
+        {/* Back navigation */}
+        <button
+          type="button"
+          onClick={() => onNavigate('/')}
+          className="flex items-center gap-1 text-sm text-muted-foreground transition-colors duration-200 hover:text-foreground"
+        >
+          <svg
+            className="h-4 w-4"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth={2}
+            viewBox="0 0 24 24"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              d="M15 19l-7-7 7-7"
+            />
+          </svg>
+          메인으로 돌아가기
+        </button>
+
+        {/* Page title */}
+        <h2 className="text-xl font-bold tracking-tight">{workspace.name} 설정</h2>
 
         {/* Invite link section */}
-        <div className="space-y-2">
-          <h3 className="text-lg font-semibold">초대 링크</h3>
-          <div className="flex items-center gap-2 rounded-lg border p-3">
-            <p className="flex-1 break-all font-mono text-sm">
-              /join/{workspace.inviteCode}
-            </p>
-            <Button variant="outline" size="sm" onClick={handleCopyInviteLink}>
-              복사
-            </Button>
-          </div>
-          {copied && (
-            <p className="text-sm text-green-600">복사되었습니다</p>
-          )}
-        </div>
+        {workspace.inviteCode && (
+          <div className="rounded-xl border border-black/5 bg-card p-4 shadow-sm dark:border-white/10">
+            <h3 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+              초대 링크
+            </h3>
+            <div className="mt-3 flex items-center gap-2">
+              <code className="flex-1 truncate rounded-lg bg-accent px-3 py-2 text-xs">
+                /join/{workspace.inviteCode}
+              </code>
+              <Button variant="outline" size="sm" onClick={handleCopyInviteLink}>
+                {copied ? '완료!' : '복사'}
+              </Button>
+            </div>
 
-        {/* Admin: Regenerate invite link */}
-        {isAdmin && (
-          <div className="space-y-2">
-            <Button variant="outline" onClick={handleRegenerateClick}>
-              초대 링크 재발급
-            </Button>
-            {showRegenerateConfirm && (
-              <div className="rounded-lg border border-yellow-300 bg-yellow-50 p-3">
-                <p className="text-sm">
-                  재발급 하시겠습니까? 기존 초대 링크는 무효화됩니다.
-                </p>
-                <div className="mt-2 flex gap-2">
-                  <Button
-                    size="sm"
-                    onClick={handleRegenerateConfirm}
+            {/* Admin: Regenerate */}
+            {isAdmin && (
+              <div className="mt-3">
+                {!showRegenerateConfirm ? (
+                  <button
+                    type="button"
+                    onClick={() => setShowRegenerateConfirm(true)}
+                    className="text-xs text-muted-foreground transition-colors duration-200 hover:text-foreground"
                   >
-                    확인
-                  </Button>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => setShowRegenerateConfirm(false)}
-                  >
-                    취소
-                  </Button>
-                </div>
+                    초대 링크 재발급
+                  </button>
+                ) : (
+                  <div className="rounded-lg border border-warning-300 bg-warning-100/50 p-3 dark:border-warning-700 dark:bg-warning-900/20">
+                    <p className="text-sm">
+                      재발급 하시겠습니까? 기존 링크는 무효화됩니다.
+                    </p>
+                    <div className="mt-2 flex gap-2">
+                      <Button size="sm" onClick={handleRegenerateConfirm}>
+                        확인
+                      </Button>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => setShowRegenerateConfirm(false)}
+                      >
+                        취소
+                      </Button>
+                    </div>
+                  </div>
+                )}
               </div>
             )}
           </div>
@@ -192,60 +209,76 @@ export function SettingsPage({
 
         {/* Admin: Edit workspace form */}
         {isAdmin && (
-          <form onSubmit={handleEditSubmit} className="space-y-4">
-            <h3 className="text-lg font-semibold">워크스페이스 수정</h3>
-            <div className="space-y-2">
-              <label htmlFor="workspace-name" className="text-sm font-medium">
-                워크스페이스 이름
-              </label>
-              <Input
-                id="workspace-name"
-                value={editName}
-                onChange={(e) => setEditName(e.target.value)}
-              />
+          <form
+            onSubmit={handleEditSubmit}
+            className="rounded-xl border border-black/5 bg-card p-4 shadow-sm dark:border-white/10"
+          >
+            <h3 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+              워크스페이스 수정
+            </h3>
+            <div className="mt-3 space-y-3">
+              <div className="space-y-1.5">
+                <label htmlFor="workspace-name" className="text-sm font-medium">
+                  이름
+                </label>
+                <Input
+                  id="workspace-name"
+                  value={editName}
+                  onChange={(e) => setEditName(e.target.value)}
+                />
+              </div>
+              <div className="space-y-1.5">
+                <label htmlFor="workspace-description" className="text-sm font-medium">
+                  설명
+                </label>
+                <Input
+                  id="workspace-description"
+                  value={editDescription}
+                  onChange={(e) => setEditDescription(e.target.value)}
+                />
+              </div>
+              <div className="flex items-center gap-3">
+                <Button type="submit" size="sm">
+                  저장
+                </Button>
+                {editSuccess && (
+                  <span className="text-sm text-success-500">저장되었습니다</span>
+                )}
+              </div>
             </div>
-            <div className="space-y-2">
-              <label
-                htmlFor="workspace-description"
-                className="text-sm font-medium"
-              >
-                설명
-              </label>
-              <Input
-                id="workspace-description"
-                value={editDescription}
-                onChange={(e) => setEditDescription(e.target.value)}
-              />
-            </div>
-            <Button type="submit">저장</Button>
-            {editSuccess && (
-              <p className="text-sm text-green-600">저장되었습니다</p>
-            )}
           </form>
         )}
 
         {/* Member list */}
-        <div className="space-y-3">
-          <h3 className="text-lg font-semibold">
+        <div className="space-y-2.5">
+          <h3 className="px-1 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
             멤버 ({members.length})
           </h3>
-          <ul className="space-y-2">
-            {members.map((member) => (
-              <li
-                key={member.id}
-                className="flex items-center justify-between rounded-lg border p-3"
-              >
-                <span>{member.nickname}</span>
-                {member.role === 'admin' && (
-                  <span className="rounded bg-primary/10 px-2 py-0.5 text-xs font-medium text-primary">
-                    관리자
+          <div className="rounded-xl border border-black/5 bg-card shadow-sm dark:border-white/10">
+            <ul className="divide-y divide-black/5 dark:divide-white/10">
+              {members.map((member) => (
+                <li
+                  key={member.id}
+                  className="flex items-center gap-3 px-4 py-3"
+                >
+                  <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-accent text-xs font-medium">
+                    {member.nickname.charAt(0)}
+                  </div>
+                  <span className="min-w-0 truncate text-sm font-medium">
+                    {member.nickname}
                   </span>
-                )}
-              </li>
-            ))}
-          </ul>
+                  {member.role === 'admin' && (
+                    <span className="ml-auto shrink-0 rounded-full bg-primary/10 px-2 py-0.5 text-[11px] font-medium text-primary">
+                      관리자
+                    </span>
+                  )}
+                </li>
+              ))}
+            </ul>
+          </div>
         </div>
 
+        {/* Error */}
         {actionError && (
           <p className="text-sm text-destructive">
             {getErrorMessage(actionError, '오류가 발생했습니다.')}
@@ -253,23 +286,28 @@ export function SettingsPage({
         )}
 
         {/* Leave workspace */}
-        <div className="border-t pt-4">
-          <Button variant="destructive" onClick={handleLeaveClick}>
-            워크스페이스 나가기
-          </Button>
-          {showLeaveConfirm && (
-            <div className="mt-2 rounded-lg border border-red-300 bg-red-50 p-3">
-              <p className="text-sm">정말 나가시겠습니까?</p>
-              <div className="mt-2 flex gap-2">
+        <div className="border-t border-black/5 pt-5 dark:border-white/10">
+          {!showLeaveConfirm ? (
+            <button
+              type="button"
+              onClick={() => setShowLeaveConfirm(true)}
+              className="text-sm text-muted-foreground transition-colors duration-200 hover:text-destructive"
+            >
+              워크스페이스 나가기
+            </button>
+          ) : (
+            <div className="rounded-xl border border-danger-200 bg-danger-100/50 p-3 dark:border-danger-800 dark:bg-danger-900/20">
+              <p className="text-sm font-medium">정말 나가시겠습니까?</p>
+              <div className="mt-2.5 flex gap-2">
                 <Button
                   size="sm"
                   variant="destructive"
                   onClick={handleLeaveConfirm}
                 >
-                  확인
+                  나가기
                 </Button>
                 <Button
-                  variant="outline"
+                  variant="ghost"
                   size="sm"
                   onClick={() => setShowLeaveConfirm(false)}
                 >

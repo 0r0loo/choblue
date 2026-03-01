@@ -1,8 +1,10 @@
 import { queryOptions } from '@tanstack/react-query';
 import { api } from './api';
-import { postKeys, workspaceKeys, memberKeys } from './query-keys';
+import { postKeys, reviewKeys, workspaceKeys, memberKeys } from './query-keys';
 import type {
   LunchPost,
+  CalendarPost,
+  Review,
   Workspace,
   Member,
   CurrentMember,
@@ -27,9 +29,17 @@ export const postQueries = {
     queryOptions({
       queryKey: postKeys.calendar(workspaceId, month),
       queryFn: () =>
-        api.get<Record<string, number>>(
+        api.get<Record<string, CalendarPost[]>>(
           `/workspaces/${workspaceId}/posts/calendar?month=${month}`,
         ),
+    }),
+};
+
+export const reviewQueries = {
+  list: (postId: string) =>
+    queryOptions({
+      queryKey: reviewKeys.list(postId),
+      queryFn: () => api.get<Review[]>(`/posts/${postId}/reviews`),
     }),
 };
 
@@ -37,7 +47,12 @@ export const workspaceQueries = {
   detail: (workspaceId: string) =>
     queryOptions({
       queryKey: workspaceKeys.detail(workspaceId),
-      queryFn: () => api.get<Workspace>(`/workspaces/${workspaceId}`),
+      queryFn: async () => {
+        const res = await api.get<{ workspace: Workspace; memberCount: number }>(
+          `/workspaces/${workspaceId}`,
+        );
+        return res.workspace;
+      },
     }),
   members: (workspaceId: string) =>
     queryOptions({
@@ -62,9 +77,6 @@ export const memberQueries = {
   current: (workspaceSlug: string) =>
     queryOptions({
       queryKey: memberKeys.current(workspaceSlug),
-      queryFn: () =>
-        api.get<CurrentMember>(
-          `/workspaces/${workspaceSlug}/members/me`,
-        ),
+      queryFn: () => api.get<CurrentMember>('/members/me'),
     }),
 };

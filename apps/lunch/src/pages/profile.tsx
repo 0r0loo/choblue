@@ -47,7 +47,7 @@ export function ProfilePage({ onNavigate }: ProfilePageProps) {
 
   if (isLoading) {
     return (
-      <div className="flex min-h-screen items-center justify-center">
+      <div className="flex flex-1 items-center justify-center">
         <p className="text-muted-foreground">불러오는 중...</p>
       </div>
     );
@@ -55,7 +55,7 @@ export function ProfilePage({ onNavigate }: ProfilePageProps) {
 
   if (fetchError || !member) {
     return (
-      <div className="flex min-h-screen items-center justify-center">
+      <div className="flex flex-1 items-center justify-center">
         <p className="text-destructive">
           {fetchError
             ? getErrorMessage(fetchError, '데이터를 불러오는 중 오류가 발생했습니다.')
@@ -97,7 +97,7 @@ export function ProfilePage({ onNavigate }: ProfilePageProps) {
   }
 
   return (
-    <div className="flex min-h-screen flex-col items-center p-4">
+    <div className="flex flex-1 flex-col items-center p-4">
       <div className="w-full max-w-md space-y-6">
         <a
           href="/settings"
