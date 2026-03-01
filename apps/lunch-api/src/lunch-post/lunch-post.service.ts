@@ -6,7 +6,7 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { DataSource, Like, Repository } from 'typeorm';
+import { Between, DataSource, Repository } from 'typeorm';
 import { LunchPost, LunchPostStatus } from '../entities/lunch-post.entity';
 import { Participation } from '../entities/participation.entity';
 import { CreateLunchPostDto } from './dto/create-lunch-post.dto';
@@ -91,24 +91,35 @@ export class LunchPostService {
   async getCalendarData(
     workspaceId: string,
     month: string,
-  ): Promise<Record<string, number>> {
+  ): Promise<Record<string, { id: string; menu: string; participantCount: number; maxParticipants: number }[]>> {
     if (!month || !/^\d{4}-\d{2}$/.test(month)) {
       throw new BadRequestException('month는 YYYY-MM 형식이어야 합니다.');
     }
 
+    const [year, mon] = month.split('-').map(Number);
+    const startDate = `${year}-${String(mon).padStart(2, '0')}-01`;
+    const lastDay = new Date(year, mon, 0).getDate();
+    const endDate = `${year}-${String(mon).padStart(2, '0')}-${String(lastDay).padStart(2, '0')}`;
+
     const posts = await this.lunchPostRepository.find({
       where: {
         workspaceId,
-        date: Like(`${month}%`),
+        date: Between(startDate, endDate),
         isDeleted: false,
       },
-      select: ['date'],
+      relations: { participations: true },
     });
 
-    const result: Record<string, number> = {};
+    const result: Record<string, { id: string; menu: string; participantCount: number; maxParticipants: number }[]> = {};
     for (const post of posts) {
       const dateStr = post.date;
-      result[dateStr] = (result[dateStr] || 0) + 1;
+      if (!result[dateStr]) result[dateStr] = [];
+      result[dateStr].push({
+        id: post.id,
+        menu: post.menu,
+        participantCount: post.participations?.length ?? 0,
+        maxParticipants: post.maxParticipants,
+      });
     }
     return result;
   }

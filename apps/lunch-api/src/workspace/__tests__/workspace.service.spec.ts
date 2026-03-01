@@ -61,6 +61,7 @@ describe('WorkspaceService', () => {
     updatedAt: new Date('2025-01-01'),
     lunchPosts: [],
     participations: [],
+    reviews: [],
   };
 
   const mockRegularMember: Member = {
@@ -74,6 +75,7 @@ describe('WorkspaceService', () => {
     updatedAt: new Date('2025-01-01'),
     lunchPosts: [],
     participations: [],
+    reviews: [],
   };
 
   beforeEach(async () => {
@@ -475,7 +477,7 @@ describe('WorkspaceService', () => {
       memberRepository.count.mockResolvedValue(10);
 
       // Act
-      const result = await service.findOne('workspace-uuid-1234');
+      const result = await service.findOne('workspace-uuid-1234', mockAdminMember);
 
       // Assert
       expect(result.workspace).toBeDefined();
@@ -489,7 +491,7 @@ describe('WorkspaceService', () => {
 
       // Act & Assert
       await expect(
-        service.findOne('non-existent-workspace'),
+        service.findOne('non-existent-workspace', mockAdminMember),
       ).rejects.toThrow(NotFoundException);
     });
 
@@ -500,7 +502,7 @@ describe('WorkspaceService', () => {
       memberRepository.count.mockResolvedValue(10);
 
       // Act
-      await service.findOne(workspaceId);
+      await service.findOne(workspaceId, mockAdminMember);
 
       // Assert
       expect(workspaceRepository.findOne).toHaveBeenCalledWith(

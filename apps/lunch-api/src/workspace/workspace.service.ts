@@ -63,7 +63,7 @@ export class WorkspaceService {
 
   async findByInviteCode(
     code: string,
-  ): Promise<{ name: string; description: string | null; memberCount: number }> {
+  ): Promise<{ id: string; name: string; slug: string; description: string | null; memberCount: number }> {
     const workspace = await this.workspaceRepository.findOne({
       where: { inviteCode: code },
     });
@@ -77,7 +77,9 @@ export class WorkspaceService {
     });
 
     return {
+      id: workspace.id,
       name: workspace.name,
+      slug: workspace.slug,
       description: workspace.description,
       memberCount,
     };
@@ -86,7 +88,7 @@ export class WorkspaceService {
   async join(
     workspaceId: string,
     dto: JoinWorkspaceDto,
-  ): Promise<{ member: Member; cookieToken: string }> {
+  ): Promise<{ member: Member; cookieToken: string; workspaceSlug: string }> {
     const workspace = await this.workspaceRepository.findOne({
       where: { id: workspaceId },
     });
@@ -122,15 +124,10 @@ export class WorkspaceService {
     });
     const savedMember = await this.memberRepository.save(member);
 
-    return { member: savedMember, cookieToken };
+    return { member: savedMember, cookieToken, workspaceSlug: workspace.slug };
   }
 
-  async findOne(
-    workspaceId: string,
-  ): Promise<{
-    workspace: Omit<Workspace, 'inviteCode' | 'adminToken'>;
-    memberCount: number;
-  }> {
+  async findOne(workspaceId: string, member: Member) {
     const workspace = await this.workspaceRepository.findOne({
       where: { id: workspaceId },
     });
@@ -143,10 +140,13 @@ export class WorkspaceService {
       where: { workspaceId },
     });
 
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const { inviteCode, adminToken, ...safeWorkspace } = workspace;
+    const { adminToken, ...rest } = workspace;
+    if (member.role !== MemberRole.ADMIN) {
+      const { inviteCode, ...safeWorkspace } = rest;
+      return { workspace: safeWorkspace, memberCount };
+    }
 
-    return { workspace: safeWorkspace, memberCount };
+    return { workspace: rest, memberCount };
   }
 
   async update(
@@ -174,6 +174,38 @@ export class WorkspaceService {
     }
 
     return this.workspaceRepository.save(workspace);
+  }
+
+  async regenerateInviteCode(
+    workspaceId: string,
+    member: Member,
+  ): Promise<{ inviteCode: string }> {
+    if (member.role !== MemberRole.ADMIN) {
+      throw new ForbiddenException('Only admins can regenerate invite code');
+    }
+
+    const workspace = await this.workspaceRepository.findOne({
+      where: { id: workspaceId },
+    });
+
+    if (!workspace) {
+      throw new NotFoundException('Workspace not found');
+    }
+
+    workspace.inviteCode = randomUUID();
+    await this.workspaceRepository.save(workspace);
+
+    return { inviteCode: workspace.inviteCode };
+  }
+
+  async leaveWorkspace(workspaceId: string, member: Member): Promise<void> {
+    if (member.role === MemberRole.ADMIN) {
+      throw new ForbiddenException(
+        '관리자는 워크스페이스를 탈퇴할 수 없습니다.',
+      );
+    }
+
+    await this.memberRepository.delete({ id: member.id, workspaceId });
   }
 
   async findMembers(workspaceId: string): Promise<Member[]> {

@@ -60,6 +60,7 @@ describe('LunchPostService', () => {
     updatedAt: new Date('2025-01-01'),
     lunchPosts: [],
     participations: [],
+    reviews: [],
   };
 
   const mockOtherMember: Member = {
@@ -73,6 +74,7 @@ describe('LunchPostService', () => {
     updatedAt: new Date('2025-01-01'),
     lunchPosts: [],
     participations: [],
+    reviews: [],
   };
 
   // Helper: future date (tomorrow) in YYYY-MM-DD format
@@ -109,6 +111,7 @@ describe('LunchPostService', () => {
       workspace: mockWorkspace,
       author: mockAuthor,
       participations: [],
+      reviews: [],
       ...overrides,
     };
   }
@@ -540,13 +543,13 @@ describe('LunchPostService', () => {
   // getCalendarData
   // ─────────────────────────────────────────────
   describe('getCalendarData', () => {
-    it('should return date-count map for the given month', async () => {
+    it('should return date-to-posts map for the given month', async () => {
       // Arrange
       const month = '2026-02';
       const mockPosts = [
-        createMockLunchPost({ date: '2026-02-25' }),
-        createMockLunchPost({ date: '2026-02-25' }),
-        createMockLunchPost({ date: '2026-02-26' }),
+        createMockLunchPost({ id: 'post-1', date: '2026-02-25', menu: '짬뽕', maxParticipants: 4, participations: [createMockParticipation(), createMockParticipation({ id: 'p2' })] }),
+        createMockLunchPost({ id: 'post-2', date: '2026-02-25', menu: '짜장면', maxParticipants: 3, participations: [createMockParticipation({ id: 'p3' })] }),
+        createMockLunchPost({ id: 'post-3', date: '2026-02-26', menu: '탕수육', maxParticipants: 5, participations: [] }),
       ];
       lunchPostRepository.find.mockResolvedValue(mockPosts);
 
@@ -555,12 +558,17 @@ describe('LunchPostService', () => {
 
       // Assert
       expect(result).toEqual({
-        '2026-02-25': 2,
-        '2026-02-26': 1,
+        '2026-02-25': [
+          { id: 'post-1', menu: '짬뽕', participantCount: 2, maxParticipants: 4 },
+          { id: 'post-2', menu: '짜장면', participantCount: 1, maxParticipants: 3 },
+        ],
+        '2026-02-26': [
+          { id: 'post-3', menu: '탕수육', participantCount: 0, maxParticipants: 5 },
+        ],
       });
     });
 
-    it('should only count posts where isDeleted is false', async () => {
+    it('should only include posts where isDeleted is false', async () => {
       // Arrange
       const month = '2026-02';
       lunchPostRepository.find.mockResolvedValue([]);
@@ -574,6 +582,7 @@ describe('LunchPostService', () => {
           where: expect.objectContaining({
             isDeleted: false,
           }),
+          relations: { participations: true },
         }),
       );
     });

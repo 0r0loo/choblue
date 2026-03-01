@@ -4,10 +4,13 @@ import {
   Inject,
   Post,
   Patch,
+  Delete,
   Param,
   Body,
   Res,
   UseGuards,
+  HttpCode,
+  HttpStatus,
   ForbiddenException,
 } from '@nestjs/common';
 import { Response } from 'express';
@@ -56,13 +59,19 @@ export class WorkspaceController {
 
     res.cookie(AUTH_COOKIE_NAME, result.cookieToken, COOKIE_OPTIONS);
 
-    return { member: result.member };
+    return {
+      memberId: result.member.id,
+      workspaceSlug: result.workspaceSlug,
+    };
   }
 
   @UseGuards(CookieGuard)
   @Get(':id')
-  async findOne(@CurrentWorkspace() workspace: Workspace) {
-    return this.workspaceService.findOne(workspace.id);
+  async findOne(
+    @CurrentWorkspace() workspace: Workspace,
+    @CurrentMember() member: Member,
+  ) {
+    return this.workspaceService.findOne(workspace.id, member);
   }
 
   @UseGuards(CookieGuard)
@@ -78,6 +87,37 @@ export class WorkspaceController {
       );
     }
     return this.workspaceService.update(id, dto, member);
+  }
+
+  @UseGuards(CookieGuard)
+  @Post(':id/regenerate-invite')
+  async regenerateInvite(
+    @Param('id') id: string,
+    @CurrentMember() member: Member,
+  ) {
+    if (id !== member.workspaceId) {
+      throw new ForbiddenException(
+        'Cannot regenerate invite for a workspace you do not belong to',
+      );
+    }
+    return this.workspaceService.regenerateInviteCode(id, member);
+  }
+
+  @UseGuards(CookieGuard)
+  @Delete(':id/members/me')
+  @HttpCode(HttpStatus.NO_CONTENT)
+  async leaveWorkspace(
+    @Param('id') id: string,
+    @CurrentMember() member: Member,
+    @Res({ passthrough: true }) res: Response,
+  ) {
+    if (id !== member.workspaceId) {
+      throw new ForbiddenException(
+        'Cannot leave a workspace you do not belong to',
+      );
+    }
+    await this.workspaceService.leaveWorkspace(id, member);
+    res.clearCookie(AUTH_COOKIE_NAME);
   }
 
   @UseGuards(CookieGuard)

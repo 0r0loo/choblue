@@ -46,6 +46,7 @@ describe('LunchPostController', () => {
     updatedAt: new Date('2025-01-01'),
     lunchPosts: [],
     participations: [],
+    reviews: [],
   };
 
   function createMockLunchPost(overrides: Partial<LunchPost> = {}): LunchPost {
@@ -65,6 +66,7 @@ describe('LunchPostController', () => {
       workspace: mockWorkspace,
       author: mockMember,
       participations: [],
+      reviews: [],
       ...overrides,
     };
   }
@@ -156,7 +158,9 @@ describe('LunchPostController', () => {
     it('should call lunchPostService.getCalendarData with workspaceId and month', async () => {
       // Arrange
       const month = '2026-02';
-      const calendarData = { '2026-02-25': 3, '2026-02-26': 1 };
+      const calendarData = {
+        '2026-02-25': [{ id: 'p1', menu: '짬뽕', participantCount: 2, maxParticipants: 4 }],
+      };
       lunchPostService.getCalendarData.mockResolvedValue(calendarData);
 
       // Act
@@ -171,7 +175,9 @@ describe('LunchPostController', () => {
 
     it('should return the calendar data map', async () => {
       // Arrange
-      const calendarData = { '2026-02-25': 3, '2026-02-26': 1 };
+      const calendarData = {
+        '2026-02-25': [{ id: 'p1', menu: '짬뽕', participantCount: 2, maxParticipants: 4 }],
+      };
       lunchPostService.getCalendarData.mockResolvedValue(calendarData);
 
       // Act

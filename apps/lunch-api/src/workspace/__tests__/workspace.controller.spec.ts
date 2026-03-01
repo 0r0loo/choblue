@@ -47,6 +47,7 @@ describe('WorkspaceController', () => {
     updatedAt: new Date('2025-01-01'),
     lunchPosts: [],
     participations: [],
+    reviews: [],
   };
 
   const mockRegularMember: Member = {
@@ -60,6 +61,7 @@ describe('WorkspaceController', () => {
     updatedAt: new Date('2025-01-01'),
     lunchPosts: [],
     participations: [],
+    reviews: [],
   };
 
   function createMockResponse() {
@@ -222,12 +224,13 @@ describe('WorkspaceController', () => {
       );
     });
 
-    it('should return member info', async () => {
+    it('should return memberId and workspaceSlug', async () => {
       // Arrange
       const res = createMockResponse();
       workspaceService.join.mockResolvedValue({
         member: mockRegularMember,
         cookieToken: 'regular-cookie-token',
+        workspaceSlug: 'engineering-team-a1b2',
       });
 
       // Act
@@ -238,7 +241,8 @@ describe('WorkspaceController', () => {
       );
 
       // Assert
-      expect(result).toHaveProperty('member');
+      expect(result).toHaveProperty('memberId', mockRegularMember.id);
+      expect(result).toHaveProperty('workspaceSlug', 'engineering-team-a1b2');
     });
 
     it('should set lunch_token cookie on the response', async () => {
@@ -247,6 +251,7 @@ describe('WorkspaceController', () => {
       workspaceService.join.mockResolvedValue({
         member: mockRegularMember,
         cookieToken: 'regular-cookie-token',
+        workspaceSlug: 'engineering-team-a1b2',
       });
 
       // Act
@@ -272,11 +277,12 @@ describe('WorkspaceController', () => {
       });
 
       // Act
-      await controller.findOne(mockWorkspace);
+      await controller.findOne(mockWorkspace, mockAdminMember);
 
       // Assert
       expect(workspaceService.findOne).toHaveBeenCalledWith(
         mockWorkspace.id,
+        mockAdminMember,
       );
     });
 
@@ -289,7 +295,7 @@ describe('WorkspaceController', () => {
       workspaceService.findOne.mockResolvedValue(expectedResult);
 
       // Act
-      const result = await controller.findOne(mockWorkspace);
+      const result = await controller.findOne(mockWorkspace, mockAdminMember);
 
       // Assert
       expect(result).toEqual(expectedResult);

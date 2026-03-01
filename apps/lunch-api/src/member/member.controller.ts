@@ -1,5 +1,6 @@
 import {
   Controller,
+  Get,
   Patch,
   Body,
   Inject,
@@ -17,6 +18,17 @@ export class MemberController {
     @Inject(MemberService)
     private readonly memberService: MemberService,
   ) {}
+
+  @UseGuards(CookieGuard)
+  @Get('me')
+  getMe(@CurrentMember() member: Member) {
+    return {
+      id: member.id,
+      nickname: member.nickname,
+      role: member.role,
+      createdAt: member.createdAt,
+    };
+  }
 
   @UseGuards(CookieGuard)
   @Patch('me')
