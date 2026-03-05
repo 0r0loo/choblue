@@ -26,8 +26,8 @@
 | DataTable 행 hover | L3 | `hover:bg-table-row-hover` | — | — | — | |
 | Dialog | L2 | `bg-card` | `border-border` | `shadow-xl` | `rounded-xl` | backdrop: `bg-black/50` |
 | Toast | L2 | `bg-card` | `border-border` | `shadow-lg` | `rounded-lg` | z-[300] |
-| Select Dropdown | L2 | `bg-background` | `border-border` | `shadow-md` | `rounded-md` | |
-| Input / Textarea | — | `bg-background` | `border-input` | `shadow-sm` | `rounded-md` | |
+| Select Dropdown | L2 | `bg-white dark:bg-neutral-950` | `border-border` | `shadow-md` | `rounded-md` | |
+| Input / Textarea | — | `bg-white dark:bg-neutral-950` | `border-input` | `shadow-sm` | `rounded-md` | |
 | Button | — | variant별 | — | `shadow-sm` | `rounded-md` | |
 
 **새 컴포넌트 추가 시**: 위 표에서 가장 유사한 컴포넌트를 찾고, 같은 레벨의 토큰을 적용한다.
@@ -85,3 +85,14 @@
 - [ ] 사용한 색상 토큰이 접근성 안전 범위 내인지 확인
 - [ ] shadow, rounded, border 조합이 같은 레벨 컴포넌트와 동일한지 확인
 - [ ] 다크모드에서 사용한 시맨틱 토큰이 dark-theme.css에 정의되어 있는지 확인
+
+---
+
+## 5. 컴포넌트 개발 플로우
+
+새 컴포넌트를 추가하거나 기존 컴포넌트를 수정할 때, 아래 순서를 따른다.
+
+1. **구현** — `packages/ui/src/components/{name}/` 에 컴포넌트 + 테스트 작성
+2. **스토리 추가** — `apps/storybook-ui/src/stories/{Name}.stories.tsx` 에 Storybook 스토리 작성 → 시각 검증
+3. **커밋** — 구현 + 스토리를 함께 커밋
+4. **문서 작성** — `apps/docs-ui/content/` 에 컴포넌트 문서(MDX) 작성 → 별도 커밋
