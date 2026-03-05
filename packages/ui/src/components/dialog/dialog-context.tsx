@@ -9,6 +9,7 @@ import {
   type ReactNode,
 } from "react";
 import { cn } from "../../lib/cn";
+import { Slot } from "../../lib/slot";
 
 // Context
 interface DialogContextValue {
@@ -57,13 +58,20 @@ function Dialog({ children, open: controlledOpen, onOpenChange }: DialogProps) {
 Dialog.displayName = "Dialog";
 
 // DialogTrigger
-type DialogTriggerProps = ComponentProps<"button">;
+interface DialogTriggerProps extends ComponentProps<"button"> {
+  asChild?: boolean;
+}
 
-function DialogTrigger({ children, ref, ...props }: DialogTriggerProps) {
+function DialogTrigger({ children, ref, asChild, ...props }: DialogTriggerProps) {
   const { onOpenChange } = useDialogContext();
+  const triggerProps = { ...props, ref, onClick: () => onOpenChange(true) };
+
+  if (asChild) {
+    return <Slot {...triggerProps}>{children}</Slot>;
+  }
 
   return (
-    <button type="button" ref={ref} onClick={() => onOpenChange(true)} {...props}>
+    <button type="button" {...triggerProps}>
       {children}
     </button>
   );
@@ -127,13 +135,20 @@ function DialogContent({
 DialogContent.displayName = "DialogContent";
 
 // DialogClose
-type DialogCloseProps = ComponentProps<"button">;
+interface DialogCloseProps extends ComponentProps<"button"> {
+  asChild?: boolean;
+}
 
-function DialogClose({ children, ref, ...props }: DialogCloseProps) {
+function DialogClose({ children, ref, asChild, ...props }: DialogCloseProps) {
   const { onOpenChange } = useDialogContext();
+  const closeProps = { ...props, ref, onClick: () => onOpenChange(false) };
+
+  if (asChild) {
+    return <Slot {...closeProps}>{children}</Slot>;
+  }
 
   return (
-    <button type="button" ref={ref} onClick={() => onOpenChange(false)} {...props}>
+    <button type="button" {...closeProps}>
       {children}
     </button>
   );

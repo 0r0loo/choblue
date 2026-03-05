@@ -35,8 +35,8 @@ type Story = StoryObj<typeof meta>;
 export const Default: Story = {
   render: () => (
     <Dialog>
-      <DialogTrigger className="rounded-md bg-primary px-4 py-2 font-medium text-primary-foreground hover:bg-primary/90">
-        Open Dialog
+      <DialogTrigger asChild>
+        <Button>Open Dialog</Button>
       </DialogTrigger>
       <DialogContent className="w-[450px]">
         <DialogHeader>
@@ -52,8 +52,8 @@ export const Default: Story = {
           </p>
         </div>
         <DialogFooter>
-          <DialogClose className="rounded-md border border-input bg-background px-4 py-2 text-sm font-medium hover:bg-accent hover:text-accent-foreground">
-            Cancel
+          <DialogClose asChild>
+            <Button variant="outline">Cancel</Button>
           </DialogClose>
           <Button>Confirm</Button>
         </DialogFooter>
@@ -65,8 +65,8 @@ export const Default: Story = {
 export const DeleteConfirmation: Story = {
   render: () => (
     <Dialog>
-      <DialogTrigger className="rounded-md bg-danger px-4 py-2 font-medium text-danger-foreground hover:bg-danger/90">
-        Delete Product
+      <DialogTrigger asChild>
+        <Button variant="danger">Delete Product</Button>
       </DialogTrigger>
       <DialogContent className="w-[400px]">
         <DialogHeader>
@@ -84,8 +84,8 @@ export const DeleteConfirmation: Story = {
           </div>
         </div>
         <DialogFooter>
-          <DialogClose className="rounded-md border border-input bg-background px-4 py-2 text-sm font-medium hover:bg-accent hover:text-accent-foreground">
-            Cancel
+          <DialogClose asChild>
+            <Button variant="outline">Cancel</Button>
           </DialogClose>
           <Button variant="danger">Delete</Button>
         </DialogFooter>
@@ -97,8 +97,8 @@ export const DeleteConfirmation: Story = {
 export const PaymentConfirmation: Story = {
   render: () => (
     <Dialog>
-      <DialogTrigger className="rounded-md bg-primary px-4 py-2 font-medium text-primary-foreground hover:bg-primary/90">
-        Pay $24.50
+      <DialogTrigger asChild>
+        <Button>Pay $24.50</Button>
       </DialogTrigger>
       <DialogContent className="w-[500px]">
         <DialogHeader>
@@ -148,8 +148,8 @@ export const PaymentConfirmation: Story = {
           </div>
         </div>
         <DialogFooter>
-          <DialogClose className="rounded-md border border-input bg-background px-4 py-2 text-sm font-medium hover:bg-accent hover:text-accent-foreground">
-            Cancel
+          <DialogClose asChild>
+            <Button variant="outline">Cancel</Button>
           </DialogClose>
           <Button>Confirm Payment</Button>
         </DialogFooter>
@@ -161,8 +161,8 @@ export const PaymentConfirmation: Story = {
 export const FormDialog: Story = {
   render: () => (
     <Dialog>
-      <DialogTrigger className="rounded-md bg-primary px-4 py-2 font-medium text-primary-foreground hover:bg-primary/90">
-        Add Product
+      <DialogTrigger asChild>
+        <Button>Add Product</Button>
       </DialogTrigger>
       <DialogContent className="w-[500px]">
         <DialogHeader>
@@ -221,8 +221,8 @@ export const FormDialog: Story = {
           </div>
         </div>
         <DialogFooter>
-          <DialogClose className="rounded-md border border-input bg-background px-4 py-2 text-sm font-medium hover:bg-accent hover:text-accent-foreground">
-            Cancel
+          <DialogClose asChild>
+            <Button variant="outline">Cancel</Button>
           </DialogClose>
           <Button>Add Product</Button>
         </DialogFooter>
@@ -234,8 +234,8 @@ export const FormDialog: Story = {
 export const WithLongContent: Story = {
   render: () => (
     <Dialog>
-      <DialogTrigger className="rounded-md bg-primary px-4 py-2 font-medium text-primary-foreground hover:bg-primary/90">
-        View Terms
+      <DialogTrigger asChild>
+        <Button>View Terms</Button>
       </DialogTrigger>
       <DialogContent className="max-h-[80vh] w-[600px] overflow-y-auto">
         <DialogHeader>
@@ -315,8 +315,8 @@ export const WithLongContent: Story = {
           </section>
         </div>
         <DialogFooter>
-          <DialogClose className="rounded-md border border-input bg-background px-4 py-2 text-sm font-medium hover:bg-accent hover:text-accent-foreground">
-            Close
+          <DialogClose asChild>
+            <Button variant="outline">Close</Button>
           </DialogClose>
           <Button>Accept</Button>
         </DialogFooter>
