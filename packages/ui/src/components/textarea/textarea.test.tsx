@@ -71,15 +71,15 @@ describe("Textarea", () => {
       );
     });
 
-    it("should include aria-invalid:border-destructive in base classes", () => {
+    it("should include aria-invalid:border-danger in base classes", () => {
       render(<Textarea />);
       const textarea = screen.getByRole("textbox");
 
       expect(textarea.className).toContain(
-        "aria-invalid:border-destructive",
+        "aria-invalid:border-danger",
       );
-      expect(textarea.className).toContain("aria-invalid:ring-destructive/20");
-      expect(textarea.className).toContain("aria-invalid:text-destructive");
+      expect(textarea.className).toContain("aria-invalid:ring-danger/20");
+      expect(textarea.className).toContain("aria-invalid:text-danger");
     });
 
     it("should not have aria-invalid attribute by default", () => {

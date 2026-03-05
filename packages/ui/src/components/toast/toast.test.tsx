@@ -85,7 +85,7 @@ function DestructiveHarnessWithButton() {
     <button
       type="button"
       onClick={() =>
-        toast({ title: "에러 발생", variant: "destructive" })
+        toast({ title: "에러 발생", variant: "danger" })
       }
     >
       에러 토스트
@@ -193,7 +193,7 @@ describe("Toast", () => {
     expect(toast).toBeInTheDocument();
   });
 
-  it("should render with destructive variant", async () => {
+  it("should render with danger variant", async () => {
     // Arrange
     const user = userEvent.setup();
     render(
@@ -207,7 +207,7 @@ describe("Toast", () => {
 
     // Assert
     const toastElement = screen.getByText("에러 발생").closest("[data-variant]");
-    expect(toastElement).toHaveAttribute("data-variant", "destructive");
+    expect(toastElement).toHaveAttribute("data-variant", "danger");
   });
 
   it("should display title text", async () => {

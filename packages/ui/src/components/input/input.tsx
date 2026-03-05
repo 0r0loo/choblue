@@ -13,7 +13,7 @@ const inputVariants = cva(
     'placeholder:text-muted-foreground',                               // 플레이스홀더
     'focus-visible:outline-none focus-visible:ring-[3px] focus-visible:ring-primary/20 focus-visible:border-primary/50', // 부드러운 글로우 포커스
     'disabled:pointer-events-none disabled:opacity-50',                // 상태
-    'aria-invalid:border-destructive aria-invalid:ring-destructive/20 aria-invalid:text-destructive', // 유효성
+    'aria-invalid:border-danger aria-invalid:ring-danger/20 aria-invalid:text-danger', // 유효성
   ],
   {
     variants: {

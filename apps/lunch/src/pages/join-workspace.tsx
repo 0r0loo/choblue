@@ -44,7 +44,7 @@ export function JoinWorkspacePage({ inviteCode, onNavigate }: JoinWorkspacePageP
   if (fetchError) {
     return (
       <div className="flex min-h-screen items-center justify-center p-4">
-        <p className="text-destructive">
+        <p className="text-danger">
           {getErrorMessage(fetchError, '유효하지 않은 링크입니다')}
         </p>
       </div>
@@ -93,12 +93,12 @@ export function JoinWorkspacePage({ inviteCode, onNavigate }: JoinWorkspacePageP
             aria-invalid={!!nicknameError}
           />
           {nicknameError && (
-            <p className="text-sm text-destructive">{nicknameError}</p>
+            <p className="text-sm text-danger">{nicknameError}</p>
           )}
         </div>
 
         {joinMutation.error && (
-          <p className="text-sm text-destructive">
+          <p className="text-sm text-danger">
             {getErrorMessage(joinMutation.error, '오류가 발생했습니다. 다시 시도해주세요.')}
           </p>
         )}

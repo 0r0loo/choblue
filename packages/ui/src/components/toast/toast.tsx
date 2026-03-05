@@ -16,7 +16,7 @@ export type {
 // -- Toast --
 
 interface ToastProps extends ComponentProps<"div"> {
-  variant?: "default" | "destructive";
+  variant?: "default" | "danger";
 }
 
 function Toast({ variant = "default", className, ref, ...props }: ToastProps) {
@@ -27,8 +27,8 @@ function Toast({ variant = "default", className, ref, ...props }: ToastProps) {
       className={cn(
         "flex items-center gap-3 rounded-xl border p-4 shadow-lg",
         variant === "default" && "bg-background border-black/5 dark:border-white/10",
-        variant === "destructive" &&
-          "bg-destructive text-destructive-foreground border-destructive",
+        variant === "danger" &&
+          "bg-danger text-danger-foreground border-danger",
         className,
       )}
       {...props}
@@ -100,7 +100,7 @@ ToastClose.displayName = "ToastClose";
 // -- ToastItem (internal: renders individual toast from context) --
 
 interface ToastItemProps {
-  data: { id: string; title?: string; description?: string; variant?: "default" | "destructive" };
+  data: { id: string; title?: string; description?: string; variant?: "default" | "danger" };
   onDismiss: (id: string) => void;
 }
 

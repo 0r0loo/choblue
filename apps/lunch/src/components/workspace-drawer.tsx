@@ -287,7 +287,7 @@ export function WorkspaceDrawer({
           </button>
 
           {leaveMutation.error && (
-            <p className="mb-2 text-sm text-destructive">
+            <p className="mb-2 text-sm text-danger">
               {getErrorMessage(leaveMutation.error, '오류가 발생했습니다.')}
             </p>
           )}
@@ -295,7 +295,7 @@ export function WorkspaceDrawer({
             <button
               type="button"
               onClick={() => setShowLeaveConfirm(true)}
-              className="text-sm text-muted-foreground transition-colors duration-200 hover:text-destructive"
+              className="text-sm text-muted-foreground transition-colors duration-200 hover:text-danger"
             >
               워크스페이스 나가기
             </button>
@@ -305,7 +305,7 @@ export function WorkspaceDrawer({
               <div className="mt-2.5 flex gap-2">
                 <Button
                   size="sm"
-                  variant="destructive"
+                  variant="danger"
                   onClick={() => leaveMutation.mutate()}
                 >
                   나가기

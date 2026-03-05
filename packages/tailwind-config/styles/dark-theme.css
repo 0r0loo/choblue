@@ -13,8 +13,7 @@
   --color-primary-foreground: white;
   --color-secondary: var(--color-neutral-800);
   --color-secondary-foreground: var(--color-neutral-50);
-  --color-destructive: var(--color-danger-400);
-  --color-destructive-foreground: white;
+  --color-danger-foreground: white;
   --color-accent: var(--color-neutral-800);
   --color-accent-foreground: var(--color-neutral-50);
   --color-overlay: oklch(0 0 0 / 0.7);

@@ -35,10 +35,10 @@ describe("Badge", () => {
       expect(badge.className).toContain("border-input");
     });
 
-    it("applies destructive variant", () => {
-      render(<Badge variant="destructive">Destructive</Badge>);
+    it("applies danger variant", () => {
+      render(<Badge variant="danger">Destructive</Badge>);
       const badge = screen.getByText("Destructive");
-      expect(badge.className).toContain("bg-destructive");
+      expect(badge.className).toContain("bg-danger");
     });
   });
 

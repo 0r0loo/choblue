@@ -98,7 +98,7 @@ export function SettingsPage({
   if (wsError || !workspace) {
     return (
       <div className="flex flex-1 items-center justify-center">
-        <p className="text-destructive">
+        <p className="text-danger">
           {wsError
             ? getErrorMessage(wsError, '데이터를 불러오는 중 오류가 발생했습니다.')
             : '데이터를 찾을 수 없습니다.'}
@@ -268,7 +268,7 @@ export function SettingsPage({
 
         {/* Error */}
         {actionError && (
-          <p className="text-sm text-destructive">
+          <p className="text-sm text-danger">
             {getErrorMessage(actionError, '오류가 발생했습니다.')}
           </p>
         )}
@@ -278,7 +278,7 @@ export function SettingsPage({
           <button
             type="button"
             onClick={() => setShowLeaveConfirm(true)}
-            className="text-sm text-muted-foreground transition-colors duration-200 hover:text-destructive"
+            className="text-sm text-muted-foreground transition-colors duration-200 hover:text-danger"
           >
             워크스페이스 나가기
           </button>
@@ -300,7 +300,7 @@ export function SettingsPage({
                 </Button>
                 <Button
                   size="sm"
-                  variant="destructive"
+                  variant="danger"
                   onClick={handleLeaveConfirm}
                 >
                   나가기

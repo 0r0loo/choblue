@@ -26,10 +26,8 @@ const badgeVariants = cva(
         warning:
           "bg-warning text-white border-transparent shadow-sm",
         danger:
-          "bg-danger text-white border-transparent shadow-sm",
+          "bg-danger text-danger-foreground border-transparent shadow-sm",
         outline: "text-foreground border-input",
-        destructive:
-          "bg-destructive text-destructive-foreground border-transparent shadow-sm",
       },
     },
     defaultVariants: {

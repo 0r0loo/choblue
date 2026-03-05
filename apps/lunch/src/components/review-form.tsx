@@ -86,7 +86,7 @@ export function ReviewForm({
         />
       </div>
       {error && (
-        <p className="text-sm text-destructive">
+        <p className="text-sm text-danger">
           {getErrorMessage(
             error,
             isCreate ? '리뷰 작성 중 오류가 발생했습니다.' : '리뷰 수정 중 오류가 발생했습니다.',

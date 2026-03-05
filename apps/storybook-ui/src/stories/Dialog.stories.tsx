@@ -56,7 +56,7 @@ export const Default: Story = {
 export const DeleteConfirmation: Story = {
   render: () => (
     <Dialog>
-      <DialogTrigger className="rounded-md bg-destructive px-4 py-2 font-medium text-destructive-foreground hover:bg-destructive/90">
+      <DialogTrigger className="rounded-md bg-danger px-4 py-2 font-medium text-danger-foreground hover:bg-danger/90">
         Delete Product
       </DialogTrigger>
       <DialogContent className="w-[400px]">
@@ -78,7 +78,7 @@ export const DeleteConfirmation: Story = {
           <DialogClose className="rounded-md border border-input bg-background px-4 py-2 text-sm font-medium hover:bg-accent hover:text-accent-foreground">
             Cancel
           </DialogClose>
-          <Button variant="destructive">Delete</Button>
+          <Button variant="danger">Delete</Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>

@@ -73,7 +73,7 @@ export function EditPostPage({ postId, onNavigate }: EditPostPageProps) {
   if (fetchError) {
     return (
       <div className="flex min-h-screen items-center justify-center">
-        <p className="text-destructive">
+        <p className="text-danger">
           {getErrorMessage(fetchError, '데이터를 불러오는 중 오류가 발생했습니다.')}
         </p>
       </div>
@@ -147,7 +147,7 @@ export function EditPostPage({ postId, onNavigate }: EditPostPageProps) {
             aria-invalid={!!menuError}
           />
           {menuError && (
-            <p className="text-sm text-destructive">{menuError}</p>
+            <p className="text-sm text-danger">{menuError}</p>
           )}
         </div>
 
@@ -175,7 +175,7 @@ export function EditPostPage({ postId, onNavigate }: EditPostPageProps) {
             aria-invalid={!!dateError}
           />
           {dateError && (
-            <p className="text-sm text-destructive">{dateError}</p>
+            <p className="text-sm text-danger">{dateError}</p>
           )}
         </div>
 
@@ -196,7 +196,7 @@ export function EditPostPage({ postId, onNavigate }: EditPostPageProps) {
             ))}
           </select>
           {timeError && (
-            <p className="text-sm text-destructive">{timeError}</p>
+            <p className="text-sm text-danger">{timeError}</p>
           )}
         </div>
 
@@ -214,12 +214,12 @@ export function EditPostPage({ postId, onNavigate }: EditPostPageProps) {
             aria-invalid={!!maxParticipantsError}
           />
           {maxParticipantsError && (
-            <p className="text-sm text-destructive">{maxParticipantsError}</p>
+            <p className="text-sm text-danger">{maxParticipantsError}</p>
           )}
         </div>
 
         {updateMutation.error && (
-          <p className="text-sm text-destructive">
+          <p className="text-sm text-danger">
             {getErrorMessage(updateMutation.error, '오류가 발생했습니다. 다시 시도해주세요.')}
           </p>
         )}

@@ -43,10 +43,10 @@ describe("Button", () => {
       expect(button.className).toContain("hover:bg-accent");
     });
 
-    it("applies destructive variant", () => {
-      render(<Button variant="destructive">Destructive</Button>);
+    it("applies danger variant", () => {
+      render(<Button variant="danger">Destructive</Button>);
       const button = screen.getByRole("button");
-      expect(button.className).toContain("bg-destructive");
+      expect(button.className).toContain("bg-danger");
     });
   });
 

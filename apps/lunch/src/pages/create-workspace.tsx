@@ -109,7 +109,7 @@ export function CreateWorkspacePage({ onNavigate }: CreateWorkspacePageProps) {
             aria-invalid={!!errors.name}
           />
           {errors.name && (
-            <p className="text-sm text-destructive">{errors.name}</p>
+            <p className="text-sm text-danger">{errors.name}</p>
           )}
         </div>
 
@@ -137,12 +137,12 @@ export function CreateWorkspacePage({ onNavigate }: CreateWorkspacePageProps) {
             aria-invalid={!!errors.nickname}
           />
           {errors.nickname && (
-            <p className="text-sm text-destructive">{errors.nickname}</p>
+            <p className="text-sm text-danger">{errors.nickname}</p>
           )}
         </div>
 
         {createMutation.error && (
-          <p className="text-sm text-destructive">
+          <p className="text-sm text-danger">
             {getErrorMessage(createMutation.error, '오류가 발생했습니다. 다시 시도해주세요.')}
           </p>
         )}

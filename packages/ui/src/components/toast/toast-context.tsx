@@ -15,7 +15,7 @@ interface ToastData {
   id: string;
   title?: string;
   description?: string;
-  variant?: "default" | "destructive";
+  variant?: "default" | "danger";
   duration?: number;
 }
 

@@ -100,7 +100,7 @@ export function PostDetailPage({ postId, currentMemberId, onNavigate }: PostDeta
   if (fetchError || !post) {
     return (
       <div className="flex min-h-screen items-center justify-center">
-        <p className="text-destructive">
+        <p className="text-danger">
           {fetchError
             ? getErrorMessage(fetchError, '데이터를 불러오는 중 오류가 발생했습니다.')
             : '데이터를 찾을 수 없습니다.'}
@@ -200,7 +200,7 @@ export function PostDetailPage({ postId, currentMemberId, onNavigate }: PostDeta
         </Card>
 
         {actionError && (
-          <p className="text-sm text-destructive">
+          <p className="text-sm text-danger">
             {getErrorMessage(actionError, '오류가 발생했습니다.')}
           </p>
         )}
@@ -226,7 +226,7 @@ export function PostDetailPage({ postId, currentMemberId, onNavigate }: PostDeta
                   마감
                 </Button>
               )}
-              <Button variant="destructive" onClick={handleDelete}>
+              <Button variant="danger" onClick={handleDelete}>
                 삭제
               </Button>
             </>
@@ -291,7 +291,7 @@ export function PostDetailPage({ postId, currentMemberId, onNavigate }: PostDeta
                             </button>
                             <button
                               type="button"
-                              className="text-xs text-muted-foreground transition-colors duration-200 hover:text-destructive"
+                              className="text-xs text-muted-foreground transition-colors duration-200 hover:text-danger"
                               onClick={() => {
                                 if (window.confirm('리뷰를 삭제하시겠습니까?')) {
                                   deleteReviewMutation.mutate(review.id);

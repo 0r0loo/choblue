@@ -74,7 +74,7 @@ const SEMANTIC_TOKENS = [
   { name: "card", desc: "카드 배경" },
   { name: "primary", desc: "주요 액션" },
   { name: "secondary", desc: "보조 액션" },
-  { name: "destructive", desc: "위험/삭제" },
+  { name: "danger", desc: "위험/삭제" },
   { name: "accent", desc: "강조 배경" },
   { name: "overlay", desc: "모달 딤 배경" },
   { name: "disabled", desc: "비활성 배경" },

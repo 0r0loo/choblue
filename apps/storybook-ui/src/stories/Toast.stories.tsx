@@ -42,10 +42,10 @@ function DestructiveDemo() {
 
   return (
     <Button
-      variant="destructive"
+      variant="danger"
       onClick={() =>
         toast({
-          variant: "destructive",
+          variant: "danger",
           title: "결제 실패",
           description: "카드 결제 처리 중 오류가 발생했습니다.",
         })
@@ -81,7 +81,7 @@ function MultipleDemo() {
       description: "첫 번째 토스트입니다.",
     });
     toast({
-      variant: "destructive",
+      variant: "danger",
       title: "두 번째 알림",
       description: "두 번째 토스트입니다.",
     });

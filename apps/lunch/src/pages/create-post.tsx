@@ -123,7 +123,7 @@ export function CreatePostPage({ workspaceId, onNavigate }: CreatePostPageProps)
             aria-invalid={!!menuError}
           />
           {menuError && (
-            <p className="text-sm text-destructive">{menuError}</p>
+            <p className="text-sm text-danger">{menuError}</p>
           )}
         </div>
 
@@ -151,7 +151,7 @@ export function CreatePostPage({ workspaceId, onNavigate }: CreatePostPageProps)
             aria-invalid={!!dateError}
           />
           {dateError && (
-            <p className="text-sm text-destructive">{dateError}</p>
+            <p className="text-sm text-danger">{dateError}</p>
           )}
         </div>
 
@@ -172,7 +172,7 @@ export function CreatePostPage({ workspaceId, onNavigate }: CreatePostPageProps)
             ))}
           </select>
           {timeError && (
-            <p className="text-sm text-destructive">{timeError}</p>
+            <p className="text-sm text-danger">{timeError}</p>
           )}
         </div>
 
@@ -190,12 +190,12 @@ export function CreatePostPage({ workspaceId, onNavigate }: CreatePostPageProps)
             aria-invalid={!!maxParticipantsError}
           />
           {maxParticipantsError && (
-            <p className="text-sm text-destructive">{maxParticipantsError}</p>
+            <p className="text-sm text-danger">{maxParticipantsError}</p>
           )}
         </div>
 
         {createMutation.error && (
-          <p className="text-sm text-destructive">
+          <p className="text-sm text-danger">
             {getErrorMessage(createMutation.error, '오류가 발생했습니다. 다시 시도해주세요.')}
           </p>
         )}

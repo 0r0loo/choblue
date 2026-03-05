@@ -48,11 +48,11 @@ describe("Input", () => {
       );
     });
 
-    it("should include aria-invalid:border-destructive in base classes", () => {
+    it("should include aria-invalid:border-danger in base classes", () => {
       render(<Input />);
       const input = screen.getByRole("textbox");
 
-      expect(input.className).toContain("aria-invalid:border-destructive");
+      expect(input.className).toContain("aria-invalid:border-danger");
     });
 
     it("should not have aria-invalid attribute by default", () => {

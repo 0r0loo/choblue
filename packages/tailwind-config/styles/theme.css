@@ -70,6 +70,7 @@
   /* ─── Semantic Colors ─── */
   --color-success: var(--color-success-500);
   --color-warning: var(--color-warning-500);
+  --color-danger: var(--color-danger-500);
   --color-error: var(--color-danger-500);
   --color-info: var(--color-info-500);
 
@@ -95,8 +96,7 @@
   --color-primary-foreground: white;
   --color-secondary: var(--color-neutral-100);
   --color-secondary-foreground: var(--color-neutral-900);
-  --color-destructive: var(--color-danger-500);
-  --color-destructive-foreground: white;
+  --color-danger-foreground: white;
   --color-accent: var(--color-neutral-100);
   --color-accent-foreground: var(--color-neutral-900);
   --color-card: white;

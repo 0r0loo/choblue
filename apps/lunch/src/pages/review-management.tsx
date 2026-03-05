@@ -75,7 +75,7 @@ export function ReviewManagementPage({
   if (fetchError) {
     return (
       <div className="flex min-h-screen items-center justify-center">
-        <p className="text-destructive">
+        <p className="text-danger">
           {getErrorMessage(fetchError, '데이터를 불러오는 중 오류가 발생했습니다.')}
         </p>
       </div>
@@ -131,7 +131,7 @@ export function ReviewManagementPage({
         </div>
 
         {actionError && (
-          <p className="text-sm text-destructive">
+          <p className="text-sm text-danger">
             {getErrorMessage(actionError, '오류가 발생했습니다.')}
           </p>
         )}
@@ -195,7 +195,7 @@ export function ReviewManagementPage({
                           review.memberId === currentMemberId) && (
                           <button
                             type="button"
-                            className="text-xs text-muted-foreground transition-colors duration-200 hover:text-destructive"
+                            className="text-xs text-muted-foreground transition-colors duration-200 hover:text-danger"
                             onClick={() => handleDelete(review.id)}
                           >
                             삭제

@@ -56,7 +56,7 @@ export function ProfilePage({ onNavigate }: ProfilePageProps) {
   if (fetchError || !member) {
     return (
       <div className="flex flex-1 items-center justify-center">
-        <p className="text-destructive">
+        <p className="text-danger">
           {fetchError
             ? getErrorMessage(fetchError, '데이터를 불러오는 중 오류가 발생했습니다.')
             : '데이터를 찾을 수 없습니다.'}
@@ -125,7 +125,7 @@ export function ProfilePage({ onNavigate }: ProfilePageProps) {
               }}
             />
             {validationError && (
-              <p className="text-sm text-destructive">{validationError}</p>
+              <p className="text-sm text-danger">{validationError}</p>
             )}
           </div>
 
@@ -138,7 +138,7 @@ export function ProfilePage({ onNavigate }: ProfilePageProps) {
           )}
 
           {updateMutation.error && (
-            <p className="text-sm text-destructive">
+            <p className="text-sm text-danger">
               {getErrorMessage(updateMutation.error, '닉네임 변경 중 오류가 발생했습니다.')}
             </p>
           )}
