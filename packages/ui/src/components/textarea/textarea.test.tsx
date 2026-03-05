@@ -11,7 +11,7 @@ describe("Textarea", () => {
     expect(textarea).toBeInTheDocument();
     expect(textarea.tagName).toBe("TEXTAREA");
     expect(textarea.className).toContain("border");
-    expect(textarea.className).toContain("bg-background");
+    expect(textarea.className).toContain("bg-white");
   });
 
   it("renders placeholder text", () => {
@@ -114,7 +114,7 @@ describe("Textarea", () => {
     render(<Textarea className="custom-class" />);
     const textarea = screen.getByRole("textbox");
     expect(textarea.className).toContain("custom-class");
-    expect(textarea.className).toContain("bg-background");
+    expect(textarea.className).toContain("bg-white");
   });
 
   it("passes additional HTML attributes", () => {

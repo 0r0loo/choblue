@@ -10,7 +10,7 @@ describe("Input", () => {
     const input = screen.getByRole("textbox");
     expect(input).toBeInTheDocument();
     expect(input.className).toContain("border");
-    expect(input.className).toContain("bg-background");
+    expect(input.className).toContain("bg-white");
   });
 
   it("has type text by default", () => {
@@ -96,7 +96,7 @@ describe("Input", () => {
     render(<Input className="custom-class" />);
     const input = screen.getByRole("textbox");
     expect(input.className).toContain("custom-class");
-    expect(input.className).toContain("bg-background");
+    expect(input.className).toContain("bg-white");
   });
 
   it("renders placeholder text", () => {
