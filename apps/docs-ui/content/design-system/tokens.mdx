@@ -1,0 +1,87 @@
+# 토큰 체계
+
+`@choblue/ui`는 3단계 토큰 구조를 사용합니다. 하드코딩된 색상값 대신 시맨틱 토큰을 사용하면 다크 모드 전환과 테마 변경이 자동으로 처리됩니다.
+
+## 토큰 구조
+
+```
+Palette (원시값) → Semantic (역할) → Component (컴포넌트 전용)
+```
+
+### 1단계: Palette 토큰 (원시값)
+
+색상 팔레트의 100~900 단계 값입니다. 직접 사용보다는 시맨틱 토큰의 기반으로 사용합니다.
+
+| 팔레트 | 범위 | 예시 |
+|--------|------|------|
+| `neutral` | 50~950 | `bg-neutral-100`, `text-neutral-700` |
+| `primary` | 100~900 | `bg-primary-500`, `text-primary-700` |
+| `success` | 100~900 | `bg-success-100`, `text-success-600` |
+| `info` | 100~900 | `bg-info-100`, `text-info-700` |
+| `warning` | 100~900 | `bg-warning-100`, `text-warning-700` |
+| `danger` | 100~900 | `bg-danger-100`, `text-danger-600` |
+
+### 2단계: Semantic 토큰 (역할 기반)
+
+UI의 역할에 따라 매핑되는 토큰입니다. 다크 모드에서 자동으로 전환됩니다.
+
+| 토큰 | 용도 | Light | Dark |
+|------|------|-------|------|
+| `background` | 페이지 배경 | white | neutral-950 |
+| `foreground` | 기본 텍스트 | neutral-900 | neutral-50 |
+| `surface` | 섹션 배경 | neutral-50 | neutral-900 |
+| `muted` | 보조 배경 | neutral-100 | neutral-800 |
+| `muted-foreground` | 보조 텍스트 | neutral-500 | neutral-400 |
+| `border` | 기본 보더 | neutral-200 | neutral-800 |
+| `input` | 입력 필드 보더 | neutral-300 | neutral-700 |
+| `ring` | 포커스 링 | primary-500 | primary-400 |
+| `overlay` | 모달 백드롭 | black/50 | black/50 |
+| `disabled` | 비활성 배경 | neutral-100 | neutral-800 |
+| `disabled-foreground` | 비활성 텍스트 | neutral-400 | neutral-600 |
+
+### 3단계: Component 토큰 (컴포넌트 전용)
+
+특정 컴포넌트를 위한 전용 토큰입니다.
+
+| 토큰 | 용도 |
+|------|------|
+| `primary` / `primary-foreground` | 주요 액션 (Button, Badge) |
+| `secondary` / `secondary-foreground` | 보조 액션 |
+| `danger` / `danger-foreground` | 위험/삭제 액션 |
+| `accent` / `accent-foreground` | 호버/강조 |
+| `card` / `card-foreground` | 카드 컨테이너 |
+| `popover` / `popover-foreground` | 팝오버/드롭다운 |
+
+#### 테이블 전용 토큰
+
+| 토큰 | Light 값 | Dark 값 | 용도 |
+|------|----------|---------|------|
+| `table-header` | neutral-100 | neutral-900 | 헤더 배경 |
+| `table-header-foreground` | neutral-700 | neutral-300 | 헤더 텍스트 |
+| `table-row-hover` | neutral-50 | neutral-900 | 행 hover |
+| `table-border` | neutral-200 | neutral-800 | 행 구분선 |
+| `table-header-border` | neutral-300 | neutral-700 | 헤더-본문 구분 |
+
+## 사용법
+
+```tsx
+{/* Semantic 토큰 사용 (권장) */}
+<div className="bg-background text-foreground border border-border">
+  기본 레이아웃
+</div>
+
+{/* Component 토큰 사용 */}
+<div className="bg-card text-card-foreground">카드 영역</div>
+<div className="bg-primary text-primary-foreground">주요 액션</div>
+
+{/* Palette 직접 참조 (뱃지, 상태 표시 등) */}
+<span className="bg-success-100 text-success-600">완료</span>
+<span className="bg-danger-100 text-danger-600">오류</span>
+```
+
+## 토큰 선택 가이드
+
+1. **컴포넌트 토큰이 있으면** 그것을 사용 (예: `bg-card`, `bg-primary`)
+2. **없으면 시맨틱 토큰** 사용 (예: `bg-background`, `border-border`)
+3. **상태 표시(뱃지 등)에만** 팔레트 직접 참조 (예: `bg-success-100 text-success-600`)
+4. **하드코딩 색상은 절대 사용하지 않음** (`bg-[#8333FF]` 금지)

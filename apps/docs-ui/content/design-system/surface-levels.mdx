@@ -1,0 +1,77 @@
+# Surface 계층 (Elevation)
+
+UI 요소가 화면에서 어느 깊이에 위치하는지를 나타내는 체계입니다.
+컴포넌트를 만들 때 **어느 레벨인지 먼저 판단**하고, 해당 레벨의 토큰을 적용합니다.
+
+## 레벨 정의
+
+| Level | 역할 | 배경 토큰 | 보더 | 그림자 | 라운딩 |
+|-------|------|-----------|------|--------|--------|
+| **L0** | 페이지 배경 | `bg-background` | — | — | — |
+| **L1** | 컨테이너 | `bg-card` | `border-border` | `shadow-sm` | `rounded-lg` |
+| **L2** | 오버레이 | `bg-card` | `border-border` | `shadow-xl` | `rounded-xl` |
+| **L3** | 내부 강조 | 전용 토큰 | — | — | — |
+
+### L0 — 페이지 배경
+
+가장 아래 깔리는 레이어입니다. 앱의 기본 배경으로, 별도 스타일링 없이 `bg-background`만 적용합니다.
+
+### L1 — 컨테이너
+
+페이지 위에 놓이는 카드, 테이블, 패널 등입니다. 가벼운 그림자(`shadow-sm`)와 보더로 배경과 구분합니다.
+
+**해당 컴포넌트**: Card, DataTable 컨테이너, Panel
+
+```tsx
+{/* L1 패턴 */}
+<div className="bg-card border border-border shadow-sm rounded-lg">
+  ...
+</div>
+```
+
+### L2 — 오버레이
+
+L1 위에 떠오르는 모달, 팝오버, 토스트 등입니다. 강한 그림자(`shadow-xl`)로 뒤의 콘텐츠와 분리감을 줍니다.
+
+**해당 컴포넌트**: Dialog, Toast, Select Dropdown, Popover
+
+```tsx
+{/* L2 패턴 */}
+<div className="bg-card border border-border shadow-xl rounded-xl">
+  ...
+</div>
+```
+
+### L3 — 내부 강조
+
+L1 컨테이너 내부에서 색으로 구분하는 영역입니다. 그림자 없이 배경색만으로 구분합니다.
+
+**해당 컴포넌트**: DataTable 헤더, 테이블 행 hover, 스트라이프 패턴
+
+```tsx
+{/* L3 패턴 — 테이블 헤더 */}
+<thead className="bg-table-header text-table-header-foreground">
+  ...
+</thead>
+```
+
+## 컴포넌트별 토큰 매핑
+
+| 컴포넌트 | Level | 배경 | 보더 | 그림자 | 라운딩 | 비고 |
+|----------|-------|------|------|--------|--------|------|
+| Card | L1 | `bg-card` | `border-border` | `shadow-sm` | `rounded-lg` | |
+| DataTable 컨테이너 | L1 | — | `border-table-border` | `shadow-sm` | `rounded-lg` | |
+| DataTable 헤더 | L3 | `bg-table-header` | `border-table-header-border` | — | — | `text-table-header-foreground` |
+| DataTable 행 hover | L3 | `hover:bg-table-row-hover` | — | — | — | |
+| Dialog | L2 | `bg-card` | `border-border` | `shadow-xl` | `rounded-xl` | backdrop: `bg-black/50` |
+| Toast | L2 | `bg-card` | `border-border` | `shadow-lg` | `rounded-lg` | |
+| Select Dropdown | L2 | `bg-white dark:bg-neutral-950` | `border-border` | `shadow-md` | `rounded-md` | |
+| Input / Textarea | — | `bg-white dark:bg-neutral-950` | `border-input` | `shadow-sm` | `rounded-md` | |
+| Button | — | variant별 | — | `shadow-sm` | `rounded-md` | |
+
+## 새 컴포넌트 추가 시
+
+1. 해당 컴포넌트의 Surface 레벨(L0~L3)을 판단합니다
+2. 위 매핑 표에서 **같은 레벨의 유사 컴포넌트**를 찾습니다
+3. 동일한 그림자, 라운딩, 보더 토큰을 적용합니다
+4. 다크 모드에서 시맨틱 토큰이 정상 전환되는지 확인합니다
