@@ -8,6 +8,7 @@ import {
 } from 'typeorm';
 import { Member } from './member.entity';
 import { LunchPost } from './lunch-post.entity';
+import { Restaurant } from './restaurant.entity';
 
 @Entity()
 export class Workspace {
@@ -40,4 +41,7 @@ export class Workspace {
 
   @OneToMany(() => LunchPost, (lunchPost) => lunchPost.workspace)
   lunchPosts!: LunchPost[];
+
+  @OneToMany(() => Restaurant, (restaurant) => restaurant.workspace)
+  restaurants!: Restaurant[];
 }

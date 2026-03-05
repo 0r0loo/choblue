@@ -63,7 +63,15 @@ export class WorkspaceService {
 
   async findByInviteCode(
     code: string,
-  ): Promise<{ id: string; name: string; slug: string; description: string | null; memberCount: number }> {
+    cookieToken?: string,
+  ): Promise<{
+    id: string;
+    name: string;
+    slug: string;
+    description: string | null;
+    memberCount: number;
+    currentMember?: { isMember: true; slug: string };
+  }> {
     const workspace = await this.workspaceRepository.findOne({
       where: { inviteCode: code },
     });
@@ -76,19 +84,43 @@ export class WorkspaceService {
       where: { workspaceId: workspace.id },
     });
 
-    return {
+    const result: {
+      id: string;
+      name: string;
+      slug: string;
+      description: string | null;
+      memberCount: number;
+      currentMember?: { isMember: true; slug: string };
+    } = {
       id: workspace.id,
       name: workspace.name,
       slug: workspace.slug,
       description: workspace.description,
       memberCount,
     };
+
+    if (cookieToken) {
+      const existingMember = await this.memberRepository.findOne({
+        where: { cookieToken, workspaceId: workspace.id },
+      });
+      if (existingMember) {
+        result.currentMember = { isMember: true, slug: workspace.slug };
+      }
+    }
+
+    return result;
   }
 
   async join(
     workspaceId: string,
     dto: JoinWorkspaceDto,
-  ): Promise<{ member: Member; cookieToken: string; workspaceSlug: string }> {
+    cookieToken?: string,
+  ): Promise<{
+    member: Member;
+    cookieToken: string;
+    workspaceSlug: string;
+    alreadyMember: boolean;
+  }> {
     const workspace = await this.workspaceRepository.findOne({
       where: { id: workspaceId },
     });
@@ -101,10 +133,18 @@ export class WorkspaceService {
       throw new BadRequestException('Invalid invite code');
     }
 
-    if (dto.nickname.length < 2 || dto.nickname.length > 10) {
-      throw new BadRequestException(
-        'Nickname must be between 2 and 10 characters',
-      );
+    if (cookieToken) {
+      const existingMember = await this.memberRepository.findOne({
+        where: { cookieToken, workspaceId },
+      });
+      if (existingMember) {
+        return {
+          member: existingMember,
+          cookieToken: existingMember.cookieToken,
+          workspaceSlug: workspace.slug,
+          alreadyMember: true,
+        };
+      }
     }
 
     const memberCount = await this.memberRepository.count({
@@ -115,16 +155,21 @@ export class WorkspaceService {
       throw new BadRequestException('Workspace has reached maximum capacity');
     }
 
-    const cookieToken = randomUUID();
+    const newCookieToken = randomUUID();
     const member = this.memberRepository.create({
       nickname: dto.nickname,
-      cookieToken,
+      cookieToken: newCookieToken,
       role: MemberRole.MEMBER,
       workspaceId,
     });
     const savedMember = await this.memberRepository.save(member);
 
-    return { member: savedMember, cookieToken, workspaceSlug: workspace.slug };
+    return {
+      member: savedMember,
+      cookieToken: newCookieToken,
+      workspaceSlug: workspace.slug,
+      alreadyMember: false,
+    };
   }
 
   async findOne(workspaceId: string, member: Member) {

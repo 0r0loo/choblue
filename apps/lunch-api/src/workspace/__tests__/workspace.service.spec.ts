@@ -27,6 +27,7 @@ describe('WorkspaceService', () => {
     create: ReturnType<typeof vi.fn>;
     save: ReturnType<typeof vi.fn>;
     find: ReturnType<typeof vi.fn>;
+    findOne: ReturnType<typeof vi.fn>;
     count: ReturnType<typeof vi.fn>;
   };
   let mockManager: {
@@ -48,6 +49,7 @@ describe('WorkspaceService', () => {
     updatedAt: new Date('2025-01-01'),
     members: [],
     lunchPosts: [],
+    restaurants: [],
   };
 
   const mockAdminMember: Member = {
@@ -89,6 +91,7 @@ describe('WorkspaceService', () => {
       create: vi.fn(),
       save: vi.fn(),
       find: vi.fn(),
+      findOne: vi.fn(),
       count: vi.fn(),
     };
     mockManager = {
@@ -337,6 +340,54 @@ describe('WorkspaceService', () => {
         }),
       );
     });
+
+    it('should return currentMember when cookieToken matches a workspace member', async () => {
+      // Arrange
+      workspaceRepository.findOne.mockResolvedValue(mockWorkspace);
+      memberRepository.count.mockResolvedValue(5);
+      memberRepository.findOne.mockResolvedValue(mockAdminMember);
+
+      // Act
+      const result = await service.findByInviteCode(
+        'invite-code-uuid-v4',
+        'admin-cookie-token',
+      );
+
+      // Assert
+      expect(result.currentMember).toEqual({
+        isMember: true,
+        slug: mockWorkspace.slug,
+      });
+    });
+
+    it('should not return currentMember when cookieToken does not match', async () => {
+      // Arrange
+      workspaceRepository.findOne.mockResolvedValue(mockWorkspace);
+      memberRepository.count.mockResolvedValue(5);
+      memberRepository.findOne.mockResolvedValue(null);
+
+      // Act
+      const result = await service.findByInviteCode(
+        'invite-code-uuid-v4',
+        'unknown-cookie-token',
+      );
+
+      // Assert
+      expect(result.currentMember).toBeUndefined();
+    });
+
+    it('should not return currentMember when no cookieToken is provided', async () => {
+      // Arrange
+      workspaceRepository.findOne.mockResolvedValue(mockWorkspace);
+      memberRepository.count.mockResolvedValue(5);
+
+      // Act
+      const result = await service.findByInviteCode('invite-code-uuid-v4');
+
+      // Assert
+      expect(result.currentMember).toBeUndefined();
+      expect(memberRepository.findOne).not.toHaveBeenCalled();
+    });
   });
 
   describe('join', () => {
@@ -425,36 +476,6 @@ describe('WorkspaceService', () => {
       ).rejects.toThrow(NotFoundException);
     });
 
-    it('should throw BadRequestException when nickname is shorter than 2 characters', async () => {
-      // Arrange
-      workspaceRepository.findOne.mockResolvedValue(mockWorkspace);
-      memberRepository.count.mockResolvedValue(5);
-      const shortNicknameDto: JoinWorkspaceDto = {
-        nickname: 'A',
-        inviteCode: 'invite-code-uuid-v4',
-      };
-
-      // Act & Assert
-      await expect(
-        service.join('workspace-uuid-1234', shortNicknameDto),
-      ).rejects.toThrow(BadRequestException);
-    });
-
-    it('should throw BadRequestException when nickname is longer than 10 characters', async () => {
-      // Arrange
-      workspaceRepository.findOne.mockResolvedValue(mockWorkspace);
-      memberRepository.count.mockResolvedValue(5);
-      const longNicknameDto: JoinWorkspaceDto = {
-        nickname: 'A'.repeat(11),
-        inviteCode: 'invite-code-uuid-v4',
-      };
-
-      // Act & Assert
-      await expect(
-        service.join('workspace-uuid-1234', longNicknameDto),
-      ).rejects.toThrow(BadRequestException);
-    });
-
     it('should call memberRepository.save with the new member', async () => {
       // Arrange
       workspaceRepository.findOne.mockResolvedValue(mockWorkspace);
@@ -467,6 +488,60 @@ describe('WorkspaceService', () => {
 
       // Assert
       expect(memberRepository.save).toHaveBeenCalled();
+    });
+
+    it('should return alreadyMember true when cookieToken matches existing member', async () => {
+      // Arrange
+      workspaceRepository.findOne.mockResolvedValue(mockWorkspace);
+      memberRepository.findOne.mockResolvedValue(mockAdminMember);
+
+      // Act
+      const result = await service.join(
+        'workspace-uuid-1234',
+        joinDto,
+        'admin-cookie-token',
+      );
+
+      // Assert
+      expect(result.alreadyMember).toBe(true);
+      expect(result.member).toBe(mockAdminMember);
+      expect(result.cookieToken).toBe(mockAdminMember.cookieToken);
+      expect(memberRepository.create).not.toHaveBeenCalled();
+      expect(memberRepository.save).not.toHaveBeenCalled();
+    });
+
+    it('should create new member when cookieToken does not match this workspace', async () => {
+      // Arrange
+      workspaceRepository.findOne.mockResolvedValue(mockWorkspace);
+      memberRepository.findOne.mockResolvedValue(null);
+      memberRepository.count.mockResolvedValue(5);
+      memberRepository.create.mockReturnValue(mockRegularMember);
+      memberRepository.save.mockResolvedValue(mockRegularMember);
+
+      // Act
+      const result = await service.join(
+        'workspace-uuid-1234',
+        joinDto,
+        'other-workspace-cookie-token',
+      );
+
+      // Assert
+      expect(result.alreadyMember).toBe(false);
+      expect(memberRepository.save).toHaveBeenCalled();
+    });
+
+    it('should return alreadyMember false when no cookieToken is provided', async () => {
+      // Arrange
+      workspaceRepository.findOne.mockResolvedValue(mockWorkspace);
+      memberRepository.count.mockResolvedValue(5);
+      memberRepository.create.mockReturnValue(mockRegularMember);
+      memberRepository.save.mockResolvedValue(mockRegularMember);
+
+      // Act
+      const result = await service.join('workspace-uuid-1234', joinDto);
+
+      // Assert
+      expect(result.alreadyMember).toBe(false);
     });
   });
 

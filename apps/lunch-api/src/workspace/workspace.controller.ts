@@ -7,13 +7,13 @@ import {
   Delete,
   Param,
   Body,
+  Req,
   Res,
   UseGuards,
   HttpCode,
   HttpStatus,
-  ForbiddenException,
 } from '@nestjs/common';
-import { Response } from 'express';
+import { Request, Response } from 'express';
 import { WorkspaceService } from './workspace.service';
 import { CreateWorkspaceDto } from './dto/create-workspace.dto';
 import { UpdateWorkspaceDto } from './dto/update-workspace.dto';
@@ -45,23 +45,32 @@ export class WorkspaceController {
   }
 
   @Get('by-invite/:code')
-  async findByInviteCode(@Param('code') code: string) {
-    return this.workspaceService.findByInviteCode(code);
+  async findByInviteCode(
+    @Param('code') code: string,
+    @Req() req: Request,
+  ) {
+    const cookieToken: string | undefined = req.cookies?.[AUTH_COOKIE_NAME];
+    return this.workspaceService.findByInviteCode(code, cookieToken);
   }
 
   @Post(':id/members')
   async join(
     @Param('id') id: string,
     @Body() dto: JoinWorkspaceDto,
+    @Req() req: Request,
     @Res({ passthrough: true }) res: Response,
   ) {
-    const result = await this.workspaceService.join(id, dto);
+    const cookieToken: string | undefined = req.cookies?.[AUTH_COOKIE_NAME];
+    const result = await this.workspaceService.join(id, dto, cookieToken);
 
-    res.cookie(AUTH_COOKIE_NAME, result.cookieToken, COOKIE_OPTIONS);
+    if (!result.alreadyMember) {
+      res.cookie(AUTH_COOKIE_NAME, result.cookieToken, COOKIE_OPTIONS);
+    }
 
     return {
       memberId: result.member.id,
       workspaceSlug: result.workspaceSlug,
+      alreadyMember: result.alreadyMember,
     };
   }
 
@@ -77,60 +86,36 @@ export class WorkspaceController {
   @UseGuards(CookieGuard)
   @Patch(':id')
   async update(
-    @Param('id') id: string,
     @Body() dto: UpdateWorkspaceDto,
     @CurrentMember() member: Member,
   ) {
-    if (id !== member.workspaceId) {
-      throw new ForbiddenException(
-        'Cannot update a workspace you do not belong to',
-      );
-    }
-    return this.workspaceService.update(id, dto, member);
+    return this.workspaceService.update(member.workspaceId, dto, member);
   }
 
   @UseGuards(CookieGuard)
   @Post(':id/regenerate-invite')
   async regenerateInvite(
-    @Param('id') id: string,
     @CurrentMember() member: Member,
   ) {
-    if (id !== member.workspaceId) {
-      throw new ForbiddenException(
-        'Cannot regenerate invite for a workspace you do not belong to',
-      );
-    }
-    return this.workspaceService.regenerateInviteCode(id, member);
+    return this.workspaceService.regenerateInviteCode(member.workspaceId, member);
   }
 
   @UseGuards(CookieGuard)
   @Delete(':id/members/me')
   @HttpCode(HttpStatus.NO_CONTENT)
   async leaveWorkspace(
-    @Param('id') id: string,
     @CurrentMember() member: Member,
     @Res({ passthrough: true }) res: Response,
   ) {
-    if (id !== member.workspaceId) {
-      throw new ForbiddenException(
-        'Cannot leave a workspace you do not belong to',
-      );
-    }
-    await this.workspaceService.leaveWorkspace(id, member);
+    await this.workspaceService.leaveWorkspace(member.workspaceId, member);
     res.clearCookie(AUTH_COOKIE_NAME);
   }
 
   @UseGuards(CookieGuard)
   @Get(':id/members')
   async findMembers(
-    @Param('id') id: string,
     @CurrentMember() member: Member,
   ) {
-    if (id !== member.workspaceId) {
-      throw new ForbiddenException(
-        'Cannot view members of a workspace you do not belong to',
-      );
-    }
-    return this.workspaceService.findMembers(id);
+    return this.workspaceService.findMembers(member.workspaceId);
   }
 }

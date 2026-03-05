@@ -1,6 +1,5 @@
 import 'reflect-metadata';
 import { describe, it, expect, beforeEach, vi } from 'vitest';
-import { ForbiddenException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { WorkspaceController } from '../workspace.controller';
 import { WorkspaceService } from '../workspace.service';
@@ -34,6 +33,7 @@ describe('WorkspaceController', () => {
     updatedAt: new Date('2025-01-01'),
     members: [],
     lunchPosts: [],
+    restaurants: [],
   };
 
   const mockAdminMember: Member = {
@@ -68,6 +68,12 @@ describe('WorkspaceController', () => {
     return {
       cookie: vi.fn(),
     } as unknown as import('express').Response;
+  }
+
+  function createMockRequest(cookieToken?: string) {
+    return {
+      cookies: cookieToken ? { [AUTH_COOKIE_NAME]: cookieToken } : {},
+    } as unknown as import('express').Request;
   }
 
   beforeEach(async () => {
@@ -165,9 +171,10 @@ describe('WorkspaceController', () => {
   });
 
   describe('GET /workspaces/by-invite/:code (findByInviteCode)', () => {
-    it('should call workspaceService.findByInviteCode with the code', async () => {
+    it('should call workspaceService.findByInviteCode with code and cookieToken', async () => {
       // Arrange
       const inviteCode = 'invite-code-uuid-v4';
+      const req = createMockRequest('some-cookie-token');
       workspaceService.findByInviteCode.mockResolvedValue({
         name: 'Engineering Team',
         description: null,
@@ -175,16 +182,37 @@ describe('WorkspaceController', () => {
       });
 
       // Act
-      await controller.findByInviteCode(inviteCode);
+      await controller.findByInviteCode(inviteCode, req);
 
       // Assert
       expect(workspaceService.findByInviteCode).toHaveBeenCalledWith(
         inviteCode,
+        'some-cookie-token',
+      );
+    });
+
+    it('should pass undefined cookieToken when no cookie present', async () => {
+      // Arrange
+      const req = createMockRequest();
+      workspaceService.findByInviteCode.mockResolvedValue({
+        name: 'Engineering Team',
+        description: null,
+        memberCount: 5,
+      });
+
+      // Act
+      await controller.findByInviteCode('invite-code-uuid-v4', req);
+
+      // Assert
+      expect(workspaceService.findByInviteCode).toHaveBeenCalledWith(
+        'invite-code-uuid-v4',
+        undefined,
       );
     });
 
     it('should return workspace name, description, and memberCount', async () => {
       // Arrange
+      const req = createMockRequest();
       const expectedResult = {
         name: 'Engineering Team',
         description: null,
@@ -193,7 +221,7 @@ describe('WorkspaceController', () => {
       workspaceService.findByInviteCode.mockResolvedValue(expectedResult);
 
       // Act
-      const result = await controller.findByInviteCode('invite-code-uuid-v4');
+      const result = await controller.findByInviteCode('invite-code-uuid-v4', req);
 
       // Assert
       expect(result).toEqual(expectedResult);
@@ -206,56 +234,66 @@ describe('WorkspaceController', () => {
       inviteCode: 'invite-code-uuid-v4',
     };
 
-    it('should call workspaceService.join with workspace id and dto', async () => {
+    it('should call workspaceService.join with workspace id, dto, and cookieToken', async () => {
       // Arrange
-      const res = createMockResponse();
-      workspaceService.join.mockResolvedValue({
-        member: mockRegularMember,
-        cookieToken: 'regular-cookie-token',
-      });
-
-      // Act
-      await controller.join('workspace-uuid-1234', joinDto, res);
-
-      // Assert
-      expect(workspaceService.join).toHaveBeenCalledWith(
-        'workspace-uuid-1234',
-        joinDto,
-      );
-    });
-
-    it('should return memberId and workspaceSlug', async () => {
-      // Arrange
+      const req = createMockRequest('some-cookie');
       const res = createMockResponse();
       workspaceService.join.mockResolvedValue({
         member: mockRegularMember,
         cookieToken: 'regular-cookie-token',
         workspaceSlug: 'engineering-team-a1b2',
+        alreadyMember: false,
+      });
+
+      // Act
+      await controller.join('workspace-uuid-1234', joinDto, req, res);
+
+      // Assert
+      expect(workspaceService.join).toHaveBeenCalledWith(
+        'workspace-uuid-1234',
+        joinDto,
+        'some-cookie',
+      );
+    });
+
+    it('should return memberId, workspaceSlug, and alreadyMember', async () => {
+      // Arrange
+      const req = createMockRequest();
+      const res = createMockResponse();
+      workspaceService.join.mockResolvedValue({
+        member: mockRegularMember,
+        cookieToken: 'regular-cookie-token',
+        workspaceSlug: 'engineering-team-a1b2',
+        alreadyMember: false,
       });
 
       // Act
       const result = await controller.join(
         'workspace-uuid-1234',
         joinDto,
+        req,
         res,
       );
 
       // Assert
       expect(result).toHaveProperty('memberId', mockRegularMember.id);
       expect(result).toHaveProperty('workspaceSlug', 'engineering-team-a1b2');
+      expect(result).toHaveProperty('alreadyMember', false);
     });
 
-    it('should set lunch_token cookie on the response', async () => {
+    it('should set lunch_token cookie for new members', async () => {
       // Arrange
+      const req = createMockRequest();
       const res = createMockResponse();
       workspaceService.join.mockResolvedValue({
         member: mockRegularMember,
         cookieToken: 'regular-cookie-token',
         workspaceSlug: 'engineering-team-a1b2',
+        alreadyMember: false,
       });
 
       // Act
-      await controller.join('workspace-uuid-1234', joinDto, res);
+      await controller.join('workspace-uuid-1234', joinDto, req, res);
 
       // Assert
       expect(res.cookie).toHaveBeenCalledWith(
@@ -265,6 +303,31 @@ describe('WorkspaceController', () => {
           httpOnly: true,
         }),
       );
+    });
+
+    it('should NOT set cookie when alreadyMember is true', async () => {
+      // Arrange
+      const req = createMockRequest('admin-cookie-token');
+      const res = createMockResponse();
+      workspaceService.join.mockResolvedValue({
+        member: mockAdminMember,
+        cookieToken: 'admin-cookie-token',
+        workspaceSlug: 'engineering-team-a1b2',
+        alreadyMember: true,
+      });
+
+      // Act
+      const result = await controller.join(
+        'workspace-uuid-1234',
+        joinDto,
+        req,
+        res,
+      );
+
+      // Assert
+      expect(res.cookie).not.toHaveBeenCalled();
+      expect(result.alreadyMember).toBe(true);
+      expect(result.workspaceSlug).toBe('engineering-team-a1b2');
     });
   });
 
@@ -320,7 +383,7 @@ describe('WorkspaceController', () => {
       description: 'Updated description',
     };
 
-    it('should call workspaceService.update with id, dto, and member', async () => {
+    it('should call workspaceService.update with member.workspaceId, dto, and member', async () => {
       // Arrange
       workspaceService.update.mockResolvedValue({
         ...mockWorkspace,
@@ -328,15 +391,11 @@ describe('WorkspaceController', () => {
       });
 
       // Act
-      await controller.update(
-        'workspace-uuid-1234',
-        updateDto,
-        mockAdminMember,
-      );
+      await controller.update(updateDto, mockAdminMember);
 
       // Assert
       expect(workspaceService.update).toHaveBeenCalledWith(
-        'workspace-uuid-1234',
+        mockAdminMember.workspaceId,
         updateDto,
         mockAdminMember,
       );
@@ -348,21 +407,10 @@ describe('WorkspaceController', () => {
       workspaceService.update.mockResolvedValue(updatedWorkspace);
 
       // Act
-      const result = await controller.update(
-        'workspace-uuid-1234',
-        updateDto,
-        mockAdminMember,
-      );
+      const result = await controller.update(updateDto, mockAdminMember);
 
       // Assert
       expect(result.name).toBe('Updated Team');
-    });
-
-    it('should throw ForbiddenException when workspace id does not match member', async () => {
-      // Act & Assert
-      await expect(
-        controller.update('different-workspace-id', updateDto, mockAdminMember),
-      ).rejects.toThrow(ForbiddenException);
     });
 
     it('should have CookieGuard applied', () => {
@@ -379,7 +427,7 @@ describe('WorkspaceController', () => {
   });
 
   describe('GET /workspaces/:id/members (findMembers)', () => {
-    it('should call workspaceService.findMembers with the workspace id', async () => {
+    it('should call workspaceService.findMembers with member.workspaceId', async () => {
       // Arrange
       workspaceService.findMembers.mockResolvedValue([
         mockAdminMember,
@@ -387,11 +435,11 @@ describe('WorkspaceController', () => {
       ]);
 
       // Act
-      await controller.findMembers('workspace-uuid-1234', mockAdminMember);
+      await controller.findMembers(mockAdminMember);
 
       // Assert
       expect(workspaceService.findMembers).toHaveBeenCalledWith(
-        'workspace-uuid-1234',
+        mockAdminMember.workspaceId,
       );
     });
 
@@ -401,20 +449,10 @@ describe('WorkspaceController', () => {
       workspaceService.findMembers.mockResolvedValue(members);
 
       // Act
-      const result = await controller.findMembers(
-        'workspace-uuid-1234',
-        mockAdminMember,
-      );
+      const result = await controller.findMembers(mockAdminMember);
 
       // Assert
       expect(result).toHaveLength(2);
-    });
-
-    it('should throw ForbiddenException when workspace id does not match member', async () => {
-      // Act & Assert
-      await expect(
-        controller.findMembers('different-workspace-id', mockAdminMember),
-      ).rejects.toThrow(ForbiddenException);
     });
 
     it('should have CookieGuard applied', () => {
