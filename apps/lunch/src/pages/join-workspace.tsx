@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useQuery, useMutation } from '@tanstack/react-query';
 import { Button } from '@choblue/ui/button';
 import { Input } from '@choblue/ui/input';
@@ -18,6 +18,12 @@ export function JoinWorkspacePage({ inviteCode, onNavigate }: JoinWorkspacePageP
 
   const [nickname, setNickname] = useState('');
   const [nicknameError, setNicknameError] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (workspace?.currentMember?.isMember) {
+      onNavigate(`/${workspace.currentMember.slug}`);
+    }
+  }, [workspace, onNavigate]);
 
   const joinMutation = useMutation({
     mutationFn: (payload: { nickname: string; inviteCode: string }) =>
@@ -45,8 +51,12 @@ export function JoinWorkspacePage({ inviteCode, onNavigate }: JoinWorkspacePageP
     );
   }
 
-  if (!workspace) {
-    return null;
+  if (!workspace || workspace.currentMember?.isMember) {
+    return (
+      <div className="flex min-h-screen items-center justify-center p-4">
+        <p className="text-muted-foreground">이동 중...</p>
+      </div>
+    );
   }
 
   function handleSubmit(e: React.FormEvent) {

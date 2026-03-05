@@ -44,14 +44,18 @@ function RouteComponent() {
     <div className="flex min-h-dvh flex-col bg-background">
       <header className="sticky top-0 z-[200] border-b border-black/5 bg-background/80 backdrop-blur-xl dark:border-white/10">
         <div className="mx-auto flex max-w-md items-center justify-between px-4 py-3">
-          <div className="flex min-w-0 items-center gap-2">
+          <button
+            type="button"
+            onClick={() => navigate({ to: `/${workspaceSlug}` })}
+            className="flex min-w-0 items-center gap-2 transition-opacity duration-200 hover:opacity-70 active:scale-[0.98]"
+          >
             <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-sm font-bold text-primary">
               {(workspace?.name ?? workspaceSlug).charAt(0).toUpperCase()}
             </div>
             <h1 className="truncate text-base font-semibold tracking-tight">
               {workspace?.name ?? workspaceSlug}
             </h1>
-          </div>
+          </button>
           <button
             type="button"
             onClick={() => setIsDrawerOpen(true)}

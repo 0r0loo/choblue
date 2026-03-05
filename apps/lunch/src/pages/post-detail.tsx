@@ -2,9 +2,12 @@ import { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { Button } from '@choblue/ui/button';
 import { Card, CardHeader, CardTitle, CardContent } from '@choblue/ui/card';
+import { StarRating } from '@choblue/ui/star-rating';
 import { api, getErrorMessage } from '@/lib/api';
 import { postQueries, reviewQueries } from '@/lib/queries';
 import { postKeys, reviewKeys } from '@/lib/query-keys';
+import { ReviewForm } from '@/components/review-form';
+import type { ReviewFormValues } from '@/components/review-form';
 import type { Review } from '@/types';
 
 export interface PostDetailPageProps {
@@ -55,19 +58,13 @@ export function PostDetailPage({ postId, currentMemberId, onNavigate }: PostDeta
     enabled: post?.status === 'closed',
   });
 
-  const [reviewRating, setReviewRating] = useState(5);
-  const [reviewContent, setReviewContent] = useState('');
   const [editingReviewId, setEditingReviewId] = useState<string | null>(null);
-  const [editRating, setEditRating] = useState(5);
-  const [editContent, setEditContent] = useState('');
 
   const createReviewMutation = useMutation({
-    mutationFn: (payload: { rating: number; content?: string }) =>
+    mutationFn: (payload: { tasteRating: number; portionRating: number; restaurant: string; menu: string; content?: string }) =>
       api.post<Review>(`/posts/${postId}/reviews`, payload),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: reviewKeys.list(postId) });
-      setReviewRating(5);
-      setReviewContent('');
     },
   });
 
@@ -77,7 +74,7 @@ export function PostDetailPage({ postId, currentMemberId, onNavigate }: PostDeta
       payload,
     }: {
       reviewId: string;
-      payload: { rating?: number; content?: string };
+      payload: { tasteRating?: number; portionRating?: number; restaurant?: string; menu?: string; content?: string };
     }) => api.patch<Review>(`/reviews/${reviewId}`, payload),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: reviewKeys.list(postId) });
@@ -132,6 +129,29 @@ export function PostDetailPage({ postId, currentMemberId, onNavigate }: PostDeta
 
   function handleEdit() {
     onNavigate(`/posts/${postId}/edit`);
+  }
+
+  function handleCreateReview(data: ReviewFormValues) {
+    createReviewMutation.mutate({
+      tasteRating: data.tasteRating,
+      portionRating: data.portionRating,
+      restaurant: data.restaurant,
+      menu: data.menu,
+      content: data.content || undefined,
+    });
+  }
+
+  function handleUpdateReview(reviewId: string, data: ReviewFormValues) {
+    updateReviewMutation.mutate({
+      reviewId,
+      payload: {
+        tasteRating: data.tasteRating,
+        portionRating: data.portionRating,
+        restaurant: data.restaurant,
+        menu: data.menu,
+        content: data.content || undefined,
+      },
+    });
   }
 
   return (
@@ -220,83 +240,39 @@ export function PostDetailPage({ postId, currentMemberId, onNavigate }: PostDeta
             {reviews && reviews.length > 0 ? (
               <ul className="space-y-3">
                 {reviews.map((review) => (
-                  <Card key={review.id} className="overflow-hidden">
-                    <CardContent className="space-y-2 pt-4 pb-4">
+                  <Card key={review.id}>
+                    <CardContent className="space-y-2 pt-6">
                     {editingReviewId === review.id ? (
-                      <form
-                        className="space-y-2"
-                        onSubmit={(e) => {
-                          e.preventDefault();
-                          updateReviewMutation.mutate({
-                            reviewId: review.id,
-                            payload: {
-                              rating: editRating,
-                              content: editContent || undefined,
-                            },
-                          });
+                      <ReviewForm
+                        mode="edit"
+                        initialValues={{
+                          tasteRating: review.tasteRating,
+                          portionRating: review.portionRating,
+                          restaurant: review.restaurant,
+                          menu: review.menu,
+                          content: review.content ?? '',
                         }}
-                      >
-                        <div className="flex gap-1">
-                          {[1, 2, 3, 4, 5].map((star) => (
-                            <button
-                              key={star}
-                              type="button"
-                              className={`text-xl ${
-                                star <= editRating
-                                  ? 'text-yellow-500'
-                                  : 'text-gray-300'
-                              }`}
-                              onClick={() => setEditRating(star)}
-                            >
-                              ★
-                            </button>
-                          ))}
-                        </div>
-                        <input
-                          type="text"
-                          maxLength={200}
-                          placeholder="한줄평을 남겨주세요 (선택)"
-                          className="w-full rounded-md border px-3 py-2 text-sm"
-                          value={editContent}
-                          onChange={(e) => setEditContent(e.target.value)}
-                        />
-                        {updateReviewMutation.error && (
-                          <p className="text-sm text-destructive">
-                            {getErrorMessage(
-                              updateReviewMutation.error,
-                              '리뷰 수정 중 오류가 발생했습니다.',
-                            )}
-                          </p>
-                        )}
-                        <div className="flex gap-2">
-                          <Button
-                            type="submit"
-                            size="sm"
-                            disabled={updateReviewMutation.isPending}
-                          >
-                            {updateReviewMutation.isPending
-                              ? '수정 중...'
-                              : '저장'}
-                          </Button>
-                          <Button
-                            type="button"
-                            variant="outline"
-                            size="sm"
-                            onClick={() => setEditingReviewId(null)}
-                          >
-                            취소
-                          </Button>
-                        </div>
-                      </form>
+                        onSubmit={(data) => handleUpdateReview(review.id, data)}
+                        onCancel={() => setEditingReviewId(null)}
+                        isPending={updateReviewMutation.isPending}
+                        error={updateReviewMutation.error}
+                      />
                     ) : (
                       <>
                         <div className="flex items-center justify-between">
                           <span className="text-sm font-medium">
                             {review.member.nickname}
                           </span>
-                          <span className="text-sm text-yellow-500">
-                            {'★'.repeat(review.rating)}
-                            {'☆'.repeat(5 - review.rating)}
+                          <span className="text-xs text-muted-foreground">
+                            {review.restaurant} · {review.menu}
+                          </span>
+                        </div>
+                        <div className="flex gap-4 text-sm">
+                          <span className="flex items-center gap-1">
+                            맛 <StarRating value={review.tasteRating} readOnly size="sm" />
+                          </span>
+                          <span className="flex items-center gap-1">
+                            양 <StarRating value={review.portionRating} readOnly size="sm" />
                           </span>
                         </div>
                         {review.content && (
@@ -305,21 +281,17 @@ export function PostDetailPage({ postId, currentMemberId, onNavigate }: PostDeta
                           </p>
                         )}
                         {review.memberId === currentMemberId && (
-                          <div className="flex gap-2">
+                          <div className="flex gap-3 pt-1">
                             <button
                               type="button"
-                              className="text-xs text-muted-foreground hover:underline"
-                              onClick={() => {
-                                setEditingReviewId(review.id);
-                                setEditRating(review.rating);
-                                setEditContent(review.content ?? '');
-                              }}
+                              className="text-xs text-muted-foreground transition-colors duration-200 hover:text-foreground"
+                              onClick={() => setEditingReviewId(review.id)}
                             >
                               수정
                             </button>
                             <button
                               type="button"
-                              className="text-xs text-destructive hover:underline"
+                              className="text-xs text-muted-foreground transition-colors duration-200 hover:text-destructive"
                               onClick={() => {
                                 if (window.confirm('리뷰를 삭제하시겠습니까?')) {
                                   deleteReviewMutation.mutate(review.id);
@@ -350,63 +322,12 @@ export function PostDetailPage({ postId, currentMemberId, onNavigate }: PostDeta
                     <CardTitle>리뷰 작성</CardTitle>
                   </CardHeader>
                   <CardContent>
-                    <form
-                      className="space-y-3"
-                      onSubmit={(e) => {
-                        e.preventDefault();
-                        createReviewMutation.mutate({
-                          rating: reviewRating,
-                          content: reviewContent || undefined,
-                        });
-                      }}
-                    >
-                      <div className="space-y-1">
-                        <label className="text-sm font-medium">별점</label>
-                        <div className="flex gap-1">
-                          {[1, 2, 3, 4, 5].map((star) => (
-                            <button
-                              key={star}
-                              type="button"
-                              className={`text-xl ${
-                                star <= reviewRating
-                                  ? 'text-yellow-500'
-                                  : 'text-gray-300'
-                              }`}
-                              onClick={() => setReviewRating(star)}
-                            >
-                              ★
-                            </button>
-                          ))}
-                        </div>
-                      </div>
-                      <div className="space-y-1">
-                        <label className="text-sm font-medium">한줄평</label>
-                        <input
-                          type="text"
-                          maxLength={200}
-                          placeholder="한줄평을 남겨주세요 (선택)"
-                          className="w-full rounded-md border px-3 py-2 text-sm"
-                          value={reviewContent}
-                          onChange={(e) => setReviewContent(e.target.value)}
-                        />
-                      </div>
-                      {createReviewMutation.error && (
-                        <p className="text-sm text-destructive">
-                          {getErrorMessage(
-                            createReviewMutation.error,
-                            '리뷰 작성 중 오류가 발생했습니다.',
-                          )}
-                        </p>
-                      )}
-                      <Button
-                        type="submit"
-                        disabled={createReviewMutation.isPending}
-                      >
-                        {createReviewMutation.isPending
-                          ? '작성 중...'
-                          : '리뷰 작성'}
-                      </Button>
-                    </form>
+                    <ReviewForm
+                      mode="create"
+                      onSubmit={handleCreateReview}
+                      isPending={createReviewMutation.isPending}
+                      error={createReviewMutation.error}
+                    />
                   </CardContent>
                 </Card>
               )}

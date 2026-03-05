@@ -24,6 +24,18 @@ export const reviewKeys = {
   all: ['reviews'] as const,
   lists: () => [...reviewKeys.all, 'list'] as const,
   list: (postId: string) => [...reviewKeys.lists(), postId] as const,
+  workspace: (workspaceId: string) =>
+    [...reviewKeys.all, 'workspace', workspaceId] as const,
+  menuHistory: (workspaceId: string) =>
+    [...reviewKeys.all, 'menu-history', workspaceId] as const,
+};
+
+export const restaurantKeys = {
+  all: ['restaurants'] as const,
+  search: (workspaceId: string, query: string) =>
+    [...restaurantKeys.all, 'search', workspaceId, query] as const,
+  stats: (workspaceId: string) =>
+    [...restaurantKeys.all, 'stats', workspaceId] as const,
 };
 
 export const memberKeys = {

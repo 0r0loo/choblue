@@ -27,7 +27,12 @@ export interface Review {
   id: string;
   lunchPostId: string;
   memberId: string;
-  rating: number;
+  tasteRating: number;
+  portionRating: number;
+  restaurant: string;
+  menu: string;
+  restaurantId?: string;
+  menuItemId?: string;
   content: string | null;
   createdAt: string;
   updatedAt: string;
@@ -35,6 +40,24 @@ export interface Review {
     id: string;
     nickname: string;
   };
+}
+
+export interface RestaurantStats {
+  restaurantId: string;
+  restaurantName: string;
+  visitCount: number;
+  avgTasteRating: number;
+  avgPortionRating: number;
+}
+
+export interface MenuHistoryItem {
+  id: string;
+  restaurant: string;
+  menu: string;
+  tasteRating: number;
+  portionRating: number;
+  date: string;
+  memberNickname: string;
 }
 
 export interface Workspace {
@@ -76,11 +99,13 @@ export interface WorkspaceInfo {
   slug: string;
   description: string;
   memberCount: number;
+  currentMember?: { isMember: true; slug: string };
 }
 
 export interface JoinResult {
   memberId: string;
   workspaceSlug: string;
+  alreadyMember: boolean;
 }
 
 export interface CalendarPost {

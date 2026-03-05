@@ -2,6 +2,14 @@ import { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { Button } from '@choblue/ui/button';
 import { Input } from '@choblue/ui/input';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+  DialogFooter,
+} from '@choblue/ui/dialog';
 import { api, getErrorMessage } from '@/lib/api';
 import { workspaceQueries, memberQueries } from '@/lib/queries';
 import { workspaceKeys } from '@/lib/query-keys';
@@ -132,30 +140,8 @@ export function SettingsPage({
   return (
     <div className="flex flex-col items-center p-4 pb-8">
       <div className="w-full max-w-md space-y-5">
-        {/* Back navigation */}
-        <button
-          type="button"
-          onClick={() => onNavigate('/')}
-          className="flex items-center gap-1 text-sm text-muted-foreground transition-colors duration-200 hover:text-foreground"
-        >
-          <svg
-            className="h-4 w-4"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth={2}
-            viewBox="0 0 24 24"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              d="M15 19l-7-7 7-7"
-            />
-          </svg>
-          메인으로 돌아가기
-        </button>
-
         {/* Page title */}
-        <h2 className="text-xl font-bold tracking-tight">{workspace.name} 설정</h2>
+        <h2 className="text-xl font-bold tracking-tight">설정</h2>
 
         {/* Invite link section */}
         {workspace.inviteCode && (
@@ -175,23 +161,22 @@ export function SettingsPage({
             {/* Admin: Regenerate */}
             {isAdmin && (
               <div className="mt-3">
-                {!showRegenerateConfirm ? (
-                  <button
-                    type="button"
-                    onClick={() => setShowRegenerateConfirm(true)}
-                    className="text-xs text-muted-foreground transition-colors duration-200 hover:text-foreground"
-                  >
-                    초대 링크 재발급
-                  </button>
-                ) : (
-                  <div className="rounded-lg border border-warning-300 bg-warning-100/50 p-3 dark:border-warning-700 dark:bg-warning-900/20">
-                    <p className="text-sm">
-                      재발급 하시겠습니까? 기존 링크는 무효화됩니다.
-                    </p>
-                    <div className="mt-2 flex gap-2">
-                      <Button size="sm" onClick={handleRegenerateConfirm}>
-                        확인
-                      </Button>
+                <button
+                  type="button"
+                  onClick={() => setShowRegenerateConfirm(true)}
+                  className="text-xs text-muted-foreground transition-colors duration-200 hover:text-foreground"
+                >
+                  초대 링크 재발급
+                </button>
+                <Dialog open={showRegenerateConfirm} onOpenChange={setShowRegenerateConfirm}>
+                  <DialogContent className="max-w-sm">
+                    <DialogHeader>
+                      <DialogTitle>초대 링크 재발급</DialogTitle>
+                      <DialogDescription>
+                        재발급하면 기존 초대 링크는 무효화됩니다. 계속하시겠습니까?
+                      </DialogDescription>
+                    </DialogHeader>
+                    <DialogFooter>
                       <Button
                         variant="ghost"
                         size="sm"
@@ -199,9 +184,12 @@ export function SettingsPage({
                       >
                         취소
                       </Button>
-                    </div>
-                  </div>
-                )}
+                      <Button size="sm" onClick={handleRegenerateConfirm}>
+                        재발급
+                      </Button>
+                    </DialogFooter>
+                  </DialogContent>
+                </Dialog>
               </div>
             )}
           </div>
@@ -287,25 +275,22 @@ export function SettingsPage({
 
         {/* Leave workspace */}
         <div className="border-t border-black/5 pt-5 dark:border-white/10">
-          {!showLeaveConfirm ? (
-            <button
-              type="button"
-              onClick={() => setShowLeaveConfirm(true)}
-              className="text-sm text-muted-foreground transition-colors duration-200 hover:text-destructive"
-            >
-              워크스페이스 나가기
-            </button>
-          ) : (
-            <div className="rounded-xl border border-danger-200 bg-danger-100/50 p-3 dark:border-danger-800 dark:bg-danger-900/20">
-              <p className="text-sm font-medium">정말 나가시겠습니까?</p>
-              <div className="mt-2.5 flex gap-2">
-                <Button
-                  size="sm"
-                  variant="destructive"
-                  onClick={handleLeaveConfirm}
-                >
-                  나가기
-                </Button>
+          <button
+            type="button"
+            onClick={() => setShowLeaveConfirm(true)}
+            className="text-sm text-muted-foreground transition-colors duration-200 hover:text-destructive"
+          >
+            워크스페이스 나가기
+          </button>
+          <Dialog open={showLeaveConfirm} onOpenChange={setShowLeaveConfirm}>
+            <DialogContent className="max-w-sm">
+              <DialogHeader>
+                <DialogTitle>워크스페이스 나가기</DialogTitle>
+                <DialogDescription>
+                  정말 나가시겠습니까? 나가면 다시 초대를 받아야 참여할 수 있습니다.
+                </DialogDescription>
+              </DialogHeader>
+              <DialogFooter>
                 <Button
                   variant="ghost"
                   size="sm"
@@ -313,9 +298,16 @@ export function SettingsPage({
                 >
                   취소
                 </Button>
-              </div>
-            </div>
-          )}
+                <Button
+                  size="sm"
+                  variant="destructive"
+                  onClick={handleLeaveConfirm}
+                >
+                  나가기
+                </Button>
+              </DialogFooter>
+            </DialogContent>
+          </Dialog>
         </div>
       </div>
     </div>

@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { Button } from '@choblue/ui/button';
 import { Input } from '@choblue/ui/input';
+import { useToast } from '@choblue/ui/toast';
 import { api, getErrorMessage } from '@/lib/api';
 import { postQueries } from '@/lib/queries';
 import { postKeys } from '@/lib/query-keys';
@@ -24,6 +25,7 @@ const TIME_OPTIONS = [
 
 export function EditPostPage({ postId, onNavigate }: EditPostPageProps) {
   const queryClient = useQueryClient();
+  const { toast } = useToast();
 
   const { data: post, isLoading, error: fetchError } = useQuery(
     postQueries.detail(postId),
@@ -44,7 +46,7 @@ export function EditPostPage({ postId, onNavigate }: EditPostPageProps) {
       setMenu(post.menu);
       setRestaurant(post.restaurant ?? '');
       setDate(post.date);
-      setTime(post.time);
+      setTime(post.time.slice(0, 5));
       setMaxParticipants(post.maxParticipants);
     }
   }, [post]);
@@ -55,6 +57,7 @@ export function EditPostPage({ postId, onNavigate }: EditPostPageProps) {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: postKeys.detail(postId) });
       queryClient.invalidateQueries({ queryKey: postKeys.lists() });
+      toast({ title: '수정 완료', description: '모집글이 수정되었습니다.' });
       onNavigate(`/posts/${postId}`);
     },
   });
@@ -128,7 +131,7 @@ export function EditPostPage({ postId, onNavigate }: EditPostPageProps) {
   }
 
   return (
-    <div className="flex min-h-screen flex-col items-center justify-center p-4">
+    <div className="flex flex-col items-center p-4 pt-8">
       <form onSubmit={handleSubmit} className="w-full max-w-md space-y-6">
         <h2 className="text-2xl font-bold">모집글 수정</h2>
 

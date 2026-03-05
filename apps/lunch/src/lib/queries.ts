@@ -1,10 +1,12 @@
 import { queryOptions } from '@tanstack/react-query';
 import { api } from './api';
-import { postKeys, reviewKeys, workspaceKeys, memberKeys } from './query-keys';
+import { postKeys, reviewKeys, workspaceKeys, restaurantKeys, memberKeys } from './query-keys';
 import type {
   LunchPost,
   CalendarPost,
   Review,
+  MenuHistoryItem,
+  RestaurantStats,
   Workspace,
   Member,
   CurrentMember,
@@ -40,6 +42,49 @@ export const reviewQueries = {
     queryOptions({
       queryKey: reviewKeys.list(postId),
       queryFn: () => api.get<Review[]>(`/posts/${postId}/reviews`),
+    }),
+  workspace: (workspaceId: string) =>
+    queryOptions({
+      queryKey: reviewKeys.workspace(workspaceId),
+      queryFn: () =>
+        api.get<Review[]>(`/workspaces/${workspaceId}/reviews`),
+    }),
+  menuHistory: (
+    workspaceId: string,
+    filters?: { dateFrom?: string; dateTo?: string; search?: string },
+  ) => {
+    const params = new URLSearchParams();
+    if (filters?.dateFrom) params.set('dateFrom', filters.dateFrom);
+    if (filters?.dateTo) params.set('dateTo', filters.dateTo);
+    if (filters?.search) params.set('search', filters.search);
+    const qs = params.toString();
+    return queryOptions({
+      queryKey: [...reviewKeys.menuHistory(workspaceId), filters] as const,
+      queryFn: () =>
+        api.get<MenuHistoryItem[]>(
+          `/workspaces/${workspaceId}/menu-history${qs ? `?${qs}` : ''}`,
+        ),
+    });
+  },
+};
+
+export const restaurantQueries = {
+  search: (workspaceId: string, query: string) =>
+    queryOptions({
+      queryKey: restaurantKeys.search(workspaceId, query),
+      queryFn: () =>
+        api.get<{ id: string; name: string }[]>(
+          `/workspaces/${workspaceId}/restaurants?q=${encodeURIComponent(query)}`,
+        ),
+      enabled: query.length > 0,
+    }),
+  stats: (workspaceId: string) =>
+    queryOptions({
+      queryKey: restaurantKeys.stats(workspaceId),
+      queryFn: () =>
+        api.get<RestaurantStats[]>(
+          `/workspaces/${workspaceId}/restaurant-stats`,
+        ),
     }),
 };
 

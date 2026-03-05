@@ -15,9 +15,12 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as WorkspaceSlugIndexRouteImport } from './routes/$workspaceSlug/index'
 import { Route as JoinInviteCodeRouteImport } from './routes/join.$inviteCode'
 import { Route as WorkspaceSlugSettingsRouteImport } from './routes/$workspaceSlug/settings'
+import { Route as WorkspaceSlugReviewsRouteImport } from './routes/$workspaceSlug/reviews'
 import { Route as WorkspaceSlugProfileRouteImport } from './routes/$workspaceSlug/profile'
+import { Route as WorkspaceSlugMenuHistoryRouteImport } from './routes/$workspaceSlug/menu-history'
 import { Route as WorkspaceSlugGatheringsNewRouteImport } from './routes/$workspaceSlug/gatherings.new'
 import { Route as WorkspaceSlugGatheringsPostIdRouteImport } from './routes/$workspaceSlug/gatherings.$postId'
+import { Route as WorkspaceSlugGatheringsPostIdIndexRouteImport } from './routes/$workspaceSlug/gatherings.$postId.index'
 import { Route as WorkspaceSlugGatheringsPostIdEditRouteImport } from './routes/$workspaceSlug/gatherings.$postId.edit'
 
 const CreateRoute = CreateRouteImport.update({
@@ -50,11 +53,22 @@ const WorkspaceSlugSettingsRoute = WorkspaceSlugSettingsRouteImport.update({
   path: '/settings',
   getParentRoute: () => WorkspaceSlugRoute,
 } as any)
+const WorkspaceSlugReviewsRoute = WorkspaceSlugReviewsRouteImport.update({
+  id: '/reviews',
+  path: '/reviews',
+  getParentRoute: () => WorkspaceSlugRoute,
+} as any)
 const WorkspaceSlugProfileRoute = WorkspaceSlugProfileRouteImport.update({
   id: '/profile',
   path: '/profile',
   getParentRoute: () => WorkspaceSlugRoute,
 } as any)
+const WorkspaceSlugMenuHistoryRoute =
+  WorkspaceSlugMenuHistoryRouteImport.update({
+    id: '/menu-history',
+    path: '/menu-history',
+    getParentRoute: () => WorkspaceSlugRoute,
+  } as any)
 const WorkspaceSlugGatheringsNewRoute =
   WorkspaceSlugGatheringsNewRouteImport.update({
     id: '/gatherings/new',
@@ -67,6 +81,12 @@ const WorkspaceSlugGatheringsPostIdRoute =
     path: '/gatherings/$postId',
     getParentRoute: () => WorkspaceSlugRoute,
   } as any)
+const WorkspaceSlugGatheringsPostIdIndexRoute =
+  WorkspaceSlugGatheringsPostIdIndexRouteImport.update({
+    id: '/',
+    path: '/',
+    getParentRoute: () => WorkspaceSlugGatheringsPostIdRoute,
+  } as any)
 const WorkspaceSlugGatheringsPostIdEditRoute =
   WorkspaceSlugGatheringsPostIdEditRouteImport.update({
     id: '/edit',
@@ -78,37 +98,45 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/$workspaceSlug': typeof WorkspaceSlugRouteWithChildren
   '/create': typeof CreateRoute
+  '/$workspaceSlug/menu-history': typeof WorkspaceSlugMenuHistoryRoute
   '/$workspaceSlug/profile': typeof WorkspaceSlugProfileRoute
+  '/$workspaceSlug/reviews': typeof WorkspaceSlugReviewsRoute
   '/$workspaceSlug/settings': typeof WorkspaceSlugSettingsRoute
   '/join/$inviteCode': typeof JoinInviteCodeRoute
   '/$workspaceSlug/': typeof WorkspaceSlugIndexRoute
   '/$workspaceSlug/gatherings/$postId': typeof WorkspaceSlugGatheringsPostIdRouteWithChildren
   '/$workspaceSlug/gatherings/new': typeof WorkspaceSlugGatheringsNewRoute
   '/$workspaceSlug/gatherings/$postId/edit': typeof WorkspaceSlugGatheringsPostIdEditRoute
+  '/$workspaceSlug/gatherings/$postId/': typeof WorkspaceSlugGatheringsPostIdIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/create': typeof CreateRoute
+  '/$workspaceSlug/menu-history': typeof WorkspaceSlugMenuHistoryRoute
   '/$workspaceSlug/profile': typeof WorkspaceSlugProfileRoute
+  '/$workspaceSlug/reviews': typeof WorkspaceSlugReviewsRoute
   '/$workspaceSlug/settings': typeof WorkspaceSlugSettingsRoute
   '/join/$inviteCode': typeof JoinInviteCodeRoute
   '/$workspaceSlug': typeof WorkspaceSlugIndexRoute
-  '/$workspaceSlug/gatherings/$postId': typeof WorkspaceSlugGatheringsPostIdRouteWithChildren
   '/$workspaceSlug/gatherings/new': typeof WorkspaceSlugGatheringsNewRoute
   '/$workspaceSlug/gatherings/$postId/edit': typeof WorkspaceSlugGatheringsPostIdEditRoute
+  '/$workspaceSlug/gatherings/$postId': typeof WorkspaceSlugGatheringsPostIdIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/$workspaceSlug': typeof WorkspaceSlugRouteWithChildren
   '/create': typeof CreateRoute
+  '/$workspaceSlug/menu-history': typeof WorkspaceSlugMenuHistoryRoute
   '/$workspaceSlug/profile': typeof WorkspaceSlugProfileRoute
+  '/$workspaceSlug/reviews': typeof WorkspaceSlugReviewsRoute
   '/$workspaceSlug/settings': typeof WorkspaceSlugSettingsRoute
   '/join/$inviteCode': typeof JoinInviteCodeRoute
   '/$workspaceSlug/': typeof WorkspaceSlugIndexRoute
   '/$workspaceSlug/gatherings/$postId': typeof WorkspaceSlugGatheringsPostIdRouteWithChildren
   '/$workspaceSlug/gatherings/new': typeof WorkspaceSlugGatheringsNewRoute
   '/$workspaceSlug/gatherings/$postId/edit': typeof WorkspaceSlugGatheringsPostIdEditRoute
+  '/$workspaceSlug/gatherings/$postId/': typeof WorkspaceSlugGatheringsPostIdIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -116,36 +144,44 @@ export interface FileRouteTypes {
     | '/'
     | '/$workspaceSlug'
     | '/create'
+    | '/$workspaceSlug/menu-history'
     | '/$workspaceSlug/profile'
+    | '/$workspaceSlug/reviews'
     | '/$workspaceSlug/settings'
     | '/join/$inviteCode'
     | '/$workspaceSlug/'
     | '/$workspaceSlug/gatherings/$postId'
     | '/$workspaceSlug/gatherings/new'
     | '/$workspaceSlug/gatherings/$postId/edit'
+    | '/$workspaceSlug/gatherings/$postId/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
     | '/create'
+    | '/$workspaceSlug/menu-history'
     | '/$workspaceSlug/profile'
+    | '/$workspaceSlug/reviews'
     | '/$workspaceSlug/settings'
     | '/join/$inviteCode'
     | '/$workspaceSlug'
-    | '/$workspaceSlug/gatherings/$postId'
     | '/$workspaceSlug/gatherings/new'
     | '/$workspaceSlug/gatherings/$postId/edit'
+    | '/$workspaceSlug/gatherings/$postId'
   id:
     | '__root__'
     | '/'
     | '/$workspaceSlug'
     | '/create'
+    | '/$workspaceSlug/menu-history'
     | '/$workspaceSlug/profile'
+    | '/$workspaceSlug/reviews'
     | '/$workspaceSlug/settings'
     | '/join/$inviteCode'
     | '/$workspaceSlug/'
     | '/$workspaceSlug/gatherings/$postId'
     | '/$workspaceSlug/gatherings/new'
     | '/$workspaceSlug/gatherings/$postId/edit'
+    | '/$workspaceSlug/gatherings/$postId/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -199,11 +235,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof WorkspaceSlugSettingsRouteImport
       parentRoute: typeof WorkspaceSlugRoute
     }
+    '/$workspaceSlug/reviews': {
+      id: '/$workspaceSlug/reviews'
+      path: '/reviews'
+      fullPath: '/$workspaceSlug/reviews'
+      preLoaderRoute: typeof WorkspaceSlugReviewsRouteImport
+      parentRoute: typeof WorkspaceSlugRoute
+    }
     '/$workspaceSlug/profile': {
       id: '/$workspaceSlug/profile'
       path: '/profile'
       fullPath: '/$workspaceSlug/profile'
       preLoaderRoute: typeof WorkspaceSlugProfileRouteImport
+      parentRoute: typeof WorkspaceSlugRoute
+    }
+    '/$workspaceSlug/menu-history': {
+      id: '/$workspaceSlug/menu-history'
+      path: '/menu-history'
+      fullPath: '/$workspaceSlug/menu-history'
+      preLoaderRoute: typeof WorkspaceSlugMenuHistoryRouteImport
       parentRoute: typeof WorkspaceSlugRoute
     }
     '/$workspaceSlug/gatherings/new': {
@@ -220,6 +270,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof WorkspaceSlugGatheringsPostIdRouteImport
       parentRoute: typeof WorkspaceSlugRoute
     }
+    '/$workspaceSlug/gatherings/$postId/': {
+      id: '/$workspaceSlug/gatherings/$postId/'
+      path: '/'
+      fullPath: '/$workspaceSlug/gatherings/$postId/'
+      preLoaderRoute: typeof WorkspaceSlugGatheringsPostIdIndexRouteImport
+      parentRoute: typeof WorkspaceSlugGatheringsPostIdRoute
+    }
     '/$workspaceSlug/gatherings/$postId/edit': {
       id: '/$workspaceSlug/gatherings/$postId/edit'
       path: '/edit'
@@ -232,12 +289,15 @@ declare module '@tanstack/react-router' {
 
 interface WorkspaceSlugGatheringsPostIdRouteChildren {
   WorkspaceSlugGatheringsPostIdEditRoute: typeof WorkspaceSlugGatheringsPostIdEditRoute
+  WorkspaceSlugGatheringsPostIdIndexRoute: typeof WorkspaceSlugGatheringsPostIdIndexRoute
 }
 
 const WorkspaceSlugGatheringsPostIdRouteChildren: WorkspaceSlugGatheringsPostIdRouteChildren =
   {
     WorkspaceSlugGatheringsPostIdEditRoute:
       WorkspaceSlugGatheringsPostIdEditRoute,
+    WorkspaceSlugGatheringsPostIdIndexRoute:
+      WorkspaceSlugGatheringsPostIdIndexRoute,
   }
 
 const WorkspaceSlugGatheringsPostIdRouteWithChildren =
@@ -246,7 +306,9 @@ const WorkspaceSlugGatheringsPostIdRouteWithChildren =
   )
 
 interface WorkspaceSlugRouteChildren {
+  WorkspaceSlugMenuHistoryRoute: typeof WorkspaceSlugMenuHistoryRoute
   WorkspaceSlugProfileRoute: typeof WorkspaceSlugProfileRoute
+  WorkspaceSlugReviewsRoute: typeof WorkspaceSlugReviewsRoute
   WorkspaceSlugSettingsRoute: typeof WorkspaceSlugSettingsRoute
   WorkspaceSlugIndexRoute: typeof WorkspaceSlugIndexRoute
   WorkspaceSlugGatheringsPostIdRoute: typeof WorkspaceSlugGatheringsPostIdRouteWithChildren
@@ -254,7 +316,9 @@ interface WorkspaceSlugRouteChildren {
 }
 
 const WorkspaceSlugRouteChildren: WorkspaceSlugRouteChildren = {
+  WorkspaceSlugMenuHistoryRoute: WorkspaceSlugMenuHistoryRoute,
   WorkspaceSlugProfileRoute: WorkspaceSlugProfileRoute,
+  WorkspaceSlugReviewsRoute: WorkspaceSlugReviewsRoute,
   WorkspaceSlugSettingsRoute: WorkspaceSlugSettingsRoute,
   WorkspaceSlugIndexRoute: WorkspaceSlugIndexRoute,
   WorkspaceSlugGatheringsPostIdRoute:
