@@ -17,6 +17,7 @@ describe('CurrentWorkspace Decorator', () => {
     updatedAt: new Date('2025-01-01'),
     members: [],
     lunchPosts: [],
+    restaurants: [],
   };
 
   function getParamDecoratorFactory() {

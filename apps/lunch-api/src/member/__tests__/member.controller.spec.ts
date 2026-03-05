@@ -25,6 +25,7 @@ describe('MemberController', () => {
     updatedAt: new Date('2025-01-01'),
     members: [],
     lunchPosts: [],
+    restaurants: [],
   };
 
   const mockMember: Member = {
