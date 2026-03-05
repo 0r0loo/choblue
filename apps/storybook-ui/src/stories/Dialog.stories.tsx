@@ -10,6 +10,15 @@ import {
   DialogClose,
 } from "@choblue/ui/dialog";
 import { Button } from "@choblue/ui/button";
+import { Input } from "@choblue/ui/input";
+import { Textarea } from "@choblue/ui/textarea";
+import {
+  Select,
+  SelectTrigger,
+  SelectContent,
+  SelectItem,
+  SelectValue,
+} from "@choblue/ui/select";
 
 const meta = {
   title: "UI/Dialog",
@@ -68,7 +77,7 @@ export const DeleteConfirmation: Story = {
           </DialogDescription>
         </DialogHeader>
         <div className="p-6 pt-0">
-          <div className="rounded-md bg-muted p-4">
+          <div className="rounded-lg border border-border bg-surface p-4">
             <p className="text-sm font-semibold">Product: Americano</p>
             <p className="text-sm text-muted-foreground">Category: Coffee</p>
             <p className="text-sm text-muted-foreground">Price: $3.50</p>
@@ -113,7 +122,7 @@ export const PaymentConfirmation: Story = {
               <span>$9.00</span>
             </div>
           </div>
-          <div className="border-t pt-2">
+          <div className="border-t border-border pt-2">
             <div className="flex justify-between text-sm">
               <span>Subtotal</span>
               <span>$20.50</span>
@@ -127,13 +136,13 @@ export const PaymentConfirmation: Story = {
               <span>$1.95</span>
             </div>
           </div>
-          <div className="border-t pt-2">
+          <div className="border-t border-border pt-2">
             <div className="flex justify-between font-semibold">
               <span>Total</span>
               <span>$24.50</span>
             </div>
           </div>
-          <div className="rounded-md bg-muted p-3">
+          <div className="rounded-lg border border-border bg-surface p-3">
             <p className="text-sm font-medium">Payment Method</p>
             <p className="text-sm text-muted-foreground">Credit Card</p>
           </div>
@@ -167,49 +176,47 @@ export const FormDialog: Story = {
             <label htmlFor="product-name" className="text-sm font-medium">
               Product Name
             </label>
-            <input
+            <Input
               id="product-name"
               type="text"
               placeholder="e.g., Caffe Latte"
-              className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
             />
           </div>
           <div className="space-y-2">
-            <label htmlFor="category" className="text-sm font-medium">
+            <label className="text-sm font-medium">
               Category
             </label>
-            <select
-              id="category"
-              className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
-            >
-              <option>Select a category</option>
-              <option>Coffee</option>
-              <option>Beverage</option>
-              <option>Dessert</option>
-              <option>Food</option>
-            </select>
+            <Select>
+              <SelectTrigger>
+                <SelectValue placeholder="Select a category" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="coffee">Coffee</SelectItem>
+                <SelectItem value="beverage">Beverage</SelectItem>
+                <SelectItem value="dessert">Dessert</SelectItem>
+                <SelectItem value="food">Food</SelectItem>
+              </SelectContent>
+            </Select>
           </div>
           <div className="space-y-2">
             <label htmlFor="price" className="text-sm font-medium">
               Price
             </label>
-            <input
+            <Input
               id="price"
               type="number"
               placeholder="0.00"
               step="0.01"
-              className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
             />
           </div>
           <div className="space-y-2">
             <label htmlFor="description" className="text-sm font-medium">
               Description
             </label>
-            <textarea
+            <Textarea
               id="description"
               placeholder="Product description..."
               rows={3}
-              className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
             />
           </div>
         </div>

@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { Button } from '@choblue/ui/button';
 import { Input } from '@choblue/ui/input';
+import { Select, SelectTrigger, SelectContent, SelectItem, SelectValue } from '@choblue/ui/select';
 import { api, getErrorMessage } from '@/lib/api';
 import { postKeys } from '@/lib/query-keys';
 
@@ -159,18 +160,18 @@ export function CreatePostPage({ workspaceId, onNavigate }: CreatePostPageProps)
           <label htmlFor="post-time" className="text-sm font-medium">
             시간
           </label>
-          <select
-            id="post-time"
-            value={time}
-            onChange={(e) => setTime(e.target.value)}
-            className="flex h-9 w-full rounded-md border border-input bg-background px-3 text-sm shadow-sm transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
-          >
-            {TIME_OPTIONS.map((t) => (
-              <option key={t} value={t}>
-                {t}
-              </option>
-            ))}
-          </select>
+          <Select value={time} onValueChange={setTime}>
+            <SelectTrigger>
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              {TIME_OPTIONS.map((t) => (
+                <SelectItem key={t} value={t}>
+                  {t}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
           {timeError && (
             <p className="text-sm text-danger">{timeError}</p>
           )}

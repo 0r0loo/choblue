@@ -1,6 +1,14 @@
 import type { Table } from "@tanstack/react-table";
 import type { ComponentProps } from "react";
 import { cn } from "../../lib/cn";
+import {
+  Select,
+  SelectTrigger,
+  SelectContent,
+  SelectItem,
+  SelectValue,
+} from "../select/select";
+export { Select } from "../select/select-context";
 
 interface DataTablePaginationProps<TData> extends Omit<ComponentProps<"div">, "children"> {
   table: Table<TData>;
@@ -26,20 +34,21 @@ function DataTablePagination<TData>({
     >
       <div className="flex items-center gap-2 text-muted-foreground">
         <span>표시</span>
-        <select
-          className={cn(
-            "h-8 rounded-md border border-border bg-background px-2 text-sm",
-            "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
-          )}
-          value={table.getState().pagination.pageSize}
-          onChange={(e) => table.setPageSize(Number(e.target.value))}
+        <Select
+          value={String(table.getState().pagination.pageSize)}
+          onValueChange={(value) => table.setPageSize(Number(value))}
         >
-          {pageSizeOptions.map((size) => (
-            <option key={size} value={size}>
-              {size}개
-            </option>
-          ))}
-        </select>
+          <SelectTrigger className="h-8 w-[70px] px-2 text-sm">
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent>
+            {pageSizeOptions.map((size) => (
+              <SelectItem key={size} value={String(size)}>
+                {size}개
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
       </div>
 
       <div className="flex items-center gap-1 text-muted-foreground">
