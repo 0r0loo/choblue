@@ -17,6 +17,18 @@
   --color-destructive-foreground: white;
   --color-accent: var(--color-neutral-800);
   --color-accent-foreground: var(--color-neutral-50);
+  --color-overlay: oklch(0 0 0 / 0.7);
+  --color-disabled: var(--color-neutral-800);
+  --color-disabled-foreground: var(--color-neutral-600);
+  --color-popover: #12121A;
+  --color-popover-foreground: var(--color-neutral-50);
   --color-card: #12121A;
   --color-card-foreground: var(--color-neutral-50);
+
+  /* ─── Table Colors ─── */
+  --color-table-header: var(--color-neutral-900);
+  --color-table-header-foreground: var(--color-neutral-300);
+  --color-table-row-hover: var(--color-neutral-900);
+  --color-table-border: var(--color-neutral-800);
+  --color-table-header-border: var(--color-neutral-700);
 }

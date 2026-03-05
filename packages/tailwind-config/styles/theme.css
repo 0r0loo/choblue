@@ -1,16 +1,16 @@
 @theme {
-  /* ─── Colors: Neutral ─── */
-  --color-neutral-50: #f7f9fc;
-  --color-neutral-100: #edf1f7;
-  --color-neutral-200: #e4e9f2;
-  --color-neutral-300: #c5cee0;
-  --color-neutral-400: #8f9bb3;
-  --color-neutral-500: #6b7a99;
-  --color-neutral-600: #536178;
-  --color-neutral-700: #3b4a63;
-  --color-neutral-800: #2e3a59;
-  --color-neutral-900: #222b45;
-  --color-neutral-950: #192038;
+  /* ─── Colors: Neutral (blue-tinted gray, perceptually uniform) ─── */
+  --color-neutral-50: #F6F7F9;
+  --color-neutral-100: #ECEFF3;
+  --color-neutral-200: #DCE1EA;
+  --color-neutral-300: #BFC8D9;
+  --color-neutral-400: #94A0B8;
+  --color-neutral-500: #6A7895;
+  --color-neutral-600: #536079;
+  --color-neutral-700: #3C475D;
+  --color-neutral-800: #2B3445;
+  --color-neutral-900: #1D2330;
+  --color-neutral-950: #121721;
 
   /* ─── Colors: Primary (#8333FF) ─── */
   --color-primary-100: #ECD6FF;
@@ -56,16 +56,16 @@
   --color-warning-800: #934814;
   --color-warning-900: #7A340C;
 
-  /* ─── Colors: Danger (#FF1B0E) ─── */
+  /* ─── Colors: Danger (#FF1B0E, smooth 500→900 transition) ─── */
   --color-danger-100: #FFF7F2;
   --color-danger-200: #FFDDCE;
   --color-danger-300: #FFD0C2;
   --color-danger-400: #FF826E;
   --color-danger-500: #FF1B0E;
-  --color-danger-600: #7B0407;
-  --color-danger-700: #62030E;
-  --color-danger-800: #4C0211;
-  --color-danger-900: #410113;
+  --color-danger-600: #A01108;
+  --color-danger-700: #760F0A;
+  --color-danger-800: #530D09;
+  --color-danger-900: #360A08;
 
   /* ─── Semantic Colors ─── */
   --color-success: var(--color-success-500);
@@ -83,6 +83,13 @@
   --color-ring: var(--color-primary-500);
   --color-input: var(--color-neutral-200);
 
+  /* ─── Overlay / Disabled ─── */
+  --color-overlay: oklch(0 0 0 / 0.5);
+  --color-disabled: var(--color-neutral-200);
+  --color-disabled-foreground: var(--color-neutral-400);
+  --color-popover: white;
+  --color-popover-foreground: var(--color-neutral-950);
+
   /* ─── Component Colors ─── */
   --color-primary: var(--color-primary-500);
   --color-primary-foreground: white;
@@ -94,6 +101,13 @@
   --color-accent-foreground: var(--color-neutral-900);
   --color-card: white;
   --color-card-foreground: var(--color-neutral-950);
+
+  /* ─── Table Colors ─── */
+  --color-table-header: var(--color-neutral-100);
+  --color-table-header-foreground: var(--color-neutral-700);
+  --color-table-row-hover: var(--color-neutral-50);
+  --color-table-border: var(--color-neutral-200);
+  --color-table-header-border: var(--color-neutral-300);
 
   /* ─── Typography ─── */
   --font-sans: "Pretendard Variable", Pretendard, ui-sans-serif, system-ui, sans-serif;

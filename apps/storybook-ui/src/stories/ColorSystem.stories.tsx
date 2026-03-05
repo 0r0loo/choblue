@@ -46,17 +46,17 @@ const PALETTES = {
     base: "#FF1B0E",
     scale: {
       100: "#FFF7F2", 200: "#FFDDCE", 300: "#FFD0C2",
-      400: "#FF826E", 500: "#FF1B0E", 600: "#7B0407",
-      700: "#62030E", 800: "#4C0211", 900: "#410113",
+      400: "#FF826E", 500: "#FF1B0E", 600: "#A01108",
+      700: "#760F0A", 800: "#530D09", 900: "#360A08",
     },
   },
 } as const;
 
 const NEUTRAL = {
-  50: "#f7f9fc", 100: "#edf1f7", 200: "#e4e9f2",
-  300: "#c5cee0", 400: "#8f9bb3", 500: "#6b7a99",
-  600: "#536178", 700: "#3b4a63", 800: "#2e3a59",
-  900: "#222b45", 950: "#192038",
+  50: "#F6F7F9", 100: "#ECEFF3", 200: "#DCE1EA",
+  300: "#BFC8D9", 400: "#94A0B8", 500: "#6A7895",
+  600: "#536079", 700: "#3C475D", 800: "#2B3445",
+  900: "#1D2330", 950: "#121721",
 } as const;
 
 const STEPS = [100, 200, 300, 400, 500, 600, 700, 800, 900] as const;
@@ -76,6 +76,11 @@ const SEMANTIC_TOKENS = [
   { name: "secondary", desc: "보조 액션" },
   { name: "destructive", desc: "위험/삭제" },
   { name: "accent", desc: "강조 배경" },
+  { name: "overlay", desc: "모달 딤 배경" },
+  { name: "disabled", desc: "비활성 배경" },
+  { name: "disabled-foreground", desc: "비활성 텍스트" },
+  { name: "popover", desc: "팝오버 배경" },
+  { name: "popover-foreground", desc: "팝오버 텍스트" },
 ] as const;
 
 // ---------------------------------------------------------------------------
