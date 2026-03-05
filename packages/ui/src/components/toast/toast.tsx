@@ -133,7 +133,7 @@ function ToastViewport({ className, ref, ...props }: ToastViewportProps) {
     <div
       ref={ref}
       className={cn(
-        "fixed top-0 right-0 z-50 flex flex-col gap-2 p-4 w-[380px]",
+        "fixed top-0 right-0 z-[300] flex flex-col gap-2 p-4 w-[380px]",
         className,
       )}
       {...props}
