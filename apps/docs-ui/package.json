@@ -20,6 +20,9 @@
     "@choblue/tailwind-config": "workspace:*",
     "@choblue/typescript-config": "workspace:*",
     "@tailwindcss/postcss": "^4.1.10",
+    "@types/mdx": "^2.0.13",
+    "@types/react": "^19.2.2",
+    "@types/react-dom": "^19.2.2",
     "typescript": "~5.9.3"
   }
 }

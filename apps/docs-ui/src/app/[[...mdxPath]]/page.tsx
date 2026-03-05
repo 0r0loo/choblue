@@ -11,7 +11,11 @@ export async function generateMetadata(props: {
   return metadata
 }
 
-const Wrapper = getMDXComponents().wrapper
+const Wrapper = getMDXComponents().wrapper as React.ComponentType<{
+  toc: unknown
+  metadata: unknown
+  children: React.ReactNode
+}>
 
 export default async function Page(props: {
   params: Promise<{ mdxPath?: string[] }>
