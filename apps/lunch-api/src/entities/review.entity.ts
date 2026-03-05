@@ -9,6 +9,8 @@ import {
 } from 'typeorm';
 import { LunchPost } from './lunch-post.entity';
 import { Member } from './member.entity';
+import { Restaurant } from './restaurant.entity';
+import { MenuItem } from './menu-item.entity';
 
 @Entity()
 @Unique(['lunchPostId', 'memberId'])
@@ -22,8 +24,17 @@ export class Review {
   @Column({ type: 'uuid' })
   memberId!: string;
 
+  @Column({ type: 'uuid' })
+  restaurantId!: string;
+
+  @Column({ type: 'uuid' })
+  menuItemId!: string;
+
   @Column({ type: 'int' })
-  rating!: number;
+  tasteRating!: number;
+
+  @Column({ type: 'int' })
+  portionRating!: number;
 
   @Column({ type: 'varchar', length: 200, nullable: true })
   content!: string | null;
@@ -39,4 +50,10 @@ export class Review {
 
   @ManyToOne(() => Member, (member) => member.reviews, { onDelete: 'CASCADE' })
   member!: Member;
+
+  @ManyToOne(() => Restaurant, (restaurant) => restaurant.reviews, { onDelete: 'CASCADE' })
+  restaurant!: Restaurant;
+
+  @ManyToOne(() => MenuItem, (menuItem) => menuItem.reviews, { onDelete: 'CASCADE' })
+  menuItem!: MenuItem;
 }

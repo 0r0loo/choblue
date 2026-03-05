@@ -1,6 +1,7 @@
 import {
   BadRequestException,
   ForbiddenException,
+  Inject,
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
@@ -9,6 +10,8 @@ import { Repository } from 'typeorm';
 import { Review } from '../entities/review.entity';
 import { LunchPost, LunchPostStatus } from '../entities/lunch-post.entity';
 import { Participation } from '../entities/participation.entity';
+import { MemberRole } from '../entities/member.entity';
+import { RestaurantService } from '../restaurant/restaurant.service';
 import { CreateReviewDto } from './dto/create-review.dto';
 import { UpdateReviewDto } from './dto/update-review.dto';
 
@@ -21,6 +24,8 @@ export class ReviewService {
     private readonly lunchPostRepository: Repository<LunchPost>,
     @InjectRepository(Participation)
     private readonly participationRepository: Repository<Participation>,
+    @Inject(RestaurantService)
+    private readonly restaurantService: RestaurantService,
   ) {}
 
   async create(
@@ -61,10 +66,20 @@ export class ReviewService {
       throw new BadRequestException('이미 리뷰를 작성했습니다.');
     }
 
+    const { restaurant, menuItem } =
+      await this.restaurantService.resolveRestaurantAndMenu(
+        dto.restaurant,
+        dto.menu,
+        workspaceId,
+      );
+
     const review = this.reviewRepository.create({
       lunchPostId: postId,
       memberId,
-      rating: dto.rating,
+      restaurantId: restaurant.id,
+      menuItemId: menuItem.id,
+      tasteRating: dto.tasteRating,
+      portionRating: dto.portionRating,
       content: dto.content ?? null,
     });
 
@@ -86,7 +101,7 @@ export class ReviewService {
 
     return this.reviewRepository.find({
       where: { lunchPostId: postId },
-      relations: { member: true },
+      relations: { member: true, restaurant: true, menuItem: true },
       order: { createdAt: 'DESC' },
     });
   }
@@ -94,10 +109,12 @@ export class ReviewService {
   async update(
     reviewId: string,
     memberId: string,
+    workspaceId: string,
     dto: UpdateReviewDto,
   ): Promise<Review> {
     const review = await this.reviewRepository.findOne({
       where: { id: reviewId },
+      relations: { restaurant: true, menuItem: true },
     });
 
     if (!review) {
@@ -108,18 +125,37 @@ export class ReviewService {
       throw new ForbiddenException('본인의 리뷰만 수정할 수 있습니다.');
     }
 
-    if (dto.rating !== undefined) {
-      review.rating = dto.rating;
+    if (dto.tasteRating !== undefined) {
+      review.tasteRating = dto.tasteRating;
+    }
+
+    if (dto.portionRating !== undefined) {
+      review.portionRating = dto.portionRating;
     }
 
     if (dto.content !== undefined) {
       review.content = dto.content;
     }
 
+    if (dto.restaurant !== undefined || dto.menu !== undefined) {
+      const restaurantName = dto.restaurant ?? review.restaurant.name;
+      const menuName = dto.menu ?? review.menuItem.name;
+      const { restaurant, menuItem } =
+        await this.restaurantService.resolveRestaurantAndMenu(
+          restaurantName,
+          menuName,
+          workspaceId,
+        );
+      review.restaurantId = restaurant.id;
+      review.menuItemId = menuItem.id;
+      review.restaurant = restaurant;
+      review.menuItem = menuItem;
+    }
+
     return this.reviewRepository.save(review);
   }
 
-  async remove(reviewId: string, memberId: string): Promise<void> {
+  async remove(reviewId: string, memberId: string, memberRole?: MemberRole): Promise<void> {
     const review = await this.reviewRepository.findOne({
       where: { id: reviewId },
     });
@@ -128,10 +164,71 @@ export class ReviewService {
       throw new NotFoundException('리뷰를 찾을 수 없습니다.');
     }
 
-    if (review.memberId !== memberId) {
+    if (memberRole !== MemberRole.ADMIN && review.memberId !== memberId) {
       throw new ForbiddenException('본인의 리뷰만 삭제할 수 있습니다.');
     }
 
     await this.reviewRepository.delete(reviewId);
+  }
+
+  async findByWorkspace(
+    workspaceId: string,
+    memberId: string,
+    memberRole: MemberRole,
+  ): Promise<Review[]> {
+    const qb = this.reviewRepository
+      .createQueryBuilder('review')
+      .innerJoinAndSelect('review.member', 'member')
+      .innerJoinAndSelect('review.restaurant', 'restaurant')
+      .innerJoinAndSelect('review.menuItem', 'menuItem')
+      .innerJoin('review.lunchPost', 'lunchPost')
+      .where('lunchPost.workspaceId = :workspaceId', { workspaceId })
+      .orderBy('review.createdAt', 'DESC');
+
+    if (memberRole !== MemberRole.ADMIN) {
+      qb.andWhere('review.memberId = :memberId', { memberId });
+    }
+
+    return qb.getMany();
+  }
+
+  async getMenuHistory(
+    workspaceId: string,
+    filters?: { dateFrom?: string; dateTo?: string; search?: string },
+  ) {
+    const qb = this.reviewRepository
+      .createQueryBuilder('review')
+      .innerJoin('review.lunchPost', 'lunchPost')
+      .innerJoin('review.member', 'member')
+      .innerJoin('review.restaurant', 'restaurant')
+      .innerJoin('review.menuItem', 'menuItem')
+      .select([
+        'review.id AS id',
+        'restaurant.name AS restaurant',
+        'menuItem.name AS menu',
+        'review.tasteRating AS "tasteRating"',
+        'review.portionRating AS "portionRating"',
+        'lunchPost.date AS date',
+        'member.nickname AS "memberNickname"',
+      ])
+      .where('lunchPost.workspaceId = :workspaceId', { workspaceId })
+      .orderBy('lunchPost.date', 'DESC');
+
+    if (filters?.dateFrom) {
+      qb.andWhere('lunchPost.date >= :dateFrom', { dateFrom: filters.dateFrom });
+    }
+
+    if (filters?.dateTo) {
+      qb.andWhere('lunchPost.date <= :dateTo', { dateTo: filters.dateTo });
+    }
+
+    if (filters?.search) {
+      qb.andWhere(
+        '(menuItem.name ILIKE :search OR restaurant.name ILIKE :search)',
+        { search: `%${filters.search}%` },
+      );
+    }
+
+    return qb.getRawMany();
   }
 }

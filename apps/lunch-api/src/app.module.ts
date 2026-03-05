@@ -7,6 +7,7 @@ import { LunchPostModule } from './lunch-post/lunch-post.module';
 import { ParticipationModule } from './participation/participation.module';
 import { MemberModule } from './member/member.module';
 import { ReviewModule } from './review/review.module';
+import { RestaurantModule } from './restaurant/restaurant.module';
 
 @Module({
   imports: [
@@ -30,6 +31,7 @@ import { ReviewModule } from './review/review.module';
     ParticipationModule,
     MemberModule,
     ReviewModule,
+    RestaurantModule,
   ],
 })
 export class AppModule {}

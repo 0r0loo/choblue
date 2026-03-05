@@ -6,6 +6,7 @@ import {
   Delete,
   Param,
   Body,
+  Query,
   Inject,
   UseGuards,
 } from '@nestjs/common';
@@ -15,6 +16,7 @@ import { CurrentMember } from '../auth/current-member.decorator';
 import { CurrentWorkspace } from '../auth/current-workspace.decorator';
 import { Member } from '../entities/member.entity';
 import { Workspace } from '../entities/workspace.entity';
+import { Review } from '../entities/review.entity';
 import { CreateReviewDto } from './dto/create-review.dto';
 import { UpdateReviewDto } from './dto/update-review.dto';
 
@@ -25,6 +27,16 @@ export class ReviewController {
     private readonly reviewService: ReviewService,
   ) {}
 
+  private mapReview(review: Review) {
+    return {
+      ...review,
+      restaurant: review.restaurant?.name ?? '',
+      menu: review.menuItem?.name ?? '',
+      restaurantId: review.restaurantId,
+      menuItemId: review.menuItemId,
+    };
+  }
+
   @UseGuards(CookieGuard)
   @Post('posts/:id/reviews')
   async create(
@@ -33,7 +45,8 @@ export class ReviewController {
     @CurrentWorkspace() workspace: Workspace,
     @Body() dto: CreateReviewDto,
   ) {
-    return this.reviewService.create(postId, member.id, workspace.id, dto);
+    const review = await this.reviewService.create(postId, member.id, workspace.id, dto);
+    return this.mapReview(review);
   }
 
   @UseGuards(CookieGuard)
@@ -42,7 +55,8 @@ export class ReviewController {
     @Param('id') postId: string,
     @CurrentWorkspace() workspace: Workspace,
   ) {
-    return this.reviewService.findByPost(postId, workspace.id);
+    const reviews = await this.reviewService.findByPost(postId, workspace.id);
+    return reviews.map((r) => this.mapReview(r));
   }
 
   @UseGuards(CookieGuard)
@@ -50,9 +64,11 @@ export class ReviewController {
   async update(
     @Param('id') reviewId: string,
     @CurrentMember() member: Member,
+    @CurrentWorkspace() workspace: Workspace,
     @Body() dto: UpdateReviewDto,
   ) {
-    return this.reviewService.update(reviewId, member.id, dto);
+    const review = await this.reviewService.update(reviewId, member.id, workspace.id, dto);
+    return this.mapReview(review);
   }
 
   @UseGuards(CookieGuard)
@@ -61,6 +77,33 @@ export class ReviewController {
     @Param('id') reviewId: string,
     @CurrentMember() member: Member,
   ) {
-    return this.reviewService.remove(reviewId, member.id);
+    return this.reviewService.remove(reviewId, member.id, member.role);
+  }
+
+  @UseGuards(CookieGuard)
+  @Get('workspaces/:workspaceId/reviews')
+  async findByWorkspace(
+    @Param('workspaceId') _workspaceId: string,
+    @CurrentMember() member: Member,
+    @CurrentWorkspace() workspace: Workspace,
+  ) {
+    const reviews = await this.reviewService.findByWorkspace(workspace.id, member.id, member.role);
+    return reviews.map((r) => this.mapReview(r));
+  }
+
+  @UseGuards(CookieGuard)
+  @Get('workspaces/:workspaceId/menu-history')
+  async getMenuHistory(
+    @Param('workspaceId') _workspaceId: string,
+    @CurrentWorkspace() workspace: Workspace,
+    @Query('dateFrom') dateFrom?: string,
+    @Query('dateTo') dateTo?: string,
+    @Query('search') search?: string,
+  ) {
+    return this.reviewService.getMenuHistory(workspace.id, {
+      dateFrom,
+      dateTo,
+      search,
+    });
   }
 }

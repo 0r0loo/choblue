@@ -5,7 +5,23 @@ export class UpdateReviewDto {
   @IsInt()
   @Min(1)
   @Max(5)
-  rating?: number;
+  tasteRating?: number;
+
+  @IsOptional()
+  @IsInt()
+  @Min(1)
+  @Max(5)
+  portionRating?: number;
+
+  @IsOptional()
+  @IsString()
+  @MaxLength(100)
+  restaurant?: string;
+
+  @IsOptional()
+  @IsString()
+  @MaxLength(100)
+  menu?: string;
 
   @IsOptional()
   @IsString()
