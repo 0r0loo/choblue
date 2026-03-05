@@ -1,0 +1,58 @@
+import { SelectBasic } from '../../src/demos/select-demo'
+
+# Select
+
+드롭다운 선택 컴포넌트입니다. Floating UI 기반으로 키보드 내비게이션을 지원합니다.
+
+## Import
+
+```tsx
+import { Select, SelectTrigger, SelectContent, SelectItem, SelectValue } from '@choblue/ui/select'
+```
+
+## 기본 사용
+
+<SelectBasic />
+
+```tsx
+const [value, setValue] = useState('')
+
+<Select value={value} onValueChange={setValue}>
+  <SelectTrigger>
+    <SelectValue placeholder="Select an option" />
+  </SelectTrigger>
+  <SelectContent>
+    <SelectItem value="apple">Apple</SelectItem>
+    <SelectItem value="banana">Banana</SelectItem>
+    <SelectItem value="cherry">Cherry</SelectItem>
+    <SelectItem value="grape" disabled>Grape (disabled)</SelectItem>
+  </SelectContent>
+</Select>
+```
+
+## 서브 컴포넌트
+
+| 컴포넌트 | 설명 |
+|----------|------|
+| `Select` | 상태 관리 컨테이너 |
+| `SelectTrigger` | 드롭다운 트리거 버튼 |
+| `SelectValue` | 선택된 값 표시 |
+| `SelectContent` | 드롭다운 목록 컨테이너 |
+| `SelectItem` | 개별 옵션 |
+
+## Select Props
+
+| Prop | 타입 | 기본값 | 설명 |
+|------|------|--------|------|
+| `value` | `string` | - | 제어 모드 선택 값 |
+| `defaultValue` | `string` | - | 비제어 모드 초기값 |
+| `onValueChange` | `(value: string) => void` | - | 값 변경 핸들러 |
+| `disabled` | `boolean` | `false` | 비활성화 |
+| `name` | `string` | - | hidden input name (폼 제출용) |
+
+## SelectItem Props
+
+| Prop | 타입 | 기본값 | 설명 |
+|------|------|--------|------|
+| `value` | `string` | - | 옵션 값 (필수) |
+| `disabled` | `boolean` | `false` | 옵션 비활성화 |

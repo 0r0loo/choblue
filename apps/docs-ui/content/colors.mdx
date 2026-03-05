@@ -1,0 +1,56 @@
+import { ColorPalettes, SemanticTokens, ComponentTokens } from '../src/demos/color-demo'
+
+# Colors
+
+`@choblue/ui` 디자인 시스템의 색상 토큰입니다.
+
+## Color Palettes
+
+각 팔레트는 100–900 단계로 구성됩니다. Neutral은 50–950까지 지원합니다.
+
+<ColorPalettes />
+
+## Semantic Tokens
+
+배경, 전경, 보더 등 UI의 역할에 따라 매핑되는 시맨틱 토큰입니다. 다크 모드에서 자동으로 전환됩니다.
+
+<SemanticTokens />
+
+| Token | 용도 |
+|-------|------|
+| `background` | 페이지 배경 |
+| `foreground` | 기본 텍스트 |
+| `surface` | 섹션 배경 |
+| `muted` / `muted-foreground` | 보조 텍스트 |
+| `border` | 기본 보더 |
+| `input` | 입력 필드 보더 |
+| `ring` | 포커스 링 |
+| `overlay` | 모달 백드롭 |
+| `disabled` / `disabled-foreground` | 비활성 상태 |
+
+## Component Tokens
+
+컴포넌트별로 사용되는 전용 색상 토큰입니다.
+
+<ComponentTokens />
+
+| Token | 용도 |
+|-------|------|
+| `primary` / `primary-foreground` | 주요 액션 (Button, Badge) |
+| `secondary` / `secondary-foreground` | 보조 액션 |
+| `danger` / `danger-foreground` | 위험/삭제 액션 |
+| `accent` / `accent-foreground` | 호버/강조 |
+| `card` / `card-foreground` | 카드 컨테이너 |
+| `popover` / `popover-foreground` | 팝오버/드롭다운 |
+
+## 사용법
+
+```tsx
+{/* Tailwind 유틸리티로 직접 사용 */}
+<div className="bg-primary text-primary-foreground">Primary</div>
+<div className="bg-background text-foreground border border-border">Surface</div>
+
+{/* 팔레트 단계 직접 참조 */}
+<span className="text-danger-600">Error message</span>
+<div className="bg-success-100 text-success-700">Success badge</div>
+```

@@ -1,0 +1,25 @@
+{
+  "name": "docs-ui",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "next --turbopack",
+    "build": "next build",
+    "start": "next start"
+  },
+  "dependencies": {
+    "@choblue/ui": "workspace:*",
+    "next": "^15.4.0",
+    "nextra": "^4.6.1",
+    "nextra-theme-docs": "^4.6.1",
+    "react": "^19.2.0",
+    "react-dom": "^19.2.0"
+  },
+  "devDependencies": {
+    "@choblue/tailwind-config": "workspace:*",
+    "@choblue/typescript-config": "workspace:*",
+    "@tailwindcss/postcss": "^4.1.10",
+    "typescript": "~5.9.3"
+  }
+}

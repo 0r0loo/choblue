@@ -1,0 +1,42 @@
+import { CardBasic } from '../../src/demos/card-demo'
+
+# Card
+
+콘텐츠를 그룹화하는 카드 컴포넌트입니다.
+
+## Import
+
+```tsx
+import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from '@choblue/ui/card'
+```
+
+## 기본 사용
+
+<CardBasic />
+
+```tsx
+<Card>
+  <CardHeader>
+    <CardTitle>Card Title</CardTitle>
+    <CardDescription>Card description goes here.</CardDescription>
+  </CardHeader>
+  <CardContent>
+    <p>카드 본문 내용입니다.</p>
+  </CardContent>
+  <CardFooter className="gap-2">
+    <Button variant="outline" size="sm" className="flex-1">Cancel</Button>
+    <Button size="sm" className="flex-1">Confirm</Button>
+  </CardFooter>
+</Card>
+```
+
+## 서브 컴포넌트
+
+| 컴포넌트 | 설명 |
+|----------|------|
+| `Card` | 최상위 컨테이너 |
+| `CardHeader` | 헤더 영역 |
+| `CardTitle` | 제목 (`h3`) |
+| `CardDescription` | 설명 텍스트 |
+| `CardContent` | 본문 영역 |
+| `CardFooter` | 하단 액션 영역 |

@@ -1,0 +1,29 @@
+# 시작하기
+
+## 설치
+
+```bash
+pnpm add @choblue/ui
+```
+
+## Tailwind CSS 설정
+
+`@choblue/ui`는 Tailwind CSS v4를 사용합니다. 프로젝트의 CSS 진입점에 다음을 추가하세요:
+
+```css
+@import "@choblue/tailwind-config/globals.css";
+```
+
+## 사용 예시
+
+```tsx
+import { Button } from '@choblue/ui/button'
+
+export function App() {
+  return (
+    <Button variant="primary" size="md">
+      Click me
+    </Button>
+  )
+}
+```

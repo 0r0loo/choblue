@@ -1,0 +1,31 @@
+import { BadgeVariants } from '../../src/demos/badge-demo'
+
+# Badge
+
+상태나 카테고리를 표시하는 뱃지 컴포넌트입니다.
+
+## Import
+
+```tsx
+import { Badge } from '@choblue/ui/badge'
+```
+
+## Variants
+
+<BadgeVariants />
+
+```tsx
+<Badge variant="primary">Primary</Badge>
+<Badge variant="secondary">Secondary</Badge>
+<Badge variant="success">Success</Badge>
+<Badge variant="info">Info</Badge>
+<Badge variant="warning">Warning</Badge>
+<Badge variant="danger">Danger</Badge>
+<Badge variant="outline">Outline</Badge>
+```
+
+## Props
+
+| Prop | 타입 | 기본값 | 설명 |
+|------|------|--------|------|
+| `variant` | `'primary' \| 'secondary' \| 'success' \| 'info' \| 'warning' \| 'danger' \| 'outline'` | `'primary'` | 뱃지 스타일 |

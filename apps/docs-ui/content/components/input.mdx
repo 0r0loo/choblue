@@ -1,0 +1,44 @@
+import { InputSizes, InputStates, InputTypes } from '../../src/demos/input-demo'
+
+# Input
+
+텍스트 입력 컴포넌트입니다.
+
+## Import
+
+```tsx
+import { Input } from '@choblue/ui/input'
+```
+
+## Sizes
+
+<InputSizes />
+
+```tsx
+<Input size="sm" placeholder="Small" />
+<Input size="md" placeholder="Medium" />
+<Input size="lg" placeholder="Large" />
+```
+
+## States
+
+<InputStates />
+
+```tsx
+<Input placeholder="Default" />
+<Input disabled placeholder="Disabled" />
+<Input aria-invalid="true" placeholder="Invalid" />
+```
+
+## Input Types
+
+<InputTypes />
+
+## Props
+
+| Prop | 타입 | 기본값 | 설명 |
+|------|------|--------|------|
+| `size` | `'sm' \| 'md' \| 'lg'` | `'md'` | 입력 크기 |
+| `type` | `string` | `'text'` | HTML input type |
+| `disabled` | `boolean` | `false` | 비활성화 |
+| `aria-invalid` | `boolean \| string` | - | 유효성 검사 실패 표시 |
