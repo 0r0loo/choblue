@@ -1,3 +1,8 @@
 @import "@choblue/tailwind-config/globals.css";
 @source "../../../packages/ui/src/**/*.tsx";
 @source "./stories/**/*.tsx";
+
+body {
+  background-color: var(--color-background);
+  color: var(--color-foreground);
+}

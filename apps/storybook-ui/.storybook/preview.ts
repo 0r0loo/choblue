@@ -1,6 +1,7 @@
 import "../src/globals.css";
-import type { Preview } from '@storybook/react-vite'
+import type { Preview, ReactRenderer } from '@storybook/react-vite'
 import { withThemeByClassName } from '@storybook/addon-themes';
+import { createElement } from 'react';
 
 const preview: Preview = {
   parameters: {
@@ -24,12 +25,22 @@ const preview: Preview = {
     }
   },
   decorators: [
-    withThemeByClassName({
+    (Story) =>
+      createElement(
+        'div',
+        {
+          className: 'bg-background text-foreground',
+          style: { padding: '1rem' },
+        },
+        createElement(Story),
+      ),
+    withThemeByClassName<ReactRenderer>({
       themes: {
-        light: '',
+        light: 'light',
         dark: 'dark',
       },
       defaultTheme: 'light',
+      parentSelector: 'html',
     }),
   ],
 };
