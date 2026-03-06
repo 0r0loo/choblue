@@ -70,33 +70,81 @@ Step 4: 수정/삭제 → 확인
 
 ---
 
-## 3. 티어별 워크플로우
+## 3. Task Header (의사결정 가시화)
+
+모든 티어에서 작업 시작 시 Task Header를 **코드블록 안에** 출력하여 의사결정을 가시화한다.
+다른 메시지와 구분되도록 반드시 코드블록(```)으로 감싼다.
+
+### S 티어 헤더
+````
+```
+📋 [작업명]
+⚡ S — [판단 근거 한 줄]
+📁 [대상 파일]
+```
+````
+
+### M 티어 헤더
+````
+```
+📋 [작업명]
+⚡ M — [판단 근거 한 줄]
+📚 [사용할 스킬 목록]
+🔄 [에이전트 흐름]
+📁 [예상 파일 수와 대상]
+```
+````
+
+### L 티어 헤더
+````
+```
+📋 [작업명]
+⚡ L — [판단 근거 한 줄]
+📚 [사용할 스킬 목록]
+🔄 [에이전트 흐름]
+📁 [예상 파일 수와 대상]
+📌 Plan:
+  ○ Step 1: [작업 단위]
+  ○ Step 2: [작업 단위]
+  ...
+```
+````
+
+L 티어에서는 각 Step 진행에 따라 상태를 갱신한다:
+- `○` 대기 → `▶ ⏳` 진행 중 → `✔` 완료
+
+---
+
+## 4. 티어별 워크플로우
 
 ### S 티어 (trivial)
 Main Agent가 직접 처리한다. 서브에이전트 위임 불필요.
-1. 파일 읽기 → 직접 수정 → 완료
-2. 필요 시 `git-manager`로 커밋
+1. **Task Header 출력**
+2. 파일 읽기 → 직접 수정 → 완료
+3. 필요 시 `git-manager`로 커밋
 
 ### M 티어 (moderate)
 TDD/Review를 생략하고 핵심 단계만 수행한다.
-1. **Planning**: 요구사항 정리, 필요 시 `explore`로 탐색
-2. **Implementation**: `code-writer` 에이전트에 구현 위임 (단위별로 나눠 호출)
-3. **Commit**: `git-manager`로 커밋/PR 생성
+1. **Task Header 출력**
+2. **Planning**: 요구사항 정리, 필요 시 `explore`로 탐색
+3. **Implementation**: `code-writer` 에이전트에 구현 위임 (단위별로 나눠 호출)
+4. **Commit**: `git-manager`로 커밋/PR 생성
 
 ### L 티어 (complex)
 파일 기반 설계 후 **단위별로** 구현한다.
-1. **Research**: `explore`로 탐색 → `research.md` 작성 (관련 코드 분석, 제약 조건)
-2. **Plan**: `plan.md` 작성 (접근 방식, 변경 파일, 트레이드 오프, **단위별 작업 순서**)
-3. **주석 사이클**: 사용자가 plan.md에 메모 → 반영 → **승인 전까지 구현 금지**
-4. **Implementation + Test**: plan.md의 각 단위를 순서대로 `implementer`에 위임 (단위당 1회 호출)
-5. **Review**: `code-reviewer`로 리뷰 → `git-manager`로 커밋/PR
+1. **Task Header 출력**
+2. **Research**: `explore`로 탐색 → `research.md` 작성 (관련 코드 분석, 제약 조건)
+3. **Plan**: `plan.md` 작성 (접근 방식, 변경 파일, 트레이드 오프, **단위별 작업 순서**)
+4. **주석 사이클**: 사용자가 plan.md에 메모 → 반영 → **승인 전까지 구현 금지**
+5. **Implementation + Test**: plan.md의 각 단위를 순서대로 `implementer`에 위임 (단위당 1회 호출)
+6. **Review**: `code-reviewer`로 리뷰 → `git-manager`로 커밋/PR
 
 ### 풀스택 작업 (FE + BE 동시 변경)
 티어는 영향도 기준으로 판단하되, 위임 순서는 BE 선행 → FE 후행을 따른다.
 
 ---
 
-## 4. 문서 참조 가이드
+## 5. 문서 참조 가이드
 
 ### Agents (서브에이전트 프롬프트)
 - `.claude/agents/explore.md` - 코드베이스 탐색 전문가
@@ -108,9 +156,8 @@ TDD/Review를 생략하고 핵심 단계만 수행한다.
 - `.claude/agents/git-manager.md` - Git 작업 전문가
 
 ### Skills (도메인 지식)
-- `.claude/skills/Coding/` - 코딩 원칙 및 패턴
-  - `SKILL.md` - 공통 원칙
-  - `backend.md` - NestJS 백엔드 규칙
+- `.claude/skills/Coding/SKILL.md` - 공통 코딩 원칙
+- `.claude/skills/NestJS/SKILL.md` - NestJS 백엔드 규칙 (레이어, DTO, DI, 에러 핸들링)
 - `.claude/skills/React/SKILL.md` - React 컴포넌트, 훅, 상태 관리
 - `.claude/skills/NextJS/SKILL.md` - Next.js App Router, SSR, Server Actions
 - `.claude/skills/TailwindCSS/SKILL.md` - Tailwind CSS 유틸리티 패턴
@@ -121,8 +168,8 @@ TDD/Review를 생략하고 핵심 단계만 수행한다.
 - `.claude/skills/TypeORM/SKILL.md` - TypeORM Entity, Repository, QueryBuilder
 - `.claude/skills/TDD/` - TDD 테스트 원칙 및 패턴
   - `SKILL.md` - 공통 TDD 원칙
-  - `frontend.md` - React 테스트 규칙
-  - `backend.md` - NestJS 테스트 규칙
+  - `references/frontend.md` - React 테스트 규칙
+  - `references/backend.md` - NestJS 테스트 규칙
 - `.claude/skills/DDD/SKILL.md` - DDD 전술적 패턴 (Entity, VO, Aggregate, Repository, Domain Event)
 - `.claude/skills/Planning/SKILL.md` - 작업 계획 (티어 판단, 작업 분해, 의존성 확인)
 - `.claude/skills/Git/SKILL.md` - Git 커밋/PR/브랜치 규칙
@@ -143,7 +190,7 @@ TDD/Review를 생략하고 핵심 단계만 수행한다.
 
 ---
 
-## 5. 프로젝트별 오버라이드
+## 6. 프로젝트별 오버라이드
 
 프로젝트 루트에 `CLAUDE.md`가 있으면 이 글로벌 규칙보다 우선한다.
 프로젝트별 규칙은 글로벌 규칙을 확장하되, 충돌 시 프로젝트 규칙을 따른다.
