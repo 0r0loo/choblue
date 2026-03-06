@@ -28,56 +28,56 @@ type Story = StoryObj<typeof meta>;
 
 export const Primary: Story = {
   args: {
-    children: "Button",
+    children: "버튼",
   },
 };
 
 export const Secondary: Story = {
   args: {
     variant: "secondary",
-    children: "Button",
+    children: "버튼",
   },
 };
 
 export const Outline: Story = {
   args: {
     variant: "outline",
-    children: "Button",
+    children: "버튼",
   },
 };
 
 export const Ghost: Story = {
   args: {
     variant: "ghost",
-    children: "Button",
+    children: "버튼",
   },
 };
 
 export const Danger: Story = {
   args: {
     variant: "danger",
-    children: "Button",
+    children: "버튼",
   },
 };
 
 export const Small: Story = {
   args: {
     size: "sm",
-    children: "Button",
+    children: "버튼",
   },
 };
 
 export const Large: Story = {
   args: {
     size: "lg",
-    children: "Button",
+    children: "버튼",
   },
 };
 
 export const Disabled: Story = {
   args: {
     disabled: true,
-    children: "Button",
+    children: "버튼",
   },
 };
 
@@ -99,7 +99,7 @@ export const WithIcon: Story = {
           <path d="M5 12h14" />
           <path d="m12 5 7 7-7 7" />
         </svg>
-        Continue
+        계속하기
       </>
     ),
   },

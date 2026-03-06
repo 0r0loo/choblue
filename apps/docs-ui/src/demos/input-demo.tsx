@@ -6,9 +6,9 @@ import { Preview } from './preview'
 export function InputSizes() {
   return (
     <Preview className="flex-col items-stretch">
-      <Input size="sm" placeholder="Small input" />
-      <Input size="md" placeholder="Medium input" />
-      <Input size="lg" placeholder="Large input" />
+      <Input size="sm" placeholder="작은 입력" />
+      <Input size="md" placeholder="보통 입력" />
+      <Input size="lg" placeholder="큰 입력" />
     </Preview>
   )
 }
@@ -16,9 +16,9 @@ export function InputSizes() {
 export function InputStates() {
   return (
     <Preview className="flex-col items-stretch">
-      <Input placeholder="Default" />
-      <Input disabled placeholder="Disabled" />
-      <Input aria-invalid="true" placeholder="Invalid" />
+      <Input placeholder="기본" />
+      <Input disabled placeholder="비활성" />
+      <Input aria-invalid="true" placeholder="오류" />
     </Preview>
   )
 }
@@ -26,9 +26,9 @@ export function InputStates() {
 export function InputTypes() {
   return (
     <Preview className="flex-col items-stretch">
-      <Input type="email" placeholder="Email" />
-      <Input type="password" placeholder="Password" />
-      <Input type="number" placeholder="Number" />
+      <Input type="email" placeholder="이메일" />
+      <Input type="password" placeholder="비밀번호" />
+      <Input type="number" placeholder="숫자" />
     </Preview>
   )
 }

@@ -9,15 +9,15 @@ export function CardBasic() {
     <Preview className="flex-col">
       <Card className="w-[350px]">
         <CardHeader>
-          <CardTitle>Confirm Action</CardTitle>
-          <CardDescription>Are you sure you want to proceed?</CardDescription>
+          <CardTitle>작업 확인</CardTitle>
+          <CardDescription>계속 진행하시겠습니까?</CardDescription>
         </CardHeader>
         <CardContent>
-          <p>This action cannot be undone. Please confirm to continue.</p>
+          <p>이 작업은 되돌릴 수 없습니다. 계속하려면 확인을 눌러주세요.</p>
         </CardContent>
         <CardFooter className="gap-2">
-          <Button variant="outline" className="flex-1">Cancel</Button>
-          <Button className="flex-1">Confirm</Button>
+          <Button variant="outline" className="flex-1">취소</Button>
+          <Button className="flex-1">확인</Button>
         </CardFooter>
       </Card>
     </Preview>

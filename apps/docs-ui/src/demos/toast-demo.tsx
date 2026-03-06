@@ -11,15 +11,15 @@ function ToastButtons() {
     <div className="flex gap-4">
       <Button
         variant="primary"
-        onClick={() => toast({ title: 'Success', description: 'Operation completed.' })}
+        onClick={() => toast({ title: '성공', description: '작업이 완료되었습니다.' })}
       >
-        Default Toast
+        기본 토스트
       </Button>
       <Button
         variant="danger"
-        onClick={() => toast({ title: 'Error', description: 'Something went wrong.', variant: 'danger' })}
+        onClick={() => toast({ title: '오류', description: '문제가 발생했습니다.', variant: 'danger' })}
       >
-        Danger Toast
+        위험 토스트
       </Button>
     </div>
   )

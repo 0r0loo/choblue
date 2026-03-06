@@ -22,14 +22,14 @@ type Story = StoryObj<typeof meta>;
 export const Primary: Story = {
   args: {
     variant: "primary",
-    children: "New",
+    children: "Primary",
   },
 };
 
 export const Secondary: Story = {
   args: {
     variant: "secondary",
-    children: "Active",
+    children: "Secondary",
   },
 };
 
@@ -64,7 +64,7 @@ export const Danger: Story = {
 export const Outline: Story = {
   args: {
     variant: "outline",
-    children: "Pending",
+    children: "Outline",
   },
 };
 

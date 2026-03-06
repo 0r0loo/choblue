@@ -21,7 +21,7 @@ export function StarRatingInteractive() {
     <Preview>
       <StarRating value={rating} onChange={setRating} size="lg" />
       <span className="text-sm text-muted-foreground">
-        {rating > 0 ? `${rating}점` : 'Click to rate'}
+        {rating > 0 ? `${rating}점` : '클릭하여 평가'}
       </span>
     </Preview>
   )

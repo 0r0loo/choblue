@@ -12,17 +12,17 @@ export function SelectBasic() {
       <div className="w-64">
         <Select value={value} onValueChange={setValue}>
           <SelectTrigger>
-            <SelectValue placeholder="Select an option" />
+            <SelectValue placeholder="옵션을 선택하세요" />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="apple">Apple</SelectItem>
-            <SelectItem value="banana">Banana</SelectItem>
-            <SelectItem value="cherry">Cherry</SelectItem>
-            <SelectItem value="grape" disabled>Grape (disabled)</SelectItem>
+            <SelectItem value="americano">아메리카노</SelectItem>
+            <SelectItem value="latte">카페라떼</SelectItem>
+            <SelectItem value="cappuccino">카푸치노</SelectItem>
+            <SelectItem value="espresso" disabled>에스프레소 (품절)</SelectItem>
           </SelectContent>
         </Select>
       </div>
-      {value && <span className="text-sm text-muted-foreground">Selected: {value}</span>}
+      {value && <span className="text-sm text-muted-foreground">선택: {value}</span>}
     </Preview>
   )
 }

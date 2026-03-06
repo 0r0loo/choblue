@@ -1,4 +1,4 @@
-import { DialogBasic } from '../../src/demos/dialog-demo'
+import { DialogBasic, DialogConfirm, DialogConfirmDanger, DialogConfirmCustom } from '../../src/demos/dialog-demo'
 
 # Dialog
 
@@ -20,22 +20,22 @@ import {
 ```tsx
 <Dialog>
   <DialogTrigger asChild>
-    <Button>Open Dialog</Button>
+    <Button>다이얼로그 열기</Button>
   </DialogTrigger>
   <DialogContent>
     <DialogHeader>
-      <DialogTitle>Dialog Title</DialogTitle>
-      <DialogDescription>Dialog description.</DialogDescription>
+      <DialogTitle>다이얼로그 제목</DialogTitle>
+      <DialogDescription>다이얼로그 설명입니다.</DialogDescription>
     </DialogHeader>
     <div className="p-6 pt-0">
-      <p>Dialog body content.</p>
+      <p>다이얼로그 본문 내용입니다.</p>
     </div>
     <DialogFooter>
       <DialogClose asChild>
-        <Button variant="outline">Cancel</Button>
+        <Button variant="outline">취소</Button>
       </DialogClose>
       <DialogClose asChild>
-        <Button>Confirm</Button>
+        <Button>확인</Button>
       </DialogClose>
     </DialogFooter>
   </DialogContent>
@@ -67,3 +67,97 @@ import {
 | Prop | 타입 | 기본값 | 설명 |
 |------|------|--------|------|
 | `asChild` | `boolean` | `false` | 자식 요소에 props를 위임 (Slot 패턴) |
+
+---
+
+## useConfirm (Imperative API)
+
+`onClick` 핸들러에서 Promise 기반으로 확인 다이얼로그를 호출할 수 있습니다.
+
+### Import
+
+```tsx
+import { ConfirmProvider, useConfirm } from '@choblue/ui/dialog'
+```
+
+### 기본 사용
+
+앱 루트에 `ConfirmProvider`를 배치한 뒤, `useConfirm` 훅으로 `confirm` 함수를 가져옵니다.
+
+<DialogConfirm />
+
+```tsx
+const confirm = useConfirm();
+
+const handleClick = async () => {
+  const ok = await confirm({
+    title: "계속하시겠습니까?",
+    description: "이 작업은 되돌릴 수 없습니다.",
+  });
+  if (ok) { /* confirmed */ }
+};
+```
+
+### Danger variant
+
+`variant: "danger"`를 전달하면 확인 버튼이 danger 스타일로 렌더링됩니다.
+
+<DialogConfirmDanger />
+
+```tsx
+const ok = await confirm({
+  title: "상품 삭제",
+  description: "이 상품이 영구적으로 삭제됩니다.",
+  confirmText: "삭제",
+  cancelText: "유지",
+  variant: "danger",
+});
+```
+
+### ConfirmOptions
+
+| Prop | 타입 | 기본값 | 설명 |
+|------|------|--------|------|
+| `title` | `string` | (필수) | 다이얼로그 제목 |
+| `description` | `string` | - | 부가 설명 |
+| `confirmText` | `string` | `"확인"` | 확인 버튼 텍스트 |
+| `cancelText` | `string` | `"취소"` | 취소 버튼 텍스트 |
+| `variant` | `"default" \| "danger"` | `"default"` | 확인 버튼 스타일 |
+| `render` | `(props: ConfirmRenderProps) => ReactNode` | - | 커스텀 콘텐츠 렌더 함수 |
+
+### 커스텀 콘텐츠 (render)
+
+`render` 함수를 전달하면 다이얼로그 내용을 자유롭게 구성할 수 있습니다.
+
+<DialogConfirmCustom />
+
+```tsx
+const ok = await confirm({
+  render: ({ confirm, cancel }) => (
+    <>
+      <DialogHeader>
+        <DialogTitle>상품 삭제</DialogTitle>
+        <DialogDescription>
+          이 상품이 영구적으로 삭제됩니다.
+        </DialogDescription>
+      </DialogHeader>
+      <div className="p-6 pt-0">
+        <ProductCard />
+      </div>
+      <DialogFooter>
+        <Button variant="outline" onClick={cancel}>취소</Button>
+        <Button variant="danger" onClick={confirm}>삭제</Button>
+      </DialogFooter>
+    </>
+  ),
+});
+```
+
+> `render`가 전달되면 `title`, `description`, `confirmText`, `cancelText`, `variant`는 무시됩니다.
+
+### ConfirmRenderProps
+
+| Prop | 타입 | 설명 |
+|------|------|------|
+| `confirm` | `() => void` | 확인 처리 (Promise를 `true`로 resolve) |
+| `cancel` | `() => void` | 취소 처리 (Promise를 `false`로 resolve) |

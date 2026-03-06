@@ -31,42 +31,42 @@ type Story = StoryObj<typeof meta>;
 
 export const Default: Story = {
   args: {
-    placeholder: "Enter text...",
+    placeholder: "텍스트를 입력하세요...",
   },
 };
 
 export const Small: Story = {
   args: {
     size: "sm",
-    placeholder: "Enter text...",
+    placeholder: "텍스트를 입력하세요...",
   },
 };
 
 export const Large: Story = {
   args: {
     size: "lg",
-    placeholder: "Enter text...",
+    placeholder: "텍스트를 입력하세요...",
   },
 };
 
 export const Error: Story = {
   args: {
     "aria-invalid": true,
-    placeholder: "Enter text...",
-    defaultValue: "Invalid input",
+    placeholder: "텍스트를 입력하세요...",
+    defaultValue: "잘못된 입력",
   },
 };
 
 export const Disabled: Story = {
   args: {
     disabled: true,
-    placeholder: "Disabled input...",
+    placeholder: "비활성화된 입력...",
   },
 };
 
 export const WithType: Story = {
   args: {
     type: "password",
-    placeholder: "Enter password...",
+    placeholder: "비밀번호를 입력하세요...",
   },
 };
