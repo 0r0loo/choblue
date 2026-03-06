@@ -1,0 +1,73 @@
+import { AllIcons, IconSizes, IconColors } from '../../src/demos/icons-demo'
+
+# Icons
+
+디자인 시스템에서 사용하는 SVG 아이콘 컴포넌트입니다. `currentColor`를 상속하여 부모 텍스트 색상을 따릅니다.
+
+## Import
+
+```tsx
+import { Check, X, ChevronRight } from '@choblue/ui/icons'
+```
+
+## 전체 아이콘
+
+<AllIcons />
+
+| 아이콘 | 용도 |
+|--------|------|
+| `X` | 닫기 버튼 |
+| `Check` | 체크마크, 선택 표시 |
+| `ChevronLeft` | 이전 탐색 |
+| `ChevronRight` | 다음 탐색 |
+| `ChevronDoubleLeft` | 첫 페이지 |
+| `ChevronDoubleRight` | 마지막 페이지 |
+| `SortAsc` | 오름차순 정렬 |
+| `SortDesc` | 내림차순 정렬 |
+| `SortDefault` | 미정렬 상태 |
+
+## 크기
+
+`size` prop으로 아이콘 크기를 조절합니다. 기본값은 `24`입니다.
+
+<IconSizes />
+
+```tsx
+<Check size={16} />
+<Check size={24} />
+<Check size={32} />
+<Check size={48} />
+```
+
+## 색상 커스터마이징
+
+`className`으로 Tailwind 색상 클래스를 적용할 수 있습니다. 아이콘은 `currentColor`를 사용하므로 `text-*` 클래스로 색상을 변경합니다.
+
+<IconColors />
+
+```tsx
+<Check className="text-primary" />
+<Check className="text-success-500" />
+<Check className="text-danger-500" />
+<Check className="text-muted-foreground" />
+```
+
+## 커스텀 아이콘 추가
+
+`createIcon` 팩토리 함수로 새 아이콘을 추가할 수 있습니다.
+
+```tsx
+import { createIcon } from '@choblue/ui/icons'
+
+const Heart = createIcon('Heart', (
+  <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
+))
+```
+
+## Props
+
+| Prop | 타입 | 기본값 | 설명 |
+|------|------|--------|------|
+| `size` | `number` | `24` | 아이콘 크기 (px) |
+| `className` | `string` | — | CSS 클래스 |
+| `...props` | `SVGAttributes` | — | SVG 요소에 전달되는 속성 |
