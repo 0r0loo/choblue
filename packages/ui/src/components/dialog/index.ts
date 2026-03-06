@@ -24,3 +24,6 @@ export type {
   DialogDescriptionProps,
   DialogFooterProps,
 } from "./dialog";
+
+export { ConfirmProvider, useConfirm } from "./confirm-context";
+export type { ConfirmOptions, ConfirmRenderProps } from "./confirm-context";
