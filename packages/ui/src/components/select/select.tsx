@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useRef, type ComponentProps } from "react";
 import { cn } from "../../lib/cn";
+import { Check } from "../icons";
 import { useSelectContext } from "./select-context";
 
 // Re-export context module so test imports from "./select" keep working
@@ -227,18 +228,7 @@ function SelectItem({
     >
       {isSelected && (
         <span className="absolute left-2 flex h-4 w-4 items-center justify-center">
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            className="h-4 w-4"
-          >
-            <polyline points="20 6 9 17 4 12" />
-          </svg>
+          <Check size={16} />
         </span>
       )}
       {children}

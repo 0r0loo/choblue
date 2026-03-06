@@ -1,6 +1,7 @@
 import type { Table } from "@tanstack/react-table";
 import type { ComponentProps } from "react";
 import { cn } from "../../lib/cn";
+import { ChevronLeft, ChevronRight, ChevronDoubleLeft, ChevronDoubleRight } from "../icons";
 import {
   Select,
   SelectTrigger,
@@ -63,28 +64,28 @@ function DataTablePagination<TData>({
           disabled={!table.getCanPreviousPage()}
           aria-label="첫 페이지"
         >
-          <ChevronDoubleLeftIcon />
+          <ChevronDoubleLeft size={16} />
         </PaginationButton>
         <PaginationButton
           onClick={() => table.previousPage()}
           disabled={!table.getCanPreviousPage()}
           aria-label="이전 페이지"
         >
-          <ChevronLeftIcon />
+          <ChevronLeft size={16} />
         </PaginationButton>
         <PaginationButton
           onClick={() => table.nextPage()}
           disabled={!table.getCanNextPage()}
           aria-label="다음 페이지"
         >
-          <ChevronRightIcon />
+          <ChevronRight size={16} />
         </PaginationButton>
         <PaginationButton
           onClick={() => table.lastPage()}
           disabled={!table.getCanNextPage()}
           aria-label="마지막 페이지"
         >
-          <ChevronDoubleRightIcon />
+          <ChevronDoubleRight size={16} />
         </PaginationButton>
       </div>
     </div>
@@ -104,40 +105,6 @@ function PaginationButton({ className, ...props }: ComponentProps<"button">) {
       )}
       {...props}
     />
-  );
-}
-
-function ChevronLeftIcon() {
-  return (
-    <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-      <path d="M10 12L6 8L10 4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-    </svg>
-  );
-}
-
-function ChevronRightIcon() {
-  return (
-    <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-      <path d="M6 4L10 8L6 12" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-    </svg>
-  );
-}
-
-function ChevronDoubleLeftIcon() {
-  return (
-    <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-      <path d="M8 12L4 8L8 4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-      <path d="M12 12L8 8L12 4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-    </svg>
-  );
-}
-
-function ChevronDoubleRightIcon() {
-  return (
-    <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-      <path d="M4 4L8 8L4 12" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-      <path d="M8 4L12 8L8 12" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-    </svg>
   );
 }
 

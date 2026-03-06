@@ -10,6 +10,7 @@ import {
 } from "@tanstack/react-table";
 import { type ComponentProps, useState } from "react";
 import { cn } from "../../lib/cn";
+import { SortAsc, SortDesc, SortDefault } from "../icons";
 import { DataTablePagination } from "./data-table-pagination";
 
 interface DataTableProps<TData> extends Omit<ComponentProps<"div">, "children"> {
@@ -24,25 +25,12 @@ interface DataTableProps<TData> extends Omit<ComponentProps<"div">, "children"> 
 
 function SortIcon({ direction }: { direction: false | "asc" | "desc" }) {
   if (direction === "asc") {
-    return (
-      <svg width="12" height="12" viewBox="0 0 12 12" fill="none" className="ml-1 inline-block">
-        <path d="M6 3L10 8H2L6 3Z" fill="currentColor" />
-      </svg>
-    );
+    return <SortAsc size={12} className="ml-1 inline-block" />;
   }
   if (direction === "desc") {
-    return (
-      <svg width="12" height="12" viewBox="0 0 12 12" fill="none" className="ml-1 inline-block">
-        <path d="M6 9L2 4H10L6 9Z" fill="currentColor" />
-      </svg>
-    );
+    return <SortDesc size={12} className="ml-1 inline-block" />;
   }
-  return (
-    <svg width="12" height="12" viewBox="0 0 12 12" fill="none" className="ml-1 inline-block opacity-30">
-      <path d="M6 2L9 5.5H3L6 2Z" fill="currentColor" />
-      <path d="M6 10L3 6.5H9L6 10Z" fill="currentColor" />
-    </svg>
-  );
+  return <SortDefault size={12} className="ml-1 inline-block opacity-30" />;
 }
 
 function DataTable<TData>({
