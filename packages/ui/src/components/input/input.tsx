@@ -6,7 +6,7 @@ const inputVariants = cva(
   [
     'flex w-full',                                                     // 레이아웃
     'rounded-md px-3',                                                 // 크기/간격
-    'text-sm',                                                         // 모양/타이포
+    'text-sm text-foreground',                                           // 모양/타이포
     'border border-input bg-white shadow-sm dark:bg-neutral-950',      // 배경/보더
     'transition-[color,background-color,border-color,box-shadow] duration-200 ease-apple', // 전환
     'file:border-0 file:bg-transparent file:text-sm file:font-medium', // 파일 입력

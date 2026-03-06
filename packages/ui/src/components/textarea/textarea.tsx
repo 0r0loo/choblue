@@ -6,7 +6,7 @@ const textareaVariants = cva(
   [
     'flex w-full',                                                     // 레이아웃
     'rounded-md px-3 py-2',                                            // 크기/간격
-    'text-sm',                                                         // 모양/타이포
+    'text-sm text-foreground',                                           // 모양/타이포
     'border border-input bg-white shadow-sm dark:bg-neutral-950',      // 배경/보더
     'transition-[color,background-color,border-color,box-shadow] duration-200 ease-apple', // 전환
     'placeholder:text-muted-foreground',                               // 플레이스홀더

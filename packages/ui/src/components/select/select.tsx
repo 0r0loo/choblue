@@ -58,7 +58,7 @@ function SelectTrigger({
         [
           "flex items-center justify-between",                                // layout
           "w-full rounded-md px-3",                                           // size/spacing
-          "h-9 text-sm",                                                      // shape/typo
+          "h-9 text-sm text-foreground",                                        // shape/typo
           "border border-input bg-white shadow-sm dark:bg-neutral-950",       // bg/border
           "transition-[color,background-color,border-color,box-shadow] duration-200 ease-apple", // transition
           "focus-visible:outline-none focus-visible:ring-[3px] focus-visible:ring-primary/20 focus-visible:border-primary/50", // focus glow
@@ -115,7 +115,7 @@ function SelectContent({
         [
           "z-50 overflow-hidden",                       // layout
           "min-w-[8rem] rounded-md p-1",                // size/spacing
-          "border border-border bg-white shadow-md dark:bg-neutral-950", // bg/border
+          "border border-border bg-white text-foreground shadow-md dark:bg-neutral-950", // bg/border
         ],
         className,
       )}
